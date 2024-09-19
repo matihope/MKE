@@ -1,45 +1,15 @@
-#include <stdexcept>
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
-}
+#include <MKE/Window.hpp>
 
 int main() {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	mk::Window window(800, 600, "Hello window!");
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Title", NULL, NULL);
-	if (window == NULL) {
-		glfwTerminate();
-		throw std::runtime_error("Couldn\'t create a window");
+	bool run = true;
+	while (run) {
+		mk::Event event;
+		while (window.pollEvent(event))
+			if (event.type == mk::EventType::WindowClose) run = false;
+
+		window.clear(mk::Colors::DARK);
+		window.display();
 	}
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-		throw std::runtime_error("Failed to initialize GLAD");
-
-	glViewport(0, 0, 800, 600);
-
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	while (!glfwWindowShouldClose(window)) {
-		processInput(window);
-
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-	glfwTerminate();
 }

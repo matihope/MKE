@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <ostream>
+#include "../Ints.hpp"
 
 namespace mk::math {
 
@@ -114,8 +115,8 @@ namespace mk::math {
 	};
 
 	using Vector2f = Vector2<float>;
-	using Vector2i = Vector2<int>;
-	using Vector2u = Vector2<unsigned int>;
+	using Vector2i = Vector2<i32>;
+	using Vector2u = Vector2<u32>;
 
 	Vector2f normalizeVector(Vector2f vector);
 	Vector2f rotateVector(Vector2f vector, float angleRads);

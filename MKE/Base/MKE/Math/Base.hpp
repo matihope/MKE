@@ -11,7 +11,6 @@
 #define LL_INFINITY    1'000'000'000'000'000'000LL
 #define EPS_ZERO       1e-12
 #define M_PIf          3.14159265358979323846f /* pi */
-typedef unsigned int uint;
 
 namespace mk::math {
 	template<typename T>

@@ -1,16 +1,17 @@
 #pragma once
 
 #include "Base.hpp"
+#include "../Ints.hpp"
 
 #include <array>
 
 namespace mk::math {
-	template<uint h, uint w>
+	template<u32 h, u32 w>
 	class Matrix: public std::array<std::array<double, w>, h> {
 	public:
 		using std::array<std::array<double, w>, h>::array;
 
-		template<uint x1, uint x2, uint x3>
+		template<u32 x1, u32 x2, u32 x3>
 		static Matrix<x1, x3> multiply(const Matrix<x1, x2>& a, const Matrix<x2, x3>& b) {
 			Matrix<x1, x3> result{};
 			for (int i = 0; i < x1; i++)

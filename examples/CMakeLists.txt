@@ -1,1 +1,2 @@
 add_subdirectory(hello_window)
+add_subdirectory(hello_window_primitive)
