@@ -1,0 +1,5 @@
+*build*
+.idea
+.vscode
+.cache
+.DS_Store
