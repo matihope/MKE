@@ -92,7 +92,10 @@ void mk::Window::display() {
 	glfwPollEvents();
 }
 
-void mk::Window::addEvent(Event event) { events.push(event); }
+void mk::Window::addEvent(Event event) {
+	if (event.type == mk::EventType::WindowResized) setSize(event.window_resized.new_size);
+	events.push(event);
+}
 
 bool mk::Window::pollEvent(Event& event) {
 	if (!events.empty()) {

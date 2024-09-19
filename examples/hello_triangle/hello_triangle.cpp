@@ -3,7 +3,7 @@
 #include <MKE/Window.hpp>
 
 int main() {
-	mk::Window window(800, 600, "Hello window!");
+	mk::Window window(800, 600, "Hello triangle!");
 
 	float vertices[] = { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f };
 
@@ -25,9 +25,7 @@ int main() {
 		  "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 		  "}\0";
 
-	u32 vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
+	u32 vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 
@@ -36,8 +34,42 @@ int main() {
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		MKE_PANIC("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n", infoLog);
+		MKE_PANIC("Vertex shader compilation has failed:\n", infoLog);
 	}
+
+	const char* fragmentShaderSource
+		= "#version 330 core\n"
+		  "out vec4 FragColor;\n"
+		  "void main()\n"
+		  "{\n"
+		  "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+		  "}\0";
+
+	u32 fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		MKE_PANIC("Fragment shader compilation has failed:\n", infoLog);
+	}
+
+	u32 shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		MKE_PANIC("Shader program compilation has failed:\n", infoLog);
+	}
+
+	glUseProgram(shaderProgram);
 
 	bool run = true;
 	while (run) {
