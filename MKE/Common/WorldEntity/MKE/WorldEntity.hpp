@@ -1,5 +1,4 @@
 #pragma once
-#include <CollisionComponent/CollisionComponent.hpp>
 #include <SFML/Graphics.hpp>
 #include <Updatable/Updatable.hpp>
 #include <WorldEntity/WorldEntity.hpp>

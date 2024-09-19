@@ -1,4 +1,5 @@
-#include <JsonBridge/JsonBridge.hpp>
+#include "JsonBridge.hpp"
+#include <MKE/ResPath.hpp>
 #include <fstream>
 
 namespace mk {
