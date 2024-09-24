@@ -12,10 +12,13 @@ namespace {
 	void mk_initGlfw() {
 		static bool initialized_glfw = false;
 		if (!initialized_glfw) {
-			glfwInit();
+			MKE_ASSERT(glfwInit(), "Couldn\'t init glfw");
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 			initialized_glfw = true;
 		}
 	}
@@ -36,6 +39,12 @@ namespace {
 		mk::Event event{};
 		event.window_resized = mk::Events::WindowResized({ width, height });
 		pushEvent(window, event);
+	}
+
+	mk::math::Vector2u getGlViewportSize() {
+		i32 data[4];
+		glGetIntegerv(GL_VIEWPORT, &data[0]);
+		return { data[2], data[3] };
 	}
 }
 
@@ -68,8 +77,9 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	glfwSetWindowCloseCallback(window, window_close_callback);
 	glfwSetFramebufferSizeCallback(window, window_framebuffer_size_callback);
 
-	setSize(width, height);
+
 	initialized = true;
+	setSize(getGlViewportSize());
 }
 
 void mk::Window::create(math::Vector2u size, std::string_view title) {
@@ -77,7 +87,6 @@ void mk::Window::create(math::Vector2u size, std::string_view title) {
 }
 
 void mk::Window::setSize(math::Vector2u size) {
-	std::cout << size << '\n';
 	window_size = size;
 	if (initialized) glViewport(0, 0, size.x, size.y);
 }
