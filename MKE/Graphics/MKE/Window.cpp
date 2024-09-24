@@ -48,29 +48,27 @@ mk::Window::~Window() {
 	if (initialized) glfwTerminate();
 }
 
-void mk::Window::create(uint32_t width, uint32_t height, std::string_view title) {
+void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	MKE_ASSERT_TRUE(!initialized, "Called create on initalized window");
-
-	this->title = title;
-	setSize(width, height);
 
 	mk_initGlfw();
 
-	window = glfwCreateWindow(window_size.x, window_size.y, this->title.c_str(), NULL, NULL);
+	this->title = title;
+	window      = glfwCreateWindow(width, height, this->title.c_str(), NULL, NULL);
 	if (window == NULL) {
 		glfwTerminate();
-		MKE_PANIC("Coulnd't create GLFW window");
+		MKE_PANIC("Couldn't create GLFW window");
 	}
+
 	glfw_to_mk_window.insert({ window, (*this) });
 	glfwMakeContextCurrent(window);
 
 	MKE_ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
 
-	glViewport(0, 0, window_size.x, window_size.y);
-
 	glfwSetWindowCloseCallback(window, window_close_callback);
 	glfwSetFramebufferSizeCallback(window, window_framebuffer_size_callback);
 
+	setSize(width, height);
 	initialized = true;
 }
 
@@ -79,13 +77,12 @@ void mk::Window::create(math::Vector2u size, std::string_view title) {
 }
 
 void mk::Window::setSize(math::Vector2u size) {
+	std::cout << size << '\n';
 	window_size = size;
-	if (initialized) {
-		//...
-	}
+	if (initialized) glViewport(0, 0, size.x, size.y);
 }
 
-void mk::Window::setSize(unsigned int width, unsigned int height) { setSize({ width, height }); }
+void mk::Window::setSize(u32 width, u32 height) { setSize({ width, height }); }
 
 void mk::Window::display() {
 	glfwSwapBuffers(window);

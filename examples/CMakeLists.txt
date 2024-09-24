@@ -1,3 +1,4 @@
 add_subdirectory(hello_window)
 add_subdirectory(hello_window_primitive)
 add_subdirectory(hello_triangle)
+add_subdirectory(test_lopen)
