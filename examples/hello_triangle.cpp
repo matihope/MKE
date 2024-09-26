@@ -22,7 +22,7 @@ int main() {
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		MKE_PANIC("Vertex shader compilation has failed:\n", infoLog);
+		MK_PANIC("Vertex shader compilation has failed:\n", infoLog);
 	}
 
 	const char* fragmentShaderSource
@@ -40,7 +40,7 @@ int main() {
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		MKE_PANIC("Fragment shader compilation has failed:\n", infoLog);
+		MK_PANIC("Fragment shader compilation has failed:\n", infoLog);
 	}
 
 	u32 shaderProgram = glCreateProgram();
@@ -54,7 +54,7 @@ int main() {
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		MKE_PANIC("Shader program compilation has failed:\n", infoLog);
+		MK_PANIC("Shader program compilation has failed:\n", infoLog);
 	}
 
 	glUseProgram(shaderProgram);

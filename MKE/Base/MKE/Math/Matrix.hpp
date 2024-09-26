@@ -1,24 +1,51 @@
 #pragma once
 
-#include "Base.hpp"
 #include "../Ints.hpp"
+#include "MKE/Panic.hpp"
 
 #include <array>
+#include <initializer_list>
+#include <type_traits>
 
 namespace mk::math {
-	template<u32 h, u32 w>
-	class Matrix: public std::array<std::array<double, w>, h> {
+	template<class T, usize H, usize W>
+	requires std::is_arithmetic_v<T> class Matrix {
 	public:
-		using std::array<std::array<double, w>, h>::array;
+		Matrix() = default;
 
-		template<u32 x1, u32 x2, u32 x3>
-		static Matrix<x1, x3> multiply(const Matrix<x1, x2>& a, const Matrix<x2, x3>& b) {
-			Matrix<x1, x3> result{};
-			for (int i = 0; i < x1; i++)
-				for (int j = 0; j < x3; j++)
-					for (int current = 0; current < x2; current++)
-						result[i][j] += a[i][current] * b[current][j];
+		template<class... Args>
+		requires(std::is_same_v<std::array<T, H>, Args> && ...)
+		constexpr Matrix(Args&&... args): matrix{ std::forward<Args>(args)... } {}
+
+		constexpr Matrix(const Matrix&)            = default;
+		constexpr Matrix(Matrix&&)                 = default;
+		constexpr Matrix& operator=(const Matrix&) = default;
+		constexpr Matrix& operator=(Matrix&&)      = default;
+
+		constexpr const T& operator()(usize row, usize col) const {
+			MK_ASSERT(row < H, "Row >= H");
+			MK_ASSERT(col < W, "Col >= W");
+			return matrix[row][col];
+		}
+
+		constexpr T& operator()(usize row, usize col) { return operator()(row, col); }
+
+		template<usize x1, usize x2, usize x3>
+		static Matrix<T, x1, x3> multiply(const Matrix<T, x1, x2>& a, const Matrix<T, x2, x3>& b) {
+			Matrix<T, x1, x3> result{};
+			for (usize i = 0; i < x1; i++)
+				for (usize j = 0; j < x3; j++)
+					for (usize current = 0; current < x2; current++)
+						result(i, j) += a(i, current) * b(current, j);
 			return result;
 		}
+
+		constexpr const T* data() const { return matrix[0].data(); }
+
+
+	private:
+		std::array<std::array<T, W>, H> matrix{};
 	};
+
+	using Matrix4f = Matrix<float, 4, 4>;
 }  // namespace mk::Math

@@ -21,17 +21,23 @@ namespace mk {
 		void setSize(math::Vector2u size);
 		void setSize(unsigned int width, unsigned int height);
 
+		math::Vector2u getSize() const;
+
 		void clear(Color color);
 		void display();
 
 		void addEvent(Event event);
 		bool pollEvent(Event& event);
 
+		bool isKeyPressed(input::KEY key) const;
+
+		void enableVerticalSync(bool enable);
+
 	private:
-		bool initialized = false;
-		std::string    title{};
-		math::Vector2u window_size{};
-		GLFWwindow*    window = nullptr;
+		bool              initialized = false;
+		std::string       title{};
+		math::Vector2u    window_size{};
+		GLFWwindow*       window = nullptr;
 		std::queue<Event> events;
 	};
 }

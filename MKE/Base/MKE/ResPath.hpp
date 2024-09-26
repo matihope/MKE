@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MKE/Panic.hpp"
 #include <string>
 #include <filesystem>
 
@@ -24,6 +25,20 @@ namespace mk {
 		bool operator()(const ResPath& other) const { return real_path == other.real_path; }
 
 		bool operator<(const ResPath& other) const { return real_path < other.real_path; }
+
+		bool isDirectory() const;
+
+		std::string readContent() const;
+
+		static inline ResPath example([[maybe_unused]] std::string_view path) {
+#ifdef CUSTOM_ASSETS_PATH
+			ResPath p;
+			p.real_path = canonical(std::filesystem::path(CUSTOM_ASSETS_PATH)) / path;
+			return p;
+#else
+			MK_PANIC("CUSTOM_ASSETS_PATH is not set");
+#endif
+		}
 
 	private:
 		std::filesystem::path real_path;

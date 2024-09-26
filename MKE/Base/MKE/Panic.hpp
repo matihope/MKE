@@ -1,30 +1,37 @@
 #pragma once
 
 #include "StrUtils.hpp"
+#include "Exceptions.hpp"
 #include <iostream>
 
-#define MKE_PANIC(...)                                            \
-	std::cerr << "ERROR: " << mk::strConcat(__VA_ARGS__) << '\n'; \
-	exit(1)
+#define MK_LOG_ERROR(...) std::cerr << "ERROR: " << mk::strConcat(__VA_ARGS__) << std::endl
 
-#define MKE_ASSERT(cond, ...) \
-	if (!(cond)) { MKE_PANIC(__VA_ARGS__); }
+// Braces to make it atomic
+#define MK_PANIC(...)              \
+	{                              \
+		MK_LOG_ERROR(__VA_ARGS__); \
+		exit(1);                   \
+	}
 
-#define MKE_ASSERT_EQUAL(expected, actual, message) \
-	MKE_ASSERT(                                     \
-		(actual) == (expected),                     \
-		mk::strConcat(                              \
-			message,                                \
-			"\n\tAt ",                              \
-			__FILE__,                               \
-			":",                                    \
-			__LINE__,                               \
-			": \n",                                 \
-			"\t\tValues not equal: ",               \
-			#expected,                              \
-			" != ",                                 \
-			#actual                                 \
-		)                                           \
+
+#define MK_ASSERT(cond, ...) \
+	if (!(cond)) { throw mk::exceptions::MkException(__VA_ARGS__); }
+
+#define MK_ASSERT_EQUAL(expected, actual, ...) \
+	MK_ASSERT(                                 \
+		(actual) == (expected),                \
+		mk::strConcat(                         \
+			__VA_ARGS__,                       \
+			"\n\tAt ",                         \
+			__FILE__,                          \
+			":",                               \
+			__LINE__,                          \
+			": \n",                            \
+			"\t\tValues not equal: ",          \
+			#expected,                         \
+			" != ",                            \
+			#actual                            \
+		)                                      \
 	)
 
-#define MKE_ASSERT_TRUE(expr, message) MKE_ASSERT_EQUAL(true, expr, message)
+#define MK_ASSERT_TRUE(expr, ...) MK_ASSERT_EQUAL(true, expr, __VA_ARGS__)

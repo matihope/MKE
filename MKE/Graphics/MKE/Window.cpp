@@ -1,5 +1,6 @@
 #include "Window.hpp"
 #include "MKE/Event.hpp"
+#include "MKE/Input.hpp"
 #include "MKE/Panic.hpp"
 
 #include <glad/glad.h>
@@ -12,7 +13,7 @@ namespace {
 	void mk_initGlfw() {
 		static bool initialized_glfw = false;
 		if (!initialized_glfw) {
-			MKE_ASSERT(glfwInit(), "Couldn\'t init glfw");
+			MK_ASSERT(glfwInit(), "Couldn\'t init glfw");
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -41,6 +42,24 @@ namespace {
 		pushEvent(window, event);
 	}
 
+	void window_key_callback(
+		GLFWwindow* window, int key, int /* scancode */, int action, int /* mods */
+	) {
+		mk::Event event;
+
+		// This is fine, because mk::input::KEY follows GLFW's key ordering.
+		if (action == GLFW_PRESS)
+			event.key_pressed = mk::Events::KeyPressed(mk::input::KEY(key));
+		else if (action == GLFW_RELEASE)
+			event.key_released = mk::Events::KeyReleased(mk::input::KEY(key));
+
+		pushEvent(window, event);
+	}
+
+	void window_mouse_callback(
+		GLFWwindow* /* window */, int /* button */, int /* action */, int /* mods */
+	) {}
+
 	mk::math::Vector2u getGlViewportSize() {
 		i32 data[4];
 		glGetIntegerv(GL_VIEWPORT, &data[0]);
@@ -58,7 +77,7 @@ mk::Window::~Window() {
 }
 
 void mk::Window::create(u32 width, u32 height, std::string_view title) {
-	MKE_ASSERT_TRUE(!initialized, "Called create on initalized window");
+	MK_ASSERT_TRUE(!initialized, "Called create on initalized window");
 
 	mk_initGlfw();
 
@@ -66,17 +85,18 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	window      = glfwCreateWindow(width, height, this->title.c_str(), NULL, NULL);
 	if (window == NULL) {
 		glfwTerminate();
-		MKE_PANIC("Couldn't create GLFW window");
+		MK_PANIC("Couldn't create GLFW window");
 	}
 
 	glfw_to_mk_window.insert({ window, (*this) });
 	glfwMakeContextCurrent(window);
 
-	MKE_ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
+	MK_ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
 
 	glfwSetWindowCloseCallback(window, window_close_callback);
 	glfwSetFramebufferSizeCallback(window, window_framebuffer_size_callback);
-
+	glfwSetKeyCallback(window, window_key_callback);
+	glfwSetMouseButtonCallback(window, window_mouse_callback);
 
 	initialized = true;
 	setSize(getGlViewportSize());
@@ -115,4 +135,18 @@ bool mk::Window::pollEvent(Event& event) {
 void mk::Window::clear(Color color) {
 	glClearColor(color.r / 255.f, color.g / 255.f, color.g / 255.f, color.a / 255.f);
 	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+mk::math::Vector2u mk::Window::getSize() const { return window_size; }
+
+bool mk::Window::isKeyPressed(input::KEY key) const {
+	return glfwGetKey(window, (i32) key) == GLFW_PRESS;
+}
+
+void mk::Window::enableVerticalSync(bool enable) {
+	if (enable) {
+		glfwSwapInterval(1);
+	} else {
+		glfwSwapInterval(0);
+	}
 }

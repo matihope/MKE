@@ -1,20 +1,20 @@
 #pragma once
 
+#include "MKE/Input.hpp"
 #include "Math/Vector2.hpp"
 
 namespace mk {
-	enum class EventType { WindowClose, KeyPressed, WindowResized };
+	enum class EventType {
+		WindowClose,
+		WindowResized,
+		KeyPressed,
+		KeyReleased,
+	};
 
 	namespace Events {
 		struct WindowClose {
 			WindowClose(): type(EventType::WindowClose) {};
 			EventType type;
-		};
-
-		struct KeyPressed {
-			KeyPressed(): type(EventType::KeyPressed) {};
-			EventType type;
-			// code
 		};
 
 		struct WindowResized {
@@ -24,13 +24,27 @@ namespace mk {
 			EventType      type;
 			math::Vector2u new_size;
 		};
+
+		struct KeyPressed {
+			KeyPressed(input::KEY key): type(EventType::KeyPressed), key(key) {};
+			EventType  type;
+			input::KEY key;
+		};
+
+		struct KeyReleased {
+			KeyReleased(input::KEY key): type(EventType::KeyReleased), key(key) {};
+			EventType  type;
+			input::KEY key;
+		};
 	}
 
 	union Event {
-        Event() {}
+		Event() {}
+
 		EventType             type;  // As everywhere
 		Events::WindowClose   window_close;
-		Events::KeyPressed    key_pressed;
 		Events::WindowResized window_resized;
+		Events::KeyPressed    key_pressed;
+		Events::KeyReleased   key_released;
 	};
 }

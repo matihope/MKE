@@ -9,7 +9,7 @@ namespace mk {
 		u8 b;
 		u8 a;
 
-		constexpr Color(u8 r, u8 g, u8 b, u8 a): r(r), g(g), b(g), a(a) {};
+		constexpr Color(u8 r, u8 g, u8 b, u8 a): r(r), g(g), b(b), a(a) {};
 	};
 
 	namespace Colors {

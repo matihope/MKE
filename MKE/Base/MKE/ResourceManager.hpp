@@ -1,8 +1,6 @@
 #pragma once
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include <map>
-#include <memory>
 #include "ResPath/ResPath.hpp"
 
 namespace mk {
