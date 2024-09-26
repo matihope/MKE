@@ -58,7 +58,7 @@ bool mk::Shader::tryLoad(const ResPath& vertex_shader, const ResPath& fragment_s
 		load(vertex_shader, fragment_shader);
 		return true;
 	} catch (exceptions::MkException& e) {
-		MK_LOG_ERROR("Continuing after", e.what());
+		MK_LOG_ERROR("in Shader::tryLoad(), continuing after", e.what());
 		return false;
 	}
 }

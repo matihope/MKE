@@ -2,10 +2,11 @@
 
 #include "MKE/Ints.hpp"
 #include "MKE/Math/Matrix.hpp"
+#include "MKE/NonCopyable.hpp"
 #include "MKE/ResPath.hpp"
 
 namespace mk {
-	class Shader {
+	class Shader: public NonCopyable {
 	public:
 		Shader() {};
 		Shader(const ResPath& vertex_shader, const ResPath& fragment_shader);

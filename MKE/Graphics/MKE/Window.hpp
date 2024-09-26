@@ -2,18 +2,19 @@
 
 #include "Color.hpp"
 #include "MKE/Event.hpp"
+#include "MKE/NonCopyable.hpp"
 #include <MKE/Math/Vector2.hpp>
-#include <cstdint>
 
 struct GLFWwindow;
 
 namespace mk {
-	class Window {
+	class Window: public NonCopyable {
 	public:
 		Window() = default;
 		Window(u32 width, u32 height, std::string_view title);
 		Window(math::Vector2u size, std::string_view title);
-		~Window();
+
+		virtual ~Window();
 
 		void create(u32 width, u32 height, std::string_view title);
 		void create(math::Vector2u size, std::string_view title);

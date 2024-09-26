@@ -3,6 +3,7 @@
 #include "MKE/Panic.hpp"
 #include <string>
 #include <filesystem>
+#include <type_traits>
 
 namespace mk {
 	class ResPath {
@@ -10,6 +11,7 @@ namespace mk {
 
 	public:
 		ResPath() = default;
+		ResPath(const std::filesystem::path& path);
 		ResPath(const std::string& path);
 		ResPath(const char* path);
 
@@ -32,13 +34,19 @@ namespace mk {
 
 		static inline ResPath example([[maybe_unused]] std::string_view path) {
 #ifdef CUSTOM_ASSETS_PATH
-			ResPath p;
-			p.real_path = canonical(std::filesystem::path(CUSTOM_ASSETS_PATH)) / path;
-			return p;
+			return { std::filesystem::path(CUSTOM_ASSETS_PATH) / path };
 #else
 			MK_PANIC("CUSTOM_ASSETS_PATH is not set");
 #endif
 		}
+
+		std::string extension() const;
+
+		std::string stem() const;
+
+		void assertExists() const;
+		void assertExtension(std::string_view desired_extension) const;
+		void assertStem(std::string_view desired_stem) const;
 
 	private:
 		std::filesystem::path real_path;
