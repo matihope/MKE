@@ -34,7 +34,7 @@ namespace mk {
 
 		void enableVerticalSync(bool enable);
 
-	private:
+	protected:
 		bool              initialized = false;
 		std::string       title{};
 		math::Vector2u    window_size{};

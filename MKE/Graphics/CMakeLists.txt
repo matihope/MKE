@@ -14,8 +14,12 @@ add_library(MKE-Graphics
     MKE/Drawable.hpp
     MKE/RenderTarget.cpp
     MKE/RenderTarget.hpp
+    MKE/DrawContext.cpp
+    MKE/DrawContext.hpp
     MKE/VertexArray.cpp
     MKE/VertexArray.hpp
+    MKE/RenderWindow.cpp
+    MKE/RenderWindow.hpp
 )
 target_link_libraries(MKE-Graphics MKE-Base GLAD glfw stb)
 target_include_directories(MKE-Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

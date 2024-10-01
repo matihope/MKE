@@ -3,6 +3,7 @@
 #include "../Ints.hpp"
 #include "MKE/Panic.hpp"
 
+#include <algorithm>
 #include <array>
 #include <initializer_list>
 #include <type_traits>
@@ -11,7 +12,9 @@ namespace mk::math {
 	template<class T, usize H, usize W>
 	requires std::is_arithmetic_v<T> class Matrix {
 	public:
-		Matrix() = default;
+		Matrix() {
+			for (usize p = 0; p < std::min(W, H); p++) operator()(p, p) = 1;
+		}
 
 		template<class... Args>
 		requires(std::is_same_v<std::array<T, H>, Args> && ...)
@@ -22,13 +25,13 @@ namespace mk::math {
 		constexpr Matrix& operator=(const Matrix&) = default;
 		constexpr Matrix& operator=(Matrix&&)      = default;
 
-		constexpr const T& operator()(usize row, usize col) const {
+		constexpr const T& operator()(usize row, usize col) const& {
 			MK_ASSERT(row < H, "Row >= H");
 			MK_ASSERT(col < W, "Col >= W");
 			return matrix[row][col];
 		}
 
-		constexpr T& operator()(usize row, usize col) { return operator()(row, col); }
+		T& operator()(usize row, usize col) { return matrix[row][col]; }
 
 		template<usize x1, usize x2, usize x3>
 		static Matrix<T, x1, x3> multiply(const Matrix<T, x1, x2>& a, const Matrix<T, x2, x3>& b) {

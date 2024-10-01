@@ -3,30 +3,30 @@
 namespace {
 	const char* shader_vertex2d   = R"(
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTex;
-out vec3 ourColor;
+uniform mat4 transform;
+out vec4 ourColor;
 out vec2 TexCoord;
 void main()
 {
-   gl_Position = vec4(aPos, 1.0);
+   gl_Position = transform * vec4(aPos, 0.0, 1.0);
    ourColor = aColor;
    TexCoord = aTex;
 }
 	      )";
 	const char* shader_fragment2d = R"(
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec2 aTex;
-out vec3 ourColor;
-out vec2 TexCoord;
+in vec4 ourColor;
+in vec2 TexCoord;
+out vec4 FragColor;
+
+uniform sampler2D ourTexture;
+
 void main()
 {
-   gl_Position = vec4(aPos, 1.0);
-   ourColor = aColor;
-   TexCoord = aTex;
+   FragColor = texture(ourTexture, TexCoord) * ourColor;
 }
 	      )";
 
@@ -37,3 +37,9 @@ void main()
 }
 
 mk::DrawContext2D::DrawContext2D() { setShader(shader2D()); }
+
+void mk::DrawContext2D::setShader(const Shader* shader) { DrawContext::setShader(shader); }
+
+mk::DrawContext2D::DrawContext2D(const Texture& texture): DrawContext2D() {
+	this->texture = &texture;
+}

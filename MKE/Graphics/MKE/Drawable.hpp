@@ -16,10 +16,11 @@ namespace mk {
 
 	class Drawable2D: public Drawable {
 	public:
-		virtual ~Drawable2D() = 0;
+		virtual ~Drawable2D() {};
 
 		void beginDraw(const RenderTarget& target) const override;
 
 		virtual void draw(const RenderTarget& target, DrawContext2D context) const = 0;
 	};
+
 }

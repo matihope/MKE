@@ -3,7 +3,6 @@
 #include "MKE/Math/Matrix.hpp"
 #include "MKE/Shader.hpp"
 #include "MKE/Texture.hpp"
-#include <functional>
 
 namespace mk {
 	class RenderTarget;
@@ -17,13 +16,11 @@ namespace mk {
 
 		DrawContext(const Shader* shader): shader(shader) {}
 
-		void setShader(const Shader* shader) { this->shader = shader; }
+		virtual void setShader(const Shader* shader) { this->shader = shader; }
 
 		virtual ~DrawContext() = 0;
 
-		virtual void bind() {
-			Shader::use(shader);
-		}
+		virtual void bind() { Shader::use(shader); }
 
 	protected:
 		const Shader* shader = nullptr;
@@ -31,13 +28,24 @@ namespace mk {
 
 	inline DrawContext::~DrawContext() {}
 
-	class DrawContext2D: public DrawContext {
+	class DrawContext2D final: public DrawContext {
 	public:
 		DrawContext2D();
+		DrawContext2D(const Texture& texture);
 
 		~DrawContext2D() = default;
 
-		math::Matrix4f                                 transform;
-		std::optional<std::reference_wrapper<Texture>> texture;
+		math::Matrix4f transform;
+
+		void setShader(const Shader* shader) override;
+
+		void bind() override {
+			DrawContext::bind();
+			Texture::bind(texture);
+			shader->setMatrix4f("transform", transform);
+		}
+
+	private:
+		const Texture* texture = nullptr;
 	};
 }
