@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MKE/Color.hpp"
 #include "MKE/Ints.hpp"
 #include "MKE/Math/Vector2.hpp"
 #include "MKE/ResPath.hpp"
@@ -19,6 +20,7 @@ namespace mk {
 		const u8* getData() const;
 
 		math::Vector2u getSize() const { return { width, height }; }
+
 
 	private:
 		u32 width{};

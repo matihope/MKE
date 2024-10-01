@@ -9,12 +9,18 @@ namespace mk {
 	class Shader: public NonCopyable {
 	public:
 		Shader() {};
-		Shader(const ResPath& vertex_shader, const ResPath& fragment_shader);
+
+		template<class T>
+		Shader(const T& vertex_shader, const T& fragment_shader) {
+			load(vertex_shader, fragment_shader);
+		}
+
 		~Shader();
 
-		void use() const;
+		static void use(const Shader* shader = nullptr);
 
 		void load(const ResPath& vertex_shader, const ResPath& fragment_shader);
+		void load(const char* vertex_shader, const char* fragment_shader);
 		bool tryLoad(const ResPath& vertex_shader, const ResPath& fragment_shader);
 		void destroy();
 

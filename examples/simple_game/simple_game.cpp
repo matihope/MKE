@@ -82,7 +82,7 @@ int main() {
 			std::array{ 0.f, 0.f, 0.f, 1.f },
 		};
 
-		shader.use();
+		mk::Shader::use(&shader);
 		shader.setMatrix4f("transform", transform);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

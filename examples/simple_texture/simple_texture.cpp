@@ -53,7 +53,8 @@ int main() {
 	bool run = true;
 
 	mk::Texture texture;
-	texture.loadFromFile(mk::ResPath::example("wall.jpg"));
+	texture.loadFromFile(mk::ResPath::example("arrow.png"));
+	texture.setSmooth(false);
 
 	while (run) {
 		mk::Event event;
@@ -61,9 +62,9 @@ int main() {
 			if (event.type == mk::EventType::WindowClose) run = false;
 		window.clear(mk::Colors::DARK);
 
-		texture.use();
+		mk::Shader::use(&shader);
+		mk::Texture::bind(&texture);
 
-		shader.use();
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -71,4 +72,5 @@ int main() {
 	}
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 }

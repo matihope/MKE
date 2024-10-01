@@ -38,7 +38,7 @@ int main() {
 			if (event.type == mk::EventType::WindowClose) run = false;
 		window.clear(mk::Colors::DARK);
 
-		shader.use();
+		mk::Shader::use(&shader);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 

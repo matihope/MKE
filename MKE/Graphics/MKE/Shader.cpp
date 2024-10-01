@@ -7,15 +7,59 @@
 using mk::exceptions::MkException;
 
 void mk::Shader::load(const ResPath& vertex_shader, const ResPath& fragment_shader) {
+	std::string vertex_shader_content   = vertex_shader.readContent();
+	std::string fragment_shader_content = fragment_shader.readContent();
+	load(vertex_shader_content.c_str(), fragment_shader_content.c_str());
+}
+
+bool mk::Shader::tryLoad(const ResPath& vertex_shader, const ResPath& fragment_shader) {
+	try {
+		load(vertex_shader, fragment_shader);
+		return true;
+	} catch (exceptions::MkException& e) {
+		MK_LOG_ERROR("in Shader::tryLoad(), continuing after", e.what());
+		return false;
+	}
+}
+
+void mk::Shader::destroy() {
+	if (is_compiled) glDeleteProgram(program_id);
+	is_compiled = false;
+}
+
+mk::Shader::~Shader() { this->destroy(); }
+
+void mk::Shader::setBool(const std::string& name, bool value) const {
+	glUniform1i(glGetUniformLocation(program_id, name.c_str()), (int) value);
+}
+
+void mk::Shader::setI32(const std::string& name, i32 value) const {
+	glUniform1i(glGetUniformLocation(program_id, name.c_str()), value);
+}
+
+void mk::Shader::setFloat(const std::string& name, float value) const {
+	glUniform1f(glGetUniformLocation(program_id, name.c_str()), value);
+}
+
+void mk::Shader::setMatrix4f(const std::string& name, const math::Matrix4f& value) const {
+	glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_TRUE, value.data());
+}
+
+void mk::Shader::use(const Shader* shader) {
+	// do not rebind if bound ;O
+	if (shader) {
+		MK_ASSERT(shader->is_compiled, "Using uncompiled shader...");
+		glUseProgram(shader->program_id);
+	} else {
+		glUseProgram(0);
+	}
+}
+
+void mk::Shader::load(const char* vertex_shader, const char* fragment_shader) {
 	destroy();
 
-	std::string vertex_shader_content       = vertex_shader.readContent();
-	const char* vertex_shader_content_ptr   = vertex_shader_content.c_str();
-	std::string fragment_shader_content     = fragment_shader.readContent();
-	const char* fragment_shader_content_ptr = fragment_shader_content.c_str();
-
 	u32 vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader_id, 1, &vertex_shader_content_ptr, NULL);
+	glShaderSource(vertex_shader_id, 1, &vertex_shader, NULL);
 	glCompileShader(vertex_shader_id);
 
 	int  success;
@@ -27,7 +71,7 @@ void mk::Shader::load(const ResPath& vertex_shader, const ResPath& fragment_shad
 	}
 
 	u32 fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader_id, 1, &fragment_shader_content_ptr, NULL);
+	glShaderSource(fragment_shader_id, 1, &fragment_shader, NULL);
 	glCompileShader(fragment_shader_id);
 
 	glGetShaderiv(fragment_shader_id, GL_COMPILE_STATUS, &success);
@@ -51,46 +95,4 @@ void mk::Shader::load(const ResPath& vertex_shader, const ResPath& fragment_shad
 	}
 
 	is_compiled = true;
-}
-
-bool mk::Shader::tryLoad(const ResPath& vertex_shader, const ResPath& fragment_shader) {
-	try {
-		load(vertex_shader, fragment_shader);
-		return true;
-	} catch (exceptions::MkException& e) {
-		MK_LOG_ERROR("in Shader::tryLoad(), continuing after", e.what());
-		return false;
-	}
-}
-
-void mk::Shader::destroy() {
-	if (is_compiled) glDeleteProgram(program_id);
-	is_compiled = false;
-}
-
-mk::Shader::~Shader() { this->destroy(); }
-
-mk::Shader::Shader(const ResPath& vertex_shader, const ResPath& fragment_shader) {
-	load(vertex_shader, fragment_shader);
-}
-
-void mk::Shader::use() const {
-	MK_ASSERT(is_compiled, "Using uncompiled shader...");
-	glUseProgram(program_id);
-}
-
-void mk::Shader::setBool(const std::string& name, bool value) const {
-	glUniform1i(glGetUniformLocation(program_id, name.c_str()), (int) value);
-}
-
-void mk::Shader::setI32(const std::string& name, i32 value) const {
-	glUniform1i(glGetUniformLocation(program_id, name.c_str()), value);
-}
-
-void mk::Shader::setFloat(const std::string& name, float value) const {
-	glUniform1f(glGetUniformLocation(program_id, name.c_str()), value);
-}
-
-void mk::Shader::setMatrix4f(const std::string& name, const math::Matrix4f& value) const {
-	glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_TRUE, value.data());
 }

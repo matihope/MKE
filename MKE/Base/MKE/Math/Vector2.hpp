@@ -6,6 +6,7 @@
 
 namespace mk::math {
 
+	// Make number of dimensions a parameter
 	template<typename T>
 	requires std::is_arithmetic_v<T> struct Vector2 {
 		Vector2() = default;

@@ -9,8 +9,9 @@ namespace mk {
 	class Texture: public NonCopyable {
 	public:
 		Texture();
+		~Texture();
 
-		void use() const;
+		static void bind(const Texture* texture);
 
 		void loadFromImage(const Image& image) const;
 		void loadFromFile(const ResPath& file) const;
@@ -21,7 +22,7 @@ namespace mk {
 
 		math::Vector2u getSize() const;
 
-		~Texture();
+		u32 getNativeHandle() const;
 
 	private:
 		math::Vector2u size{};

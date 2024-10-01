@@ -8,9 +8,6 @@ mk::Texture::~Texture() { glDeleteTextures(1, &texture_id); }
 void mk::Texture::loadFromImage(const Image& image) const {
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 
-	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -18,15 +15,13 @@ void mk::Texture::loadFromImage(const Image& image) const {
 
 	auto [width, height] = image.getSize();
 	glTexImage2D(
-		GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.getData()
+		GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getData()
 	);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void mk::Texture::loadFromFile(const ResPath& file) const { loadFromImage(Image(file)); }
-
-void mk::Texture::use() const { glBindTexture(GL_TEXTURE_2D, texture_id); }
 
 mk::math::Vector2u mk::Texture::getSize() const { return size; }
 
@@ -44,4 +39,13 @@ void mk::Texture::generateMipmaps() const {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+u32 mk::Texture::getNativeHandle() const { return texture_id; }
+
+void mk::Texture::bind(const Texture* texture) {
+	if (texture)
+		glBindTexture(GL_TEXTURE_2D, texture->texture_id);
+	else
+		glBindTexture(GL_TEXTURE_2D, 0);
 }

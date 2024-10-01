@@ -1,5 +1,4 @@
 #include "Image.hpp"
-
 #include "MKE/Exceptions.hpp"
 #include "MKE/Panic.hpp"
 
@@ -11,8 +10,11 @@ mk::Image::Image(const ResPath& image) { load(image); }
 void mk::Image::load(const ResPath& image) {
 	destroy();
 
-	image.assertExtension(".jpg");
-	data = stbi_load(image.strPath(), (i32*) &width, (i32*) &height, (i32*) &nrChannels, 0);
+	auto ext = image.extension();
+	MK_ASSERT(ext == ".jpg" || ext == ".png", "Invalid image extension: ", image.getPath());
+
+	stbi_set_flip_vertically_on_load(true);
+	data = stbi_load(image.strPath(), (i32*) &width, (i32*) &height, (i32*) &nrChannels, 4);
 	MK_ASSERT(data != nullptr, "Couldn\'t load the image data");
 }
 
