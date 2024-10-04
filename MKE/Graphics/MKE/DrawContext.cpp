@@ -1,4 +1,5 @@
 #include "DrawContext.hpp"
+#include "MKE/Shader.hpp"
 
 namespace {
 	const char* shader_vertex2d   = R"(
@@ -34,12 +35,38 @@ void main()
 		static mk::Shader shader(shader_vertex2d, shader_fragment2d);
 		return &shader;
 	}
+
+	const char* shader_fragment_no_texture_2d = R"(
+#version 330 core
+in vec4 ourColor;
+in vec2 TexCoord;
+out vec4 FragColor;
+
+void main()
+{
+   FragColor = ourColor;
+}
+	      )";
+
+	mk::Shader* shaderNoTexture2D() {
+		static mk::Shader shader(shader_vertex2d, shader_fragment_no_texture_2d);
+		return &shader;
+	}
 }
 
 mk::DrawContext2D::DrawContext2D() { setShader(shader2D()); }
 
 void mk::DrawContext2D::setShader(const Shader* shader) { DrawContext::setShader(shader); }
 
-mk::DrawContext2D::DrawContext2D(const Texture& texture): DrawContext2D() {
-	this->texture = &texture;
+mk::DrawContext2D::DrawContext2D(const Texture* texture): DrawContext2D() {
+	this->texture = texture;
+}
+
+void mk::DrawContext2D::bind() {
+	if (texture)
+		Shader::use(shader2D());
+	else
+		Shader::use(shaderNoTexture2D());
+	Texture::bind(texture);
+	shader->setMatrix4f("transform", transform);
 }

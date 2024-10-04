@@ -1,6 +1,7 @@
 #include "Window.hpp"
 #include "MKE/Event.hpp"
 #include "MKE/Input.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/Panic.hpp"
 
 #include <glad/glad.h>
@@ -38,7 +39,7 @@ namespace {
 
 	void window_framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		mk::Event event{};
-		event.window_resized = mk::Events::WindowResized({ width, height });
+		event.window_resized = mk::Events::WindowResized(mk::math::Vector2u(width, height));
 		pushEvent(window, event);
 	}
 
@@ -63,7 +64,7 @@ namespace {
 	mk::math::Vector2u getGlViewportSize() {
 		i32 data[4];
 		glGetIntegerv(GL_VIEWPORT, &data[0]);
-		return { data[2], data[3] };
+		return { u32(data[2]), u32(data[3]) };
 	}
 }
 
@@ -133,7 +134,7 @@ bool mk::Window::pollEvent(Event& event) {
 }
 
 void mk::Window::clear(Color color) {
-	glClearColor(color.r / 255.f, color.g / 255.f, color.g / 255.f, color.a / 255.f);
+	glClearColor(color.r, color.g, color.b, color.a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -144,9 +145,8 @@ bool mk::Window::isKeyPressed(input::KEY key) const {
 }
 
 void mk::Window::enableVerticalSync(bool enable) {
-	if (enable) {
+	if (enable)
 		glfwSwapInterval(1);
-	} else {
+	else
 		glfwSwapInterval(0);
-	}
 }

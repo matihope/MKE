@@ -3,7 +3,7 @@
 #include "Color.hpp"
 #include "MKE/Event.hpp"
 #include "MKE/NonCopyable.hpp"
-#include <MKE/Math/Vector2.hpp>
+#include <MKE/Math/Vector.hpp>
 
 struct GLFWwindow;
 

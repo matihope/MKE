@@ -31,7 +31,7 @@ namespace mk {
 	class DrawContext2D final: public DrawContext {
 	public:
 		DrawContext2D();
-		DrawContext2D(const Texture& texture);
+		DrawContext2D(const Texture* texture);
 
 		~DrawContext2D() = default;
 
@@ -39,11 +39,7 @@ namespace mk {
 
 		void setShader(const Shader* shader) override;
 
-		void bind() override {
-			DrawContext::bind();
-			Texture::bind(texture);
-			shader->setMatrix4f("transform", transform);
-		}
+		void bind() override;
 
 	private:
 		const Texture* texture = nullptr;

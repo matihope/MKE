@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include "Vector2.hpp"
+#include "Vector.hpp"
 #include <type_traits>
 
 namespace mk {
-	template<class T> requires std::is_arithmetic_v<T>
-	class Rect {
+	template<class T>
+	requires std::is_arithmetic_v<T> class Rect {
 	public:
 		T left, top, width, height;
 

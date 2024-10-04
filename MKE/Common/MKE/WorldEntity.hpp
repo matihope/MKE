@@ -1,7 +1,7 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <Updatable/Updatable.hpp>
-#include <WorldEntity/WorldEntity.hpp>
+#include "MKE/Drawable.hpp"
+#include "MKE/Transformable.hpp"
+#include <MKE/Updatable.hpp>
 #include <list>
 #include <map>
 #include <memory>
@@ -9,8 +9,8 @@
 namespace mk {
 	typedef unsigned long long EntityID;
 
-	class WorldEntity: public sf::Drawable, public sf::Transformable, public Updatable {
-	private:
+	class WorldEntity: public Transformable, public Updatable {
+	protected:
 		static EntityID id_counter;
 		EntityID        m_entityId;
 
@@ -59,7 +59,7 @@ namespace mk {
 		void ready(Game& game) override;
 		void update(Game& game, float dt) override;
 		void physicsUpdate(Game& game, float dt) override;
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		void draw(RenderTarget& target) const override;
 
 		virtual void onReady(Game& game) {}
 
@@ -76,5 +76,9 @@ namespace mk {
 
 		sf::Vector2f  getGlobalPosition() const;
 		sf::Transform getGlobalTransform() const;
+	};
+
+	class WorldEntity2D: public WorldEntity, public Drawable2D {
+		public:
 	};
 }  // namespace mk

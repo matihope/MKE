@@ -2,6 +2,6 @@
 
 #include "RenderTarget.hpp"
 
-void mk::VertexArray2D::draw(const RenderTarget& target, DrawContext2D context) const {
+void mk::VertexArray2D::draw2d(const RenderTarget& target, DrawContext2D context) const {
 	target.render(*this, context);
 }

@@ -1,7 +1,5 @@
 #include "WorldEntity.hpp"
 
-#include <WorldEntity/WorldEntity.hpp>
-
 namespace mk {
 
 	EntityID WorldEntity::id_counter = 0;
@@ -32,7 +30,7 @@ namespace mk {
 			for (auto& entity: layer.second) entity->physicsUpdate(game, dt);
 	}
 
-	void WorldEntity::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	void WorldEntity::draw(RenderTarget& target) const {
 		if (m_show) {
 			sf::RenderStates copied_states(states);
 			copied_states.transform *= getTransform();

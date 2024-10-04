@@ -1,8 +1,7 @@
 #pragma once
 
-#include "MKE/Color.hpp"
 #include "MKE/Ints.hpp"
-#include "MKE/Math/Vector2.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/ResPath.hpp"
 
 namespace mk {

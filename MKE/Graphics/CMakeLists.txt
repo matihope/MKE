@@ -20,6 +20,9 @@ add_library(MKE-Graphics
     MKE/VertexArray.hpp
     MKE/RenderWindow.cpp
     MKE/RenderWindow.hpp
+
+    MKE/Primitives/2d/RectPrimitive.cpp
+    MKE/Primitives/2d/RectPrimitive.hpp
 )
 target_link_libraries(MKE-Graphics MKE-Base GLAD glfw stb)
 target_include_directories(MKE-Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

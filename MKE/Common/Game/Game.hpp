@@ -4,7 +4,7 @@
 #include "JsonBridge/JsonBridge.hpp"
 #include "Updatable/Updatable.hpp"
 #include "WorldEntity/WorldEntity.hpp"
-#include "Math/Vector2.hpp"
+#include "Math/Vector.hpp"
 
 #include <memory>
 #include <queue>

@@ -5,14 +5,13 @@
 
 #include <algorithm>
 #include <array>
-#include <initializer_list>
 #include <type_traits>
 
 namespace mk::math {
 	template<class T, usize H, usize W>
-	requires std::is_arithmetic_v<T> class Matrix {
+	requires std::is_arithmetic_v<T> && (W > 0 && H > 0) class Matrix {
 	public:
-		Matrix() {
+		constexpr Matrix() {
 			for (usize p = 0; p < std::min(W, H); p++) operator()(p, p) = 1;
 		}
 
@@ -31,10 +30,11 @@ namespace mk::math {
 			return matrix[row][col];
 		}
 
-		T& operator()(usize row, usize col) { return matrix[row][col]; }
+		constexpr T& operator()(usize row, usize col) { return matrix[row][col]; }
 
 		template<usize x1, usize x2, usize x3>
-		static Matrix<T, x1, x3> multiply(const Matrix<T, x1, x2>& a, const Matrix<T, x2, x3>& b) {
+		constexpr static Matrix<T, x1, x3>
+			multiply(const Matrix<T, x1, x2>& a, const Matrix<T, x2, x3>& b) {
 			Matrix<T, x1, x3> result{};
 			for (usize i = 0; i < x1; i++)
 				for (usize j = 0; j < x3; j++)

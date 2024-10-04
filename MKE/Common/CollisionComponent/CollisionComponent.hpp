@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "Math/Vector2.hpp"
+#include "Math/Vector.hpp"
 
 namespace mk {
 	namespace Debug {

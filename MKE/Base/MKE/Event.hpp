@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MKE/Input.hpp"
-#include "Math/Vector2.hpp"
+#include "Math/Vector.hpp"
 
 namespace mk {
 	enum class EventType {

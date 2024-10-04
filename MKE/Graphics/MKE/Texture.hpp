@@ -2,7 +2,7 @@
 
 #include "MKE/Image.hpp"
 #include "MKE/Ints.hpp"
-#include "MKE/Math/Vector2.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/NonCopyable.hpp"
 
 namespace mk {
@@ -15,6 +15,7 @@ namespace mk {
 
 		void loadFromImage(const Image& image) const;
 		void loadFromFile(const ResPath& file) const;
+		void loadFromMemory(const ResPath& file) const;
 
 		void setSmooth(bool smooth) const;
 

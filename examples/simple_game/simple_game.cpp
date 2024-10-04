@@ -3,7 +3,7 @@
 #include "MKE/Event.hpp"
 #include "MKE/Input.hpp"
 #include "MKE/Math/Matrix.hpp"
-#include "MKE/Math/Vector2.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/ResPath.hpp"
 #include "glad/glad.h"
 
@@ -52,7 +52,7 @@ int main() {
 
 	mk::math::Vector2f pos   = { 0, 0 };
 	mk::math::Vector2f scale = { 50., 50. };
-	scale /= window.getSize().as<mk::math::Vector2f>();
+	scale /= window.getSize().type<float>();
 
 	bool enabled = true;
 

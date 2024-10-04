@@ -1,4 +1,4 @@
-#include "Vector2.hpp"
+#include "Vector.hpp"
 
 namespace mk::math {
 	Vector2f normalizeVector(const Vector2f vector) {

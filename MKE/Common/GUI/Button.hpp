@@ -1,5 +1,5 @@
 #pragma once
-#include "Math/Vector2.hpp"
+#include "Math/Vector.hpp"
 #include "Nodes/RectShape.hpp"
 
 #include <Clickable/Clickable.hpp>

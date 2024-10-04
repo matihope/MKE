@@ -1,4 +1,5 @@
 add_library(MKE-Base
+
     # Math
     MKE/Math/Base.cpp
     MKE/Math/Base.hpp
@@ -7,24 +8,31 @@ add_library(MKE-Base
     MKE/Math/Matrix.cpp
     MKE/Math/Matrix.hpp
     MKE/Math/Rect.hpp
-    MKE/Math/Vector2.cpp
-    MKE/Math/Vector2.hpp
+    MKE/Math/Vector.cpp
+    MKE/Math/Vector.hpp
+
     # JsonBridge
     MKE/JsonBridge.cpp
     MKE/JsonBridge.hpp
+
     # Random
     MKE/Random.cpp
     MKE/Random.hpp
-    # ResourceManager
-    # MKE/ResourceManager.cpp
-    # MKE/ResourceManager.hpp
+
     # ResPath
     MKE/ResPath.cpp
     MKE/ResPath.hpp
+
     # Updatable
     MKE/Updatable.hpp
+
+    # Transformable
+    MKE/Transformable.cpp
+    MKE/Transformable.hpp
+
     # Ints
     MKE/Ints.hpp
+
     # StrUtils
     MKE/StrUtils.hpp
 )

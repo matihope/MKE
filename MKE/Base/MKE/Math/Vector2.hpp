@@ -1,123 +1,97 @@
 #pragma once
 
 #include <cmath>
+#include <initializer_list>
 #include <ostream>
 #include "../Ints.hpp"
 
 namespace mk::math {
 
 	// Make number of dimensions a parameter
-	template<typename T>
-	requires std::is_arithmetic_v<T> struct Vector2 {
-		Vector2() = default;
+	template<class T, usize SIZE>
+	requires(SIZE >= 2) && std::is_arithmetic_v<T> struct Vector {
+		constexpr Vector() = default;
 
-		template<typename K1, typename K2>
-		Vector2(K1 x, K2 y): x(x), y(y) {}
+		constexpr Vector(std::initializer_list<T> list): vec_data(list) {}
 
 		/**
 		 * @brief This is a weird constructor and it's useful if we want to cast from other types.
 		 */
 		template<typename K>
-		explicit Vector2(K obj): x(obj.x), y(obj.y) {}
+		constexpr explicit Vector(std::initializer_list<K> list): vec_data(list) {}
 
-		T x = 0;
-		T y = 0;
+		std::array<T, SIZE> vec_data{};
 
-		bool operator==(const Vector2<T>& rhs) const { return x == rhs.x && y == rhs.y; }
+		constexpr bool operator==(const Vector& rhs) const { return vec_data == rhs.data; }
 
-		Vector2<T>& operator+=(const Vector2<T>& rhs) {
-			x += rhs.x;
-			y += rhs.y;
+		constexpr Vector& operator+=(const Vector& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] += rhs.data[p];
 			return *this;
 		}
 
-		Vector2<T>& operator-=(const Vector2<T>& rhs) {
-			x -= rhs.x;
-			y -= rhs.y;
+		constexpr Vector& operator-=(const Vector& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] -= rhs.data[p];
 			return *this;
 		}
 
-		Vector2<T>& operator*=(const Vector2<T>& rhs) {
-			x *= rhs.x;
-			y *= rhs.y;
+		constexpr Vector& operator*=(const Vector& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] *= rhs.data[p];
 			return *this;
 		}
 
-		Vector2<T>& operator/=(const Vector2<T>& rhs) {
-			x /= rhs.x;
-			y /= rhs.y;
+		constexpr Vector& operator/=(const Vector& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] /= rhs.data[p];
 			return *this;
 		}
 
-		template<class X>
-		Vector2<T>& operator*=(const X& rhs) {
-			x *= rhs;
-			y *= rhs;
+		constexpr Vector& operator*=(const auto& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] *= rhs;
 			return *this;
 		}
 
-		template<class X>
-		Vector2<T>& operator/=(const X& rhs) {
-			x *= rhs;
-			y *= rhs;
+		constexpr Vector& operator/=(const auto& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] /= rhs;
 			return *this;
 		}
 
-		template<class X>
-		Vector2<T>& operator+=(const X& rhs) {
-			x += rhs;
-			y += rhs;
+		constexpr Vector& operator+=(const auto& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] += rhs;
 			return *this;
 		}
 
-		template<class X>
-		Vector2<T>& operator-=(const X& rhs) {
-			x -= rhs;
-			y -= rhs;
+		constexpr Vector& operator-=(const auto& rhs) {
+			for (usize p = 0; p < SIZE; p++) vec_data[p] -= rhs;
 			return *this;
 		}
 
-		Vector2<T> operator+(const Vector2<T>& rhs) const { return { x + rhs.x, y + rhs.y }; }
+		constexpr Vector operator+(const auto& rhs) const { return Vector() += rhs; }
 
-		Vector2<T> operator-(const Vector2<T>& rhs) const { return { x - rhs.x, y - rhs.y }; }
+		constexpr Vector operator-(const auto& rhs) const { return Vector() -= rhs; }
 
-		Vector2<T> operator*(const Vector2<T>& rhs) const { return { x * rhs.x, y * rhs.y }; }
+		constexpr Vector operator*(const auto& rhs) const { return Vector() *= rhs; }
 
-		Vector2<T> operator/(const Vector2<T>& rhs) const { return { x / rhs.x, y / rhs.y }; }
-
-		template<class X>
-		Vector2<T> operator*(const X& rhs) const {
-			return { x * rhs, y * rhs };
-		}
-
-		template<class X>
-		Vector2<T> operator/(const X& rhs) const {
-			return { x / rhs, y / rhs };
-		}
+		constexpr Vector operator/(const auto& rhs) const { return Vector() /= rhs; }
 
 		T length() const { return std::sqrt(length_squared()); }
 
-		T length_squared() const { return x * x + y * y; }
-
-		template<class X>
-		Vector2<X> type() const {
-			return { (X) x, (X) y };
+		T length_squared() const {
+			T sum = 0;
+			for (auto&& d: vec_data) sum += d;
+			return sum / SIZE;
 		}
 
-		template<class X>
-		X as() const {
-			return X(x, y);
-		}
-
-		friend std::ostream& operator<<(std::ostream& stream, const Vector2<T>& vector) {
-			stream << vector.x << ", " << vector.y;
+		friend std::ostream& operator<<(std::ostream& stream, const Vector& vector) {
+			for (usize p = 0; p < SIZE; p++) {
+				stream << vector.data[p];
+				if (p + 1 < SIZE) stream << ", ";
+			}
 			return stream;
 		}
 	};
 
-	using Vector2f = Vector2<float>;
-	using Vector2i = Vector2<i32>;
-	using Vector2u = Vector2<u32>;
+	using Vector2f = Vector<float, 2>;
+	using Vector2i = Vector<i32, 2>;
+	using Vector2u = Vector<u32, 2>;
 
 	Vector2f normalizeVector(Vector2f vector);
 	Vector2f rotateVector(Vector2f vector, float angleRads);
