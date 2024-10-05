@@ -13,7 +13,6 @@ void mk::Image::load(const ResPath& image) {
 	auto ext = image.extension();
 	MK_ASSERT(ext == ".jpg" || ext == ".png", "Invalid image extension: ", image.getPath());
 
-	stbi_set_flip_vertically_on_load(true);
 	data = stbi_load(image.strPath(), (i32*) &width, (i32*) &height, (i32*) &nrChannels, 4);
 	MK_ASSERT(data != nullptr, "Couldn\'t load the image data");
 }

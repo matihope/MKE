@@ -13,7 +13,7 @@ void mk::RenderTarget::render(const VertexArray2D& vertex_array, DrawContext2D c
 	// Context has to be bound at the last possible moment (after all the changes could've been
 	// done).
 	context.bind();
-	// context.shader->setMatrix4f("camera", camera_transform);
+	context.shader->setMatrix4f("camera", camera_transform);
 	vertex_array.startDraw();
 }
 

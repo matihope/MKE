@@ -1,8 +1,10 @@
 file(GLOB examples_list LIST_DIRECTORIES true RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 
 foreach(name ${examples_list})
-    IF(IS_DIRECTORY ${name} AND NOT ${name} STREQUAL "assets")
-        add_subdirectory(${name})
+    IF(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${name})
+        IF(NOT ${name} STREQUAL "assets")
+            add_subdirectory(${name})
+        ENDIF()
     ENDIF()
 endforeach()
 

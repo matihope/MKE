@@ -8,14 +8,17 @@
 int main() {
 	mk::RenderWindow window(800, 600, "RectPrimitive");
 
-	mk::math::Matrix4f camera;
-	camera(0, 0) = 1. / window.getSize().x;
-	camera(1, 1) = -1. / window.getSize().y;
-	camera(0, 3) = -window.getSize().x / 2.f;
-	camera(1, 3) = window.getSize().y / 2.f;
-	// window.setCamera(camera);
+	auto [xscale, yscale] = window.getScaleFactor().bind();
+	std::cout << "Size: " << window.getSize() << '\n';
 
-	mk::RectPrimitive rect(mk::math::Vector2f(1, 1));
+	mk::math::Matrix4f camera;
+	camera(0, 0) = xscale / window.getSize().x;
+	camera(1, 1) = -yscale / window.getSize().y;
+	camera(0, 3) = -1;
+	camera(1, 3) = 1;
+	window.setCamera(camera);
+
+	mk::RectPrimitive rect(mk::math::Vector2f(400, 100));
 
 	mk::Texture texture;
 	texture.loadFromFile(mk::ResPath::example("arrow.png"));
@@ -28,7 +31,6 @@ int main() {
 		while (window.pollEvent(event))
 			if (event.type == mk::EventType::WindowClose) run = false;
 		window.clear(mk::Colors::DARK);
-		// window.render(rect, &texture);
 		window.render(rect);
 		window.display();
 	}

@@ -35,7 +35,7 @@ namespace mk {
 
 		~DrawContext2D() = default;
 
-		math::Matrix4f transform;
+		math::Matrix4f transform{};
 
 		void setShader(const Shader* shader) override;
 

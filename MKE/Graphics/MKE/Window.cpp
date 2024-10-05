@@ -43,6 +43,12 @@ namespace {
 		pushEvent(window, event);
 	}
 
+	void window_scale_factor_callback(GLFWwindow* window, float xscale, float yscale) {
+		mk::Event event{};
+		event.window_scale_factor = mk::Events::WindowScaleFactorChanged({ xscale, yscale });
+		pushEvent(window, event);
+	}
+
 	void window_key_callback(
 		GLFWwindow* window, int key, int /* scancode */, int action, int /* mods */
 	) {
@@ -61,6 +67,7 @@ namespace {
 		GLFWwindow* /* window */, int /* button */, int /* action */, int /* mods */
 	) {}
 
+	[[maybe_unused]]
 	mk::math::Vector2u getGlViewportSize() {
 		i32 data[4];
 		glGetIntegerv(GL_VIEWPORT, &data[0]);
@@ -86,7 +93,7 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	window      = glfwCreateWindow(width, height, this->title.c_str(), NULL, NULL);
 	if (window == NULL) {
 		glfwTerminate();
-		MK_PANIC("Couldn't create GLFW window");
+		MK_PANIC("Couldn\'t create GLFW window");
 	}
 
 	glfw_to_mk_window.insert({ window, (*this) });
@@ -96,11 +103,19 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 
 	glfwSetWindowCloseCallback(window, window_close_callback);
 	glfwSetFramebufferSizeCallback(window, window_framebuffer_size_callback);
+	glfwSetWindowContentScaleCallback(window, window_scale_factor_callback);
 	glfwSetKeyCallback(window, window_key_callback);
 	glfwSetMouseButtonCallback(window, window_mouse_callback);
 
+	glfwGetWindowContentScale(window, &window_scale_factor.x, &window_scale_factor.y);
+	MK_ASSERT_TRUE(window_scale_factor.x > 0, "Invalid window native x_scale");
+	MK_ASSERT_TRUE(window_scale_factor.y > 0, "Invalid window native y_scale");
+
+	std::cerr << " -- Requested window size: " << math::Vector2u{ width, height } << '\n';
+	std::cerr << " -- Guessed window scaling factor: " << window_scale_factor << '\n';
+
 	initialized = true;
-	setSize(getGlViewportSize());
+	setSize(width, height);
 }
 
 void mk::Window::create(math::Vector2u size, std::string_view title) {
@@ -109,7 +124,9 @@ void mk::Window::create(math::Vector2u size, std::string_view title) {
 
 void mk::Window::setSize(math::Vector2u size) {
 	window_size = size;
-	if (initialized) glViewport(0, 0, size.x, size.y);
+
+	math::Vector2f new_size = size.type<float>() * window_scale_factor;
+	if (initialized) glViewport(0, 0, new_size.x, new_size.y);
 }
 
 void mk::Window::setSize(u32 width, u32 height) { setSize({ width, height }); }
@@ -120,7 +137,15 @@ void mk::Window::display() {
 }
 
 void mk::Window::addEvent(Event event) {
-	if (event.type == mk::EventType::WindowResized) setSize(event.window_resized.new_size);
+	if (event.type == EventType::WindowScaleFactorChanged)
+		window_scale_factor = event.window_scale_factor.scale_factors.x;
+
+	else if (event.type == EventType::WindowResized) {
+		event.window_resized.new_size
+			= (event.window_resized.new_size.type<float>() / window_scale_factor).type<u32>();
+		setSize(event.window_resized.new_size);
+	}
+
 	events.push(event);
 }
 
@@ -150,3 +175,5 @@ void mk::Window::enableVerticalSync(bool enable) {
 	else
 		glfwSwapInterval(0);
 }
+
+mk::math::Vector2f mk::Window::getScaleFactor() const { return window_scale_factor; }

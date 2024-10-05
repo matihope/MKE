@@ -7,6 +7,7 @@ namespace mk {
 	enum class EventType {
 		WindowClose,
 		WindowResized,
+		WindowScaleFactorChanged,
 		KeyPressed,
 		KeyReleased,
 	};
@@ -20,9 +21,19 @@ namespace mk {
 		struct WindowResized {
 			WindowResized(math::Vector2u new_size):
 				  type(EventType::WindowResized),
-				  new_size(new_size) {};
+				  new_size(new_size) {}
+
 			EventType      type;
 			math::Vector2u new_size;
+		};
+
+		struct WindowScaleFactorChanged {
+			WindowScaleFactorChanged(math::Vector2f new_scale):
+				  type(EventType::WindowScaleFactorChanged),
+				  scale_factors(new_scale) {}
+
+			EventType      type;
+			math::Vector2f scale_factors;
 		};
 
 		struct KeyPressed {
@@ -41,10 +52,11 @@ namespace mk {
 	union Event {
 		Event() {}
 
-		EventType             type;  // As everywhere
-		Events::WindowClose   window_close;
-		Events::WindowResized window_resized;
-		Events::KeyPressed    key_pressed;
-		Events::KeyReleased   key_released;
+		EventType                        type;  // As everywhere
+		Events::WindowClose              window_close;
+		Events::WindowResized            window_resized;
+		Events::WindowScaleFactorChanged window_scale_factor;
+		Events::KeyPressed               key_pressed;
+		Events::KeyReleased              key_released;
 	};
 }
