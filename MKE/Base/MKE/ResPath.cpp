@@ -5,12 +5,6 @@
 #include <sstream>
 
 namespace mk {
-	ResPath::ResPath(const std::filesystem::path& path): real_path("assets" / canonical(path)) {}
-
-	ResPath::ResPath(const std::string& path): mk::ResPath(std::filesystem::path(path)) {}
-
-	ResPath::ResPath(const char* path): mk::ResPath(std::filesystem::path(path)) {}
-
 	const std::filesystem::path& ResPath::getPath() const { return real_path; }
 
 	bool ResPath::exists() const { return std::filesystem::exists(real_path); }

@@ -59,6 +59,8 @@ namespace {
 			event.key_pressed = mk::Events::KeyPressed(mk::input::KEY(key));
 		else if (action == GLFW_RELEASE)
 			event.key_released = mk::Events::KeyReleased(mk::input::KEY(key));
+		else
+			return;
 
 		pushEvent(window, event);
 	}
@@ -138,7 +140,8 @@ void mk::Window::display() {
 
 void mk::Window::addEvent(Event event) {
 	if (event.type == EventType::WindowScaleFactorChanged)
-		window_scale_factor = event.window_scale_factor.scale_factors.x;
+		window_scale_factor = event.window_scale_factor.scale_factors;
+
 
 	else if (event.type == EventType::WindowResized) {
 		event.window_resized.new_size

@@ -1,11 +1,10 @@
 #include <MKE/Shader.hpp>
 #include <MKE/Window.hpp>
-#include "MKE/ResPath.hpp"
 #include "glad/glad.h"
 
 int main() {
 	mk::Window window(800, 600, "Simple shader");
-	mk::Shader shader(mk::ResPath::example("shader.vs"), mk::ResPath::example("shader.fs"));
+	mk::Shader shader("shader.vs", "shader.fs");
 
 	float vertices[] = {
 		// positions         // colors

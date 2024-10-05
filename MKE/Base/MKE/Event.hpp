@@ -5,6 +5,7 @@
 
 namespace mk {
 	enum class EventType {
+		InvalidEvent = 0,
 		WindowClose,
 		WindowResized,
 		WindowScaleFactorChanged,
@@ -50,9 +51,9 @@ namespace mk {
 	}
 
 	union Event {
-		Event() {}
+		Event() {};
 
-		EventType                        type;  // As everywhere
+		EventType                        type{};  // As everywhere
 		Events::WindowClose              window_close;
 		Events::WindowResized            window_resized;
 		Events::WindowScaleFactorChanged window_scale_factor;

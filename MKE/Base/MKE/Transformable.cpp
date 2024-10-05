@@ -33,3 +33,7 @@ void mk::Transformable::move(float delta_x, float delta_y, float delta_z) {
 	transform(1, 3) += delta_y;
 	transform(2, 3) += delta_z;
 }
+
+mk::math::Vector2f mk::Transformable::getPosition() const {
+	return { transform(0, 3), transform(1, 3) };
+}

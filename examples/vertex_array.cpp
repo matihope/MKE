@@ -31,7 +31,7 @@ int main() {
 	bool run = true;
 
 	mk::Texture texture;
-	texture.loadFromFile(mk::ResPath::example("arrow.png"));
+	texture.loadFromFile("arrow.png");
 	texture.setSmooth(false);
 
 	while (run) {
@@ -39,7 +39,7 @@ int main() {
 		while (window.pollEvent(event))
 			if (event.type == mk::EventType::WindowClose) run = false;
 		window.clear(mk::Colors::DARK);
-		window.render(vertex_array, &texture);
+		window.render(vertex_array);
 		window.display();
 	}
 }

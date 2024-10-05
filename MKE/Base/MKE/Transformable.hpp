@@ -12,6 +12,8 @@ namespace mk {
 
 		constexpr const math::Matrix4f& getTransform() const { return transform; }
 
+		math::Vector2f getPosition() const;
+
 		void setPosition(math::Vector2f position);
 		void setPosition(math::Vector3f position);
 		void setPosition(float x, float y);

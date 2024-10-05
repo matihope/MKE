@@ -9,7 +9,7 @@
 int main() {
 	mk::Window window(800, 600, "Simple game");
 
-	mk::Shader shader(mk::ResPath::example("shader.vs"), mk::ResPath::example("shader.fs"));
+	mk::Shader shader("shader.vs", "shader.fs");
 
 	float vertices[] = {
 		// positions          // colors           // texture coords
@@ -53,7 +53,7 @@ int main() {
 	bool run = true;
 
 	mk::Texture texture;
-	texture.loadFromFile(mk::ResPath::example("arrow.png"));
+	texture.loadFromFile("arrow.png");
 	texture.setSmooth(false);
 
 	while (run) {

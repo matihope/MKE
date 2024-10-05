@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Ints.hpp"
-#include "MKE/Math/Base.hpp"
 #include "MKE/Panic.hpp"
 
 #include <algorithm>
@@ -31,7 +30,11 @@ namespace mk::math {
 			return matrix[row][col];
 		}
 
-		constexpr T& operator()(usize row, usize col) { return matrix[row][col]; }
+		constexpr T& operator()(usize row, usize col) {
+			MK_ASSERT(row < H, "Row >= H");
+			MK_ASSERT(col < W, "Col >= W");
+			return matrix[row][col];
+		}
 
 		template<usize x1, usize x2, usize x3>
 		constexpr static Matrix<T, x1, x3>

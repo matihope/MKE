@@ -16,7 +16,7 @@ namespace mk {
 
 		void render(const Drawable2D& drawable, DrawContext2D context = DrawContext2D()) const;
 
-		void render(const VertexArray2D& vertex_array, DrawContext2D context) const;
+		void render(const VertexArray2D& vertex_array, DrawContext2D context = DrawContext2D()) const;
 
 		void setCamera(math::Matrix4f camera_transform);
 
