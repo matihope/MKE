@@ -18,9 +18,10 @@ namespace mk {
 
 		void render(const VertexArray2D& vertex_array, DrawContext2D context) const;
 
-		// void setCamera(math::Matrix4f camera_transform);
+		void setCamera(math::Matrix4f camera_transform);
 
 	private:
+		math::Matrix4f camera_transform {};
 	};
 
 	inline RenderTarget::~RenderTarget() {};

@@ -5,7 +5,6 @@ add_library(MKE-Base
     MKE/Math/Base.hpp
     MKE/Math/Geometry.cpp
     MKE/Math/Geometry.hpp
-    MKE/Math/Matrix.cpp
     MKE/Math/Matrix.hpp
     MKE/Math/Rect.hpp
     MKE/Math/Vector.cpp

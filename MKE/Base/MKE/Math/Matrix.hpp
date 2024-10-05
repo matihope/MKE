@@ -45,6 +45,17 @@ namespace mk::math {
 
 		constexpr const T* data() const { return matrix[0].data(); }
 
+		friend std::ostream& operator<<(std::ostream& stream, const Matrix& matrix) {
+			for (usize row = 0; row < H; row++) {
+				for (usize col = 0; col < W; col++) {
+					stream << matrix(row, col);
+					if (col + 1 < W) stream << ' ';
+				}
+				stream << '\n';
+			}
+
+			return stream;
+		}
 
 	private:
 		std::array<std::array<T, W>, H> matrix{};

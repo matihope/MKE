@@ -18,7 +18,6 @@ add_library(MKE-Graphics
     MKE/DrawContext.hpp
     MKE/VertexArray.cpp
     MKE/VertexArray.hpp
-    MKE/RenderWindow.cpp
     MKE/RenderWindow.hpp
 
     MKE/Primitives/2d/RectPrimitive.cpp

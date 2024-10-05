@@ -8,7 +8,7 @@
 namespace mk::math {
 	namespace impl {
 
-		template <class T, usize SIZE>
+		template<class T, usize SIZE>
 		struct Vec;
 
 		template<class T>
@@ -23,6 +23,8 @@ namespace mk::math {
 			};
 
 			Vec() = default;
+
+			Vec(T value): x(value), y(value) {}
 
 			Vec(T x, T y): x(x), y(y) {}
 
@@ -42,6 +44,8 @@ namespace mk::math {
 			};
 
 			Vec() = default;
+
+			Vec(T value): x(value), y(value), z(value) {}
 
 			Vec(T x, T y, T z): x(x), y(y), z(z) {}
 
@@ -119,6 +123,12 @@ namespace mk::math {
 			T sum = 0;
 			for (auto&& d: this->vec_data) sum += d;
 			return sum / SIZE;
+		}
+
+		Vector normalize_or_zero() const {
+			T len = length();
+			if (len == 0) return *this;
+			return *this / len;
 		}
 
 		friend std::ostream& operator<<(std::ostream& stream, const Vector& vector) {

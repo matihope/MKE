@@ -1,7 +1,7 @@
-file(GLOB examples_list LIST_DIRECTORIES true *)
+file(GLOB examples_list LIST_DIRECTORIES true RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 
 foreach(name ${examples_list})
-    IF(IS_DIRECTORY ${name})
+    IF(IS_DIRECTORY ${name} AND NOT ${name} STREQUAL "assets")
         add_subdirectory(${name})
     ENDIF()
 endforeach()
@@ -11,4 +11,9 @@ add_example(hello_window USES MKE-Engine)
 add_example(hello_triangle USES MKE-Engine)
 add_example(hello_rectangle USES MKE-Engine glfw)
 add_example(fun USES MKE-Engine)
+
+add_example(vertex_array USES MKE-Engine)
+add_example_assets(vertex_array)
+
 add_example(rect_primitive USES MKE-Engine)
+add_example_assets(rect_primitive)
