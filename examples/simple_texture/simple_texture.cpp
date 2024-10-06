@@ -50,16 +50,11 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	bool run = true;
-
 	mk::Texture texture;
 	texture.loadFromFile("arrow.png");
 	texture.setSmooth(false);
 
-	while (run) {
-		mk::Event event;
-		while (window.pollEvent(event))
-			if (event.type == mk::EventType::WindowClose) run = false;
+	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
 
 		mk::Shader::use(&shader);

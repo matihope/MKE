@@ -87,11 +87,7 @@ int main() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	bool run = true;
-	while (run) {
-		mk::Event event;
-		while (window.pollEvent(event))
-			if (event.type == mk::EventType::WindowClose) run = false;
+	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
 
 		glUseProgram(shaderProgram);

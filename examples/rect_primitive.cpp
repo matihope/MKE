@@ -7,16 +7,7 @@ int main() {
 
 	mk::RectPrimitive rect(mk::math::Vector2f(100, 100));
 
-	mk::Texture texture;
-	texture.loadFromFile("arrow.png");
-	texture.setSmooth(false);
-
-	bool run = true;
-
-	while (run) {
-		mk::Event event;
-		while (window.pollEvent(event))
-			if (event.type == mk::EventType::WindowClose) run = false;
+	while (!window.isExitRequested()) {
 
 		float diff_x
 			= window.isKeyPressed(mk::input::KEY::D) - window.isKeyPressed(mk::input::KEY::A);

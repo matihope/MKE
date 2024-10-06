@@ -146,6 +146,8 @@ void mk::Window::addEvent(Event event) {
 		event.window_resized.new_size
 			= (event.window_resized.new_size.type<float>() / window_scale_factor).type<u32>();
 		setSize(event.window_resized.new_size);
+	} else if (event.type == EventType::WindowClose) {
+		setExitRequested(true);
 	}
 
 	events.push(event);
@@ -179,3 +181,7 @@ void mk::Window::enableVerticalSync(bool enable) {
 }
 
 mk::math::Vector2f mk::Window::getScaleFactor() const { return window_scale_factor; }
+
+bool mk::Window::isExitRequested() const { return exit_requested; }
+
+void mk::Window::setExitRequested(bool value) { exit_requested = value; }

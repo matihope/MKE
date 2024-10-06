@@ -3,6 +3,9 @@
 namespace mk::input {
 	// Keyboard keys
 	enum class KEY {
+		// Note: Codes should match GLFW's key IDs:
+		// https://www.glfw.org/docs/3.3/group__keys.html
+
 		// misc
 		SPACE         = ' ',
 		APOSTROPHE    = '\'',
@@ -52,7 +55,12 @@ namespace mk::input {
 		W = 'W',
 		X = 'X',
 		Y = 'Y',
-		Z = 'Z'
+		Z = 'Z',
+		// Arrow keys
+		ARROW_RIGHT = 262,
+		ARROW_LEFT  = 263,
+		ARROW_DOWN  = 264,
+		ARROW_UP    = 265
 	};
 	// Mouse buttons
 	enum class MOUSE {

@@ -28,16 +28,11 @@ int main() {
 	vertex_array.setIndexBuffer(indices.begin(), indices.size());
 	vertex_array.save();
 
-	bool run = true;
-
 	mk::Texture texture;
 	texture.loadFromFile("arrow.png");
 	texture.setSmooth(false);
 
-	while (run) {
-		mk::Event event;
-		while (window.pollEvent(event))
-			if (event.type == mk::EventType::WindowClose) run = false;
+	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
 		window.render(vertex_array);
 		window.display();

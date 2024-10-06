@@ -36,8 +36,13 @@ namespace mk {
 
 		void enableVerticalSync(bool enable);
 
+		bool isExitRequested() const;
+
+		void setExitRequested(bool value);
+
 	protected:
-		bool              initialized = false;
+		bool              exit_requested = false;
+		bool              initialized    = false;
 		std::string       title{};
 		math::Vector2u    window_size{};
 		math::Vector2f    window_scale_factor{};

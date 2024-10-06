@@ -102,11 +102,7 @@ int main() {
 
 	int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 
-	bool run = true;
-	while (run) {
-		mk::Event event;
-		while (window.pollEvent(event))
-			if (event.type == mk::EventType::WindowClose) run = false;
+	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
 
 		float timeValue  = glfwGetTime();
