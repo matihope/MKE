@@ -24,7 +24,7 @@ namespace mk::math {
 		constexpr Matrix& operator=(const Matrix&) = default;
 		constexpr Matrix& operator=(Matrix&&)      = default;
 
-		constexpr const T& operator()(usize row, usize col) const& {
+		constexpr const T operator()(usize row, usize col) const& {
 			MK_ASSERT(row < H, "Row >= H");
 			MK_ASSERT(col < W, "Col >= W");
 			return matrix[row][col];

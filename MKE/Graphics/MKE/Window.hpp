@@ -29,8 +29,8 @@ namespace mk {
 		void clear(Color color);
 		void display();
 
-		void addEvent(Event event);
-		bool pollEvent(Event& event);
+		virtual void addEvent(Event event);
+		bool         pollEvent(Event& event);
 
 		bool isKeyPressed(input::KEY key) const;
 

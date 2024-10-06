@@ -142,7 +142,6 @@ void mk::Window::addEvent(Event event) {
 	if (event.type == EventType::WindowScaleFactorChanged)
 		window_scale_factor = event.window_scale_factor.scale_factors;
 
-
 	else if (event.type == EventType::WindowResized) {
 		event.window_resized.new_size
 			= (event.window_resized.new_size.type<float>() / window_scale_factor).type<u32>();
