@@ -4,6 +4,7 @@
 #include "MKE/Event.hpp"
 #include "MKE/NonCopyable.hpp"
 #include <MKE/Math/Vector.hpp>
+#include <queue>
 
 struct GLFWwindow;
 

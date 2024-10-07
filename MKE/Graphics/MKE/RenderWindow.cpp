@@ -21,7 +21,7 @@ void mk::RenderWindow::addEvent(Event event) {
 
 void mk::RenderWindow::updateCamera() {
 	auto [x_scale, y_scale] = (getScaleFactor() / getSize().type<float>()).bind();
-	camera_transform(0, 0)  = x_scale;
-	camera_transform(1, 1)  = -y_scale;
+	camera_transform(0, 0)  = 2.f * x_scale;
+	camera_transform(1, 1)  = - 2.f * y_scale;
 	setCamera(camera_transform);
 }

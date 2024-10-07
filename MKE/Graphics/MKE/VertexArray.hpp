@@ -6,6 +6,7 @@
 #include "MKE/Vertex.hpp"
 #include "MKE/RenderTarget.hpp"
 #include "glad/glad.h"
+#include <cstring>
 
 namespace mk {
 	template<class Vert>
@@ -51,13 +52,13 @@ namespace mk {
 			);
 			index_buffer_size = length;
 			indices.reset(new u32[length]);
-			memcpy(indices.get(), buffer, length * sizeof(u32));
+			std::memcpy(indices.get(), buffer, length * sizeof(u32));
 			index_buffer_modified = true;
 		}
 
 		void setVertexBuffer(const Vert* buffer, usize length) {
 			MK_ASSERT_EQUAL(vertex_buffer_size, length, "invalid vertex count");
-			memcpy(vertices.get(), buffer, length * sizeof(Vert));
+			std::memcpy(vertices.get(), buffer, length * sizeof(Vert));
 			vertex_buffer_modified = true;
 		}
 

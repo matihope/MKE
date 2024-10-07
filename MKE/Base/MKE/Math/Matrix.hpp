@@ -30,7 +30,7 @@ namespace mk::math {
 			return matrix[row][col];
 		}
 
-		constexpr T& operator()(usize row, usize col) {
+		constexpr T& operator()(usize row, usize col) & {
 			MK_ASSERT(row < H, "Row >= H");
 			MK_ASSERT(col < W, "Col >= W");
 			return matrix[row][col];
