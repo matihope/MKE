@@ -34,6 +34,10 @@ void mk::Transformable::move(float delta_x, float delta_y, float delta_z) {
 	transform(2, 3) += delta_z;
 }
 
-mk::math::Vector2f mk::Transformable::getPosition() const {
+mk::math::Vector2f mk::Transformable::getPosition2D() const {
 	return { transform(0, 3), transform(1, 3) };
+}
+
+mk::math::Vector3f mk::Transformable::getPosition3D() const {
+	return { transform(0, 3), transform(1, 3), transform(2, 3) };
 }

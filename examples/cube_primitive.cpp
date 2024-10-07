@@ -1,11 +1,17 @@
+#include "MKE/Math/Matrix.hpp"
 #include "MKE/RenderWindow.hpp"
-#include "MKE/Primitives/2d/RectPrimitive.hpp"
+#include "MKE/VertexArray.hpp"
 
 int main() {
-	mk::RenderWindow window(800, 600, "RectPrimitive");
-	window.enableCamera2D(true);
+	mk::RenderWindow window(800, 600, "Cube");
 
-	mk::RectPrimitive rect(mk::math::Vector2f(400, 300));
+	mk::math::Matrix4f camera3d{1};
+	auto [x_scale, y_scale] = (window.getScaleFactor() / window.getSize().type<float>()).bind();
+	camera3d(0, 0)  = x_scale;
+	camera3d(1, 1)  = y_scale;
+	window.setCamera(camera3d);
+
+	mk::VertexArray2D
 
 	while (!window.isExitRequested()) {
 

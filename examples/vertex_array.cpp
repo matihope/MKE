@@ -1,9 +1,6 @@
-#include <MKE/Shader.hpp>
 #include <MKE/Window.hpp>
-#include "MKE/Event.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/RenderWindow.hpp"
-#include "MKE/Vertex.hpp"
 #include "MKE/VertexArray.hpp"
 
 int main() {
