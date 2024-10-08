@@ -51,6 +51,28 @@ namespace mk::math {
 
 			std::tuple<T, T, T> bind() const { return { x, y, z }; }
 		};
+
+		template<class T>
+		struct Vec<T, 4> {
+			union {
+				struct {
+					T x;
+					T y;
+					T z;
+					T w;
+				};
+
+				std::array<T, 4> vec_data{};
+			};
+
+			Vec() = default;
+
+			Vec(T value): x(value), y(value), z(value), w(value) {}
+
+			Vec(T x, T y, T z, T w): x(x), y(y), z(z), w(w) {}
+
+			std::tuple<T, T, T, T> bind() const { return { x, y, z, w }; }
+		};
 	}
 
 	// Make number of dimensions a parameter
@@ -110,7 +132,7 @@ namespace mk::math {
 
 		constexpr Vector operator/(const auto& rhs) const { return Vector(*this) /= rhs; }
 
-		T length() const { return std::sqrt(length_squared()); }
+		T length() const { return std::sqrt(lengthSquared()); }
 
 		template<class K>
 		auto type() const {
@@ -119,15 +141,15 @@ namespace mk::math {
 			return result;
 		}
 
-		T length_squared() const {
-			T sum = 0;
-			for (auto&& d: this->vec_data) sum += d;
-			return sum / SIZE;
+		T lengthSquared() const {
+			T sum{};
+			for (auto&& d: this->vec_data) sum += d * d;
+			return sum;
 		}
 
-		Vector normalize_or_zero() const {
+		Vector normalizeOrZero() const {
 			T len = length();
-			if (len == 0) return *this;
+			if (len < 1e-9) return *this;
 			return *this / len;
 		}
 
@@ -153,6 +175,13 @@ namespace mk::math {
 	using Vector3f = Vector3<float>;
 	using Vector3i = Vector3<i32>;
 	using Vector3u = Vector3<u32>;
+
+	template<class T>
+	using Vector4 = Vector<impl::Vec, T, 4>;
+
+	using Vector4f = Vector4<float>;
+	using Vector4i = Vector4<i32>;
+	using Vector4u = Vector4<u32>;
 
 	Vector2f normalizeVector(Vector2f vector);
 	Vector2f rotateVector(Vector2f vector, float angleRads);

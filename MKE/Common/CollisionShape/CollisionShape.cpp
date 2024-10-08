@@ -28,7 +28,7 @@ namespace mk {
 
 	bool CircleCollision::contains(const math::Vector2f& point) const {
 		auto diff = math::Vector2f(getPosition()) - point;
-		return diff.length_squared() <= m_radius * m_radius;
+		return diff.lengthSquared() <= m_radius * m_radius;
 	}
 
 	// RECT

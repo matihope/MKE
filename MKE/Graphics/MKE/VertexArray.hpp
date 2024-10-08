@@ -111,7 +111,6 @@ namespace mk {
 		std::unique_ptr<u32> indices{};
 
 		void startDraw() const {
-			// writeData();
 			glBindVertexArray(vertex_array);
 			if (enable_index_buffer)
 				glDrawElements(GL_TRIANGLES, index_buffer_size, GL_UNSIGNED_INT, 0);

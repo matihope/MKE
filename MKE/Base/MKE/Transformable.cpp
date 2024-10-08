@@ -68,3 +68,9 @@ mk::math::Matrix4f mk::Transformable::getRotationTransform() const {
 	result(2, 2) = cos(b) * cos(c);
 	return result;
 }
+
+void mk::Transformable::setScale(float xscale, float yscale, float zscale) {
+	transform(0, 0) = xscale;
+	transform(1, 1) = yscale;
+	transform(2, 2) = zscale;
+}

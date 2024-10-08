@@ -31,6 +31,6 @@ mk::RectPrimitive::RectPrimitive(float width, float height):
 	  mk::RectPrimitive(math::Vector2f{ width, height }) {}
 
 void mk::RectPrimitive::draw2d(const RenderTarget& target, DrawContext2D context) const {
-	context.transform = math::Matrix4f::multiply(context.transform, getTransform());
+	context.transform *= getTransform();
 	vertices.draw2d(target, context);
 }

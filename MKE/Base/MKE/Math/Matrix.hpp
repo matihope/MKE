@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Ints.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/Panic.hpp"
 
 #include <algorithm>
@@ -36,12 +37,6 @@ namespace mk::math {
 			return matrix[row][col];
 		}
 
-		template<usize x1, usize x2, usize x3>
-		constexpr static Matrix<T, x1, x3>
-			multiply(const Matrix<T, x1, x2>& a, const Matrix<T, x2, x3>& b) {
-			return a * b;
-		}
-
 		constexpr Matrix& operator*=(const Matrix<T, W, H>& rhs) {
 			Matrix result(0);
 			for (usize row = 0; row < H; row++)
@@ -50,6 +45,15 @@ namespace mk::math {
 						result(row, col) += operator()(row, current) * rhs(current, col);
 			*this = result;
 			return *this;
+		}
+
+		template<template<class, usize> class DATA>
+		constexpr auto operator*(const Vector<DATA, T, W>& rhs) -> Vector<DATA, T, W> {
+			Vector<DATA, T, W> result(0);
+			for (usize row = 0; row < H; row++)
+				for (usize col = 0; col < W; col++)
+					result.vec_data.at(col) += rhs.vec_data.at(row) * operator()(row, col);
+			return result;
 		}
 
 		constexpr const T* data() const { return matrix[0].data(); }

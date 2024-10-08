@@ -72,9 +72,9 @@ namespace mk::math {
 
 		constexpr Vector operator/(const auto& rhs) const { return Vector() /= rhs; }
 
-		T length() const { return std::sqrt(length_squared()); }
+		T length() const { return std::sqrt(lengthSquared()); }
 
-		T length_squared() const {
+		T lengthSquared() const {
 			T sum = 0;
 			for (auto&& d: vec_data) sum += d;
 			return sum / SIZE;

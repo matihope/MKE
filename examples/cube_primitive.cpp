@@ -1,6 +1,7 @@
 #include "MKE/DrawContext.hpp"
 #include "MKE/Input.hpp"
 #include "MKE/Math/Matrix.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/RenderWindow.hpp"
 #include "MKE/Vertex.hpp"
 #include "MKE/VertexArray.hpp"
@@ -14,24 +15,21 @@ int main() {
 
 	float ratio = float(width) / float(height);
 	float fovX  = 90.f;
-	float front = 0.1f;   // NEAR
+	float front = 0.01f;  // NEAR
 	float back  = 100.f;  // FAR
 
-	float deg2rad = acos(-1.f) / 180.f;
+	float DEG2RAD = 2.f * M_PI / 360.f;
 
-	float tang  = tan(fovX / 2 * deg2rad);
-	float right = front * tang;
-	float top   = right / ratio;
+	float tangent = std::tan(fovX / 2 * DEG2RAD);
+	float right   = front * tangent;
+	float top     = right / ratio;
 
 	camera3d(0, 0) = front / right;
 	camera3d(1, 1) = front / top;
 	camera3d(2, 2) = (front + back) / (front - back);
 	camera3d(3, 2) = -1.f;
-	camera3d(0, 2) = 1.0;
-	camera3d(1, 2) = (back + front) / (back - front);
 	camera3d(2, 3) = 2 * back * front / (front - back);
 	camera3d(3, 3) = 0.f;
-	// camera3d(3, 3) = 0.9;
 
 	std::array vertices = {
 		mk::Vertex3D({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }),
@@ -69,16 +67,32 @@ int main() {
 
 	Transform cam_t;
 	Transform pos_t;
-	// pos_t.move(0.f, 0.f, -1.f);
+	pos_t.move(0.f, 0.f, 5.f);
+	cam_t.rotate(0, M_PI, 0);
 
 
 	while (!window.isExitRequested()) {
 		mk::math::Vector3f rotation{ 0.0002, 0.003, 0.004 };
 		rotation *= 5.f;
-		cam_t.rotate(rotation.x, rotation.y, rotation.z);
-		context.camera = cam_t.getTransform() * camera3d;
-		// context.camera    = camera3d;
-		// context.transform = pos_t.getTransform();
+
+		float move_side
+			= window.isKeyPressed(mk::input::KEY::D) - window.isKeyPressed(mk::input::KEY::A);
+		float move_h
+			= window.isKeyPressed(mk::input::KEY::S) - window.isKeyPressed(mk::input::KEY::W);
+
+		mk::math::Vector4f vec(-move_side, 0, -move_h, 0);
+		vec = (cam_t.getRotationTransform() * vec).normalizeOrZero() * 0.01;
+		pos_t.move(vec.x, vec.y, vec.z);
+
+		float look_side = window.isKeyPressed(mk::input::KEY::ARROW_RIGHT)
+		                - window.isKeyPressed(mk::input::KEY::ARROW_LEFT);
+
+		// float look_vert = window.isKeyPressed(mk::input::KEY::ARROW_UP)
+		//                 - window.isKeyPressed(mk::input::KEY::ARROW_DOWN);
+		cam_t.rotate(0.f, look_side * 0.01, 0.f);
+		context.camera    = camera3d * cam_t.getTransform();
+		context.transform = pos_t.getTransform();
+
 
 		window.clear(mk::Colors::DARK);
 		window.render3d(cube, context);
