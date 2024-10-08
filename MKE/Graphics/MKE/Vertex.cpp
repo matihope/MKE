@@ -2,14 +2,55 @@
 #include "glad/glad.h"
 
 void mk::Vertex2D::configureVertexAttribute() {
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*) 0);
+	glVertexAttribPointer(
+		0, sizeof(position) / sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*) 0
+	);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*) (sizeof(position)));
+	glVertexAttribPointer(
+		1,
+		sizeof(color) / sizeof(float),
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex2D),
+		(void*) (sizeof(position))
+	);
 	glEnableVertexAttribArray(1);
 
 	glVertexAttribPointer(
-		2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*) (sizeof(position) + sizeof(color))
+		2,
+		sizeof(tex_coords) / sizeof(float),
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex2D),
+		(void*) (sizeof(position) + sizeof(color))
+	);
+	glEnableVertexAttribArray(2);
+}
+
+void mk::Vertex3D::configureVertexAttribute() {
+	glVertexAttribPointer(
+		0, sizeof(position) / sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*) 0
+	);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(
+		1,
+		sizeof(color) / sizeof(float),
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex3D),
+		(void*) (sizeof(position))
+	);
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(
+		2,
+		sizeof(tex_coords) / sizeof(float),
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex3D),
+		(void*) (sizeof(position) + sizeof(color))
 	);
 	glEnableVertexAttribArray(2);
 }

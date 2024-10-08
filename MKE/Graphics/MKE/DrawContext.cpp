@@ -2,7 +2,7 @@
 #include "MKE/Shader.hpp"
 
 namespace {
-	const char* shader_vertex2d   = R"(
+	const char* shader_vertex2d = R"(
 #version 330 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
@@ -18,7 +18,25 @@ void main()
    TexCoord = aTex;
 }
 	      )";
-	const char* shader_fragment2d = R"(
+
+	const char* shader_vertex3d = R"(
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec4 aColor;
+layout (location = 2) in vec2 aTex;
+uniform mat4 transform;
+uniform mat4 camera;
+out vec4 ourColor;
+out vec2 TexCoord;
+void main()
+{
+   gl_Position = camera * transform * vec4(aPos, 1.0);
+   ourColor = aColor;
+   TexCoord = aTex;
+}
+	      )";
+
+	const char* shader_fragment = R"(
 #version 330 core
 in vec4 ourColor;
 in vec2 TexCoord;
@@ -33,11 +51,16 @@ void main()
 	      )";
 
 	mk::Shader* shader2D() {
-		static mk::Shader shader(shader_vertex2d, shader_fragment2d);
+		static mk::Shader shader(shader_vertex2d, shader_fragment);
 		return &shader;
 	}
 
-	const char* shader_fragment_no_texture_2d = R"(
+	mk::Shader* shader3D() {
+		static mk::Shader shader(shader_vertex3d, shader_fragment);
+		return &shader;
+	}
+
+	const char* shader_fragment_no_texture = R"(
 #version 330 core
 in vec4 ourColor;
 in vec2 TexCoord;
@@ -50,25 +73,41 @@ void main()
 	      )";
 
 	mk::Shader* shaderNoTexture2D() {
-		static mk::Shader shader(shader_vertex2d, shader_fragment_no_texture_2d);
+		static mk::Shader shader(shader_vertex2d, shader_fragment_no_texture);
+		return &shader;
+	}
+
+	mk::Shader* shaderNoTexture3D() {
+		static mk::Shader shader(shader_vertex3d, shader_fragment_no_texture);
 		return &shader;
 	}
 }
 
-mk::DrawContext2D::DrawContext2D() { setShader(shader2D()); }
+void mk::DrawContext::bind() {
+	if (!shader) return;
 
-void mk::DrawContext2D::setShader(const Shader* shader) { DrawContext::setShader(shader); }
-
-mk::DrawContext2D::DrawContext2D(const Texture* texture): DrawContext2D() {
-	this->texture = texture;
-}
-
-void mk::DrawContext2D::bind() {
-	if (texture)
-		setShader(shader2D());
-	else
-		setShader(shaderNoTexture2D());
 	Shader::use(shader);
 	Texture::bind(texture);
 	shader->setMatrix4f("transform", transform);
+	shader->setMatrix4f("camera", camera);
+}
+
+mk::DrawContext::DrawContext(Shader* shader): shader(shader) {}
+
+mk::DrawContext::DrawContext(Texture* texture): texture(texture) {}
+
+void mk::DrawContext2D::bind() {
+	if (texture)
+		shader = shader2D();
+	else
+		shader = shaderNoTexture2D();
+	DrawContext::bind();
+}
+
+void mk::DrawContext3D::bind() {
+	if (texture)
+		shader = shader3D();
+	else
+		shader = shaderNoTexture3D();
+	DrawContext::bind();
 }

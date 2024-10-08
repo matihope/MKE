@@ -8,9 +8,7 @@ namespace mk {
 	public:
 		virtual ~Transformable() {};
 
-		constexpr math::Matrix4f& getTransform() { return transform; }
-
-		constexpr const math::Matrix4f& getTransform() const { return transform; }
+		constexpr math::Matrix4f getTransform() const { return getRotationTransform() * transform; }
 
 		math::Vector2f getPosition2D() const;
 		math::Vector3f getPosition3D() const;
@@ -25,7 +23,16 @@ namespace mk {
 		void move(float delta_x, float delta_y);
 		void move(float delta_x, float delta_y, float delta_z);
 
+		void setRotation(math::Vector3f rotation);
+
+		void rotate(float d_pitch, float d_yaw, float d_roll);
+
 	private:
-		math::Matrix4f transform{};
+		math::Matrix4f getRotationTransform() const;
+
+		math::Vector3f position;
+		math::Vector3f rotation;
+		math::Vector3f scale{1};
+		math::Matrix4f transform{1};
 	};
 }

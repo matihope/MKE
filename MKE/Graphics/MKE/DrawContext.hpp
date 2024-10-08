@@ -5,43 +5,27 @@
 #include "MKE/Texture.hpp"
 
 namespace mk {
-	class RenderTarget;
-
-	// A shader-specification class - for a specific shader specification (input variables)
-	class DrawContext {
-		friend class RenderTarget;
-
-	public:
+	struct DrawContext {
 		DrawContext() = default;
 
-		DrawContext(const Shader* shader): shader(shader) {}
+		DrawContext(Shader* shader);
 
-		virtual void setShader(const Shader* shader) { this->shader = shader; }
+		DrawContext(Texture* texture);
 
-		virtual ~DrawContext() = 0;
-
-		virtual void bind() { Shader::use(shader); }
-
-	protected:
-		const Shader* shader = nullptr;
-	};
-
-	inline DrawContext::~DrawContext() {}
-
-	class DrawContext2D final: public DrawContext {
-	public:
-		DrawContext2D();
-		DrawContext2D(const Texture* texture);
-
-		~DrawContext2D() = default;
+		virtual void bind();
 
 		math::Matrix4f transform{};
+		math::Matrix4f camera{};
 
-		void setShader(const Shader* shader) override;
+		Shader*  shader  = nullptr;
+		Texture* texture = nullptr;
+	};
 
-		void bind() override;
+	struct DrawContext2D: public DrawContext {
+		void bind();
+	};
 
-	private:
-		const Texture* texture = nullptr;
+	struct DrawContext3D: public DrawContext {
+		void bind();
 	};
 }

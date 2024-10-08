@@ -19,3 +19,6 @@ add_example_assets(vertex_array)
 
 add_example(rect_primitive USES MKE-Engine)
 add_example_assets(rect_primitive)
+
+add_example(cube_primitive USES MKE-Engine)
+add_example_assets(cube_primitive)

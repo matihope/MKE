@@ -4,7 +4,7 @@
 
 int main() {
 	mk::Window window(800, 600, "Simple shader");
-	mk::Shader shader("shader.vs", "shader.fs");
+	mk::Shader shader(mk::ResPath("shader.vs"), mk::ResPath("shader.fs"));
 
 	float vertices[] = {
 		// positions         // colors

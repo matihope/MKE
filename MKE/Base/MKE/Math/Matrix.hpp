@@ -39,12 +39,17 @@ namespace mk::math {
 		template<usize x1, usize x2, usize x3>
 		constexpr static Matrix<T, x1, x3>
 			multiply(const Matrix<T, x1, x2>& a, const Matrix<T, x2, x3>& b) {
-			Matrix<T, x1, x3> result{ 0 };
-			for (usize row = 0; row < x1; row++)
-				for (usize col = 0; col < x3; col++)
-					for (usize current = 0; current < x2; current++)
-						result(row, col) += a(row, current) * b(current, col);
-			return result;
+			return a * b;
+		}
+
+		constexpr Matrix& operator*=(const Matrix<T, W, H>& rhs) {
+			Matrix result(0);
+			for (usize row = 0; row < H; row++)
+				for (usize col = 0; col < H; col++)
+					for (usize current = 0; current < W; current++)
+						result(row, col) += operator()(row, current) * rhs(current, col);
+			*this = result;
+			return *this;
 		}
 
 		constexpr const T* data() const { return matrix[0].data(); }
@@ -64,6 +69,11 @@ namespace mk::math {
 	private:
 		std::array<std::array<T, W>, H> matrix{};
 	};
+
+	template<class T, usize H, usize W, usize x3>
+	constexpr Matrix<T, H, x3> operator*(Matrix<T, H, W> lhs, const Matrix<T, W, x3>& rhs) {
+		return lhs *= rhs;
+	}
 
 	using Matrix4f = Matrix<float, 4, 4>;
 }  // namespace mk::Math

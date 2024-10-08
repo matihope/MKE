@@ -11,8 +11,6 @@
 namespace mk {
 	template<class Vert>
 	class VertexArray {
-		friend class RenderTarget;
-
 	public:
 		VertexArray(bool enable_index_buffer): enable_index_buffer(enable_index_buffer) {
 			glGenVertexArrays(1, &vertex_array);
@@ -98,7 +96,7 @@ namespace mk {
 			}
 		}
 
-	private:
+	protected:
 		u32 vertex_array{};
 
 		u32                   vertex_buffer{};
@@ -124,8 +122,15 @@ namespace mk {
 
 	class VertexArray2D: public VertexArray<Vertex2D>, public Drawable2D {
 	public:
-		using VertexArray<Vertex2D>::VertexArray;
+		using VertexArray::VertexArray;
 		~VertexArray2D() = default;
 		void draw2d(const RenderTarget& target, DrawContext2D context) const override;
+	};
+
+	class VertexArray3D: public VertexArray<Vertex3D>, public Drawable3D {
+	public:
+		using VertexArray::VertexArray;
+		~VertexArray3D() = default;
+		void draw3d(const RenderTarget& target, DrawContext3D context) const override;
 	};
 }
