@@ -11,4 +11,5 @@ namespace mk::math {
 		return { std::cos(angleRads) * vector.x - std::sin(angleRads) * vector.y,
 			     std::sin(angleRads) * vector.x + std::cos(angleRads) * vector.y };
 	}
+
 }  // namespace mk::Math

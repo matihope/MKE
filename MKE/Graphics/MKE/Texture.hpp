@@ -15,7 +15,6 @@ namespace mk {
 
 		void loadFromImage(const Image& image) const;
 		void loadFromFile(const ResPath& file) const;
-		void loadFromMemory(const ResPath& file) const;
 
 		void setSmooth(bool smooth) const;
 

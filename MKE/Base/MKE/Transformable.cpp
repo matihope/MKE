@@ -42,7 +42,9 @@ mk::math::Vector3f mk::Transformable::getPosition3D() const {
 	return { transform(0, 3), transform(1, 3), transform(2, 3) };
 }
 
-void mk::Transformable::setRotation(math::Vector3f rotation) { this->rotation = rotation; }
+void mk::Transformable::setRotation(math::Vector3f rotation) {
+	setRotation(rotation.x, rotation.y, rotation.z);
+}
 
 void mk::Transformable::rotate(float d_pitch, float d_yaw, float d_roll) {
 	rotation.x += d_pitch;
@@ -73,4 +75,8 @@ void mk::Transformable::setScale(float xscale, float yscale, float zscale) {
 	transform(0, 0) = xscale;
 	transform(1, 1) = yscale;
 	transform(2, 2) = zscale;
+}
+
+void mk::Transformable::setRotation(float d_pitch, float d_yaw, float d_roll) {
+	this->rotation = { d_pitch, d_yaw, d_roll };
 }

@@ -1,45 +1,27 @@
 #include "MKE/DrawContext.hpp"
-#include "MKE/Input.hpp"
-#include "MKE/Math/Matrix.hpp"
+#include "MKE/Math/MatrixUtils.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/RenderWindow.hpp"
-#include "MKE/Vertex.hpp"
-#include "MKE/VertexArray.hpp"
+#include "MKE/Texture.hpp"
 #include "MKE/Transformable.hpp"
+#include "MKE/VertexArray.hpp"
 
 int main() {
 	mk::RenderWindow window(800, 600, "Cube");
 
-	mk::math::Matrix4f camera3d{ 1 };
 	auto [width, height] = window.getSize().bind();
-
-	float ratio = float(width) / float(height);
-	float fovX  = 90.f;
-	float front = 0.01f;  // NEAR
-	float back  = 100.f;  // FAR
-
-	float DEG2RAD = 2.f * M_PI / 360.f;
-
-	float tangent = std::tan(fovX / 2 * DEG2RAD);
-	float right   = front * tangent;
-	float top     = right / ratio;
-
-	camera3d(0, 0) = front / right;
-	camera3d(1, 1) = front / top;
-	camera3d(2, 2) = (front + back) / (front - back);
-	camera3d(3, 2) = -1.f;
-	camera3d(2, 3) = 2 * back * front / (front - back);
-	camera3d(3, 3) = 0.f;
+	const mk::math::Matrix4f camera_projection
+		= mk::math::perspective(45.f, float(width) / height, 0.01f, 10.f);
 
 	std::array vertices = {
-		mk::Vertex3D({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }),
-		mk::Vertex3D({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }),
+		mk::Vertex3D({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }),
+		mk::Vertex3D({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }),
 		mk::Vertex3D({ 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.0f }),
-		mk::Vertex3D({ 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }),
-		mk::Vertex3D({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }),
+		mk::Vertex3D({ 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }),
+		mk::Vertex3D({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }),
 		mk::Vertex3D({ 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }),
-		mk::Vertex3D({ 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.0f }),
-		mk::Vertex3D({ 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }),
+		mk::Vertex3D({ 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f }),
+		mk::Vertex3D({ 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }),
 	};
 	std::array indices = {
 		0u, 1u, 2u, 0u, 2u, 3u,  // FRONT
@@ -56,42 +38,39 @@ int main() {
 	cube.setIndexBuffer(indices.data(), indices.size());
 	cube.save();
 
+	mk::Texture texture;
+	texture.loadFromFile("arrow.png");
+	texture.setSmooth(false);
+
 	mk::DrawContext3D context;
-	context.camera = camera3d;
+	context.camera  = camera_projection;
+	context.texture = &texture;
 
 	class Transform: public mk::Transformable {
 	public:
-		Transform()  = default;
-		~Transform() = default;
+		Transform() = default;
 	};
 
-	Transform cam_t;
-	Transform pos_t;
-	pos_t.move(0.f, 0.f, 5.f);
-	cam_t.rotate(0, M_PI, 0);
+	Transform position;
+	position.move(mk::math::Vector3f(-.5f));
 
-
+	float time = 0.;
 	while (!window.isExitRequested()) {
-		mk::math::Vector3f rotation{ 0.0002, 0.003, 0.004 };
-		rotation *= 5.f;
+		const float radius = 5.0f;
 
-		float move_side
-			= window.isKeyPressed(mk::input::KEY::D) - window.isKeyPressed(mk::input::KEY::A);
-		float move_h
-			= window.isKeyPressed(mk::input::KEY::S) - window.isKeyPressed(mk::input::KEY::W);
+		time += 1 / 60.f;
 
-		mk::math::Vector4f vec(-move_side, 0, -move_h, 0);
-		vec = (cam_t.getRotationTransform() * vec).normalizeOrZero() * 0.01;
-		pos_t.move(vec.x, vec.y, vec.z);
+		float camX = sin(time) * radius;
+		float camZ = cos(time) * radius;
 
-		float look_side = window.isKeyPressed(mk::input::KEY::ARROW_RIGHT)
-		                - window.isKeyPressed(mk::input::KEY::ARROW_LEFT);
+		context.transform = position.getTransform();
 
-		// float look_vert = window.isKeyPressed(mk::input::KEY::ARROW_UP)
-		//                 - window.isKeyPressed(mk::input::KEY::ARROW_DOWN);
-		cam_t.rotate(0.f, look_side * 0.01, 0.f);
-		context.camera    = camera3d * cam_t.getTransform();
-		context.transform = pos_t.getTransform();
+		context.camera = camera_projection
+		               * mk::math::lookAt(
+							 mk::math::Vector3f(camX, 2.f, camZ),
+							 mk::math::Vector3f(0.0f),
+							 mk::math::Vector3f(0.f, 1.f, 0.f)
+					   );
 
 
 		window.clear(mk::Colors::DARK);

@@ -23,16 +23,18 @@ namespace mk {
 		void move(float delta_x, float delta_y);
 		void move(float delta_x, float delta_y, float delta_z);
 
-		void setRotation(math::Vector3f rotation);
+		void rotate(math::Vector3f delta) { rotate(delta.x, delta.y, delta.z); }
 
 		void rotate(float d_pitch, float d_yaw, float d_roll);
+
+		void setRotation(float d_pitch, float d_yaw, float d_roll);
+		void setRotation(math::Vector3f rotation);
 
 		void setScale(float xscale, float yscale, float zscale);
 
 		math::Matrix4f getRotationTransform() const;
 
 	private:
-
 		math::Vector3f position;
 		math::Vector3f rotation;
 		math::Vector3f scale{ 1 };
