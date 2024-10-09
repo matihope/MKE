@@ -1,4 +1,5 @@
 #include "MKE/DrawContext.hpp"
+#include "MKE/Input.hpp"
 #include "MKE/Math/MatrixUtils.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/RenderWindow.hpp"
@@ -11,7 +12,7 @@ int main() {
 
 	auto [width, height] = window.getSize().bind();
 	const mk::math::Matrix4f camera_projection
-		= mk::math::perspective(45.f, float(width) / height, 0.01f, 10.f);
+		= mk::math::perspective(45.f, float(width) / height, 1.f, 10000.f);
 
 	std::array vertices = {
 		mk::Vertex3D({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }),
@@ -25,7 +26,7 @@ int main() {
 	};
 	std::array indices = {
 		0u, 1u, 2u, 0u, 2u, 3u,  // FRONT
-		0u, 1u, 4u, 1u, 4u, 5u,  // FRONT
+		// 0u, 1u, 4u, 1u, 4u, 5u,  // FRONT
 		1u, 2u, 5u, 2u, 5u, 6u,  //
 		2u, 3u, 6u, 3u, 6u, 7u,  //
 		3u, 0u, 7u, 0u, 7u, 4u,  //
@@ -58,10 +59,12 @@ int main() {
 	while (!window.isExitRequested()) {
 		const float radius = 5.0f;
 
-		time += 1 / 60.f;
-
 		float camX = sin(time) * radius;
 		float camZ = cos(time) * radius;
+
+		time += (window.isKeyPressed(mk::input::KEY::ARROW_RIGHT)
+		         - window.isKeyPressed(mk::input::KEY::ARROW_LEFT))
+		      * 0.01f;
 
 		context.transform = position.getTransform();
 

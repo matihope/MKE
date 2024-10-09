@@ -7,7 +7,7 @@ int main() {
 	mk::Window window(800, 600, "Hello rectangle!");
 
 	const char* vertexShaderSource
-		= "#version 330 core\n"
+		= "#version 410 core\n"
 		  "layout (location = 0) in vec3 aPos;\n"
 		  "void main()\n"
 		  "{\n"
@@ -27,7 +27,7 @@ int main() {
 	}
 
 	const char* fragmentShaderSource
-		= "#version 330 core\n"
+		= "#version 410 core\n"
 		  "out vec4 FragColor;\n"
 		  "uniform vec4 ourColor;\n"
 		  "void main()\n"

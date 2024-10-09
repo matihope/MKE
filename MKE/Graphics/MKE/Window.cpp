@@ -113,7 +113,7 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	MK_ASSERT_TRUE(window_scale_factor.x > 0, "Invalid window native x_scale");
 	MK_ASSERT_TRUE(window_scale_factor.y > 0, "Invalid window native y_scale");
 
-	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_DEPTH_TEST);
 
 	std::cerr << " -- Requested window size: " << math::Vector2u{ width, height } << '\n';
 	std::cerr << " -- Guessed window scaling factor: " << window_scale_factor << '\n';
@@ -166,7 +166,8 @@ bool mk::Window::pollEvent(Event& event) {
 
 void mk::Window::clear(Color color) {
 	glClearColor(color.r, color.g, color.b, color.a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
+	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 mk::math::Vector2u mk::Window::getSize() const { return window_size; }

@@ -26,9 +26,8 @@ namespace mk::math {
 	constexpr Matrix4f orthogonal([[maybe_unused]] float width, [[maybe_unused]] float height) {
 		Matrix4f projection{ 1.f };
 
-		projection(0, 0) = 0.25f;
-		projection(1, 1) = 0.25f;
-		projection(2, 2) = -1.f;
+		projection(0, 0) = 2.f / width * height;
+		projection(1, 1) = 2.f;
 
 		return projection;
 	}
