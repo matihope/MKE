@@ -15,7 +15,7 @@ namespace mk {
 		Window(u32 width, u32 height, std::string_view title);
 		Window(math::Vector2u size, std::string_view title);
 
-		virtual ~Window();
+		virtual ~Window() = default;
 
 		void create(u32 width, u32 height, std::string_view title);
 		void create(math::Vector2u size, std::string_view title);

@@ -8,7 +8,6 @@ foreach(name ${examples_list})
     ENDIF()
 endforeach()
 
-add_example(hello_window_primitive USES glfw GLAD)
 add_example(hello_window USES MKE-Engine)
 add_example(hello_triangle USES MKE-Engine)
 add_example(hello_rectangle USES MKE-Engine glfw)

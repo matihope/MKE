@@ -12,6 +12,20 @@ namespace mk {
 		static void configureVertexAttribute();
 	};
 
+	struct Vertex2DNoColor {
+		math::Vector2f position;    // 8 bytes
+		math::Vector2f tex_coords;  // 8 bytes
+
+		static void configureVertexAttribute();
+	};
+
+	struct Vertex2DNoTexture {
+		math::Vector2f position;  // 8 bytes
+		Color          color;     // 16 bytes
+
+		static void configureVertexAttribute();
+	};
+
 	struct Vertex3D {
 		math::Vector3f position;    // 12 bytes
 		Color          color;       // 16 bytes

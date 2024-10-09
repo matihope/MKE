@@ -16,11 +16,11 @@ namespace mk {
 
 	class RenderTarget2D: public RenderTarget {
 	public:
-		virtual void render2d(const Drawable2D& drawable, DrawContext2D context) const;
+		virtual void render2d(const Drawable2D& drawable, DrawContext context) const;
 	};
 
 	class RenderTarget3D: public RenderTarget {
 	public:
-		virtual void render3d(const Drawable3D& drawable, DrawContext3D context) const;
+		virtual void render3d(const Drawable3D& drawable, DrawContext context) const;
 	};
 }

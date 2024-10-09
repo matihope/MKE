@@ -22,7 +22,7 @@ namespace mk {
 		void load(const ResPath& vertex_shader, const ResPath& fragment_shader);
 		void load(const char* vertex_shader, const char* fragment_shader);
 		bool tryLoad(const ResPath& vertex_shader, const ResPath& fragment_shader);
-		void destroy();
+		void deleteProgram();
 
 		void setBool(const std::string& name, bool value) const;
 		void setI32(const std::string& name, i32 value) const;

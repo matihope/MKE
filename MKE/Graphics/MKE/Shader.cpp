@@ -22,12 +22,12 @@ bool mk::Shader::tryLoad(const ResPath& vertex_shader, const ResPath& fragment_s
 	}
 }
 
-void mk::Shader::destroy() {
+void mk::Shader::deleteProgram() {
 	if (is_compiled) glDeleteProgram(program_id);
 	is_compiled = false;
 }
 
-mk::Shader::~Shader() { this->destroy(); }
+mk::Shader::~Shader() { this->deleteProgram(); }
 
 void mk::Shader::setBool(const std::string& name, bool value) const {
 	glUniform1i(glGetUniformLocation(program_id, name.c_str()), (int) value);
@@ -56,7 +56,7 @@ void mk::Shader::use(const Shader* shader) {
 }
 
 void mk::Shader::load(const char* vertex_shader, const char* fragment_shader) {
-	destroy();
+	deleteProgram();
 
 	u32 vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader_id, 1, &vertex_shader, NULL);

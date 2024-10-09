@@ -2,6 +2,7 @@
 
 #include "MKE/Drawable.hpp"
 #include "MKE/Ints.hpp"
+#include "MKE/NonCopyable.hpp"
 #include "MKE/Panic.hpp"
 #include "MKE/Vertex.hpp"
 #include "MKE/RenderTarget.hpp"
@@ -9,8 +10,13 @@
 #include <cstring>
 
 namespace mk {
-	template<class Vert>
-	class VertexArray {
+	enum class BUFFER_USAGE {
+		DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
+		STATIC_DRAW  = GL_STATIC_DRAW,
+	};
+
+	template<class Vert, BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
+	class VertexArray: public NonCopyable {
 	public:
 		VertexArray(bool enable_index_buffer): enable_index_buffer(enable_index_buffer) {
 			glGenVertexArrays(1, &vertex_array);
@@ -79,7 +85,7 @@ namespace mk {
 					GL_ARRAY_BUFFER,
 					vertex_buffer_size * sizeof(Vert),
 					vertices.get(),
-					GL_DYNAMIC_DRAW
+					static_cast<GLenum>(BufferUsage)
 				);
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 			}
@@ -90,7 +96,7 @@ namespace mk {
 					GL_ELEMENT_ARRAY_BUFFER,
 					index_buffer_size * sizeof(u32),
 					indices.get(),
-					GL_DYNAMIC_DRAW
+					static_cast<GLenum>(BufferUsage)
 				);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
@@ -123,13 +129,13 @@ namespace mk {
 	public:
 		using VertexArray::VertexArray;
 		~VertexArray2D() = default;
-		void draw2d(const RenderTarget& target, DrawContext2D context) const override;
+		void draw2d(const RenderTarget& target, DrawContext context) const override;
 	};
 
 	class VertexArray3D: public VertexArray<Vertex3D>, public Drawable3D {
 	public:
 		using VertexArray::VertexArray;
 		~VertexArray3D() = default;
-		void draw3d(const RenderTarget& target, DrawContext3D context) const override;
+		void draw3d(const RenderTarget& target, DrawContext context) const override;
 	};
 }

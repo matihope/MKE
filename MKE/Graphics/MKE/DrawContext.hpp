@@ -20,12 +20,4 @@ namespace mk {
 		Shader*  shader  = nullptr;
 		Texture* texture = nullptr;
 	};
-
-	struct DrawContext2D: public DrawContext {
-		void bind();
-	};
-
-	struct DrawContext3D: public DrawContext {
-		void bind();
-	};
 }

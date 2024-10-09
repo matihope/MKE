@@ -4,7 +4,6 @@
 #include <map>
 
 namespace mk {
-
 	class ResourceManager {
 	private:
 		ResourceManager() = default;

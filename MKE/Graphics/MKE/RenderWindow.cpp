@@ -20,8 +20,8 @@ void mk::RenderWindow::addEvent(Event event) {
 }
 
 void mk::RenderWindow::updateCamera2D() {
-	auto [x_scale, y_scale] = getSize().bind();
-	camera_transform(0, 0)  = 2.f / x_scale;
-	camera_transform(1, 1)  = -2.f / y_scale;
+	auto [width, height]   = getSize().bind();
+	camera_transform(0, 0) = 2.f / width;
+	camera_transform(1, 1) = -2.f / height;
 	setCamera(camera_transform);
 }

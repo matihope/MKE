@@ -1,4 +1,6 @@
 add_library(MKE-Graphics
+    MKE/Init.cpp
+    MKE/Init.hpp
     MKE/Window.cpp
     MKE/Window.hpp
     MKE/Color.hpp
@@ -16,13 +18,8 @@ add_library(MKE-Graphics
     MKE/RenderTarget.hpp
     MKE/DrawContext.cpp
     MKE/DrawContext.hpp
-    MKE/VertexArray.cpp
-    MKE/VertexArray.hpp
     MKE/RenderWindow.cpp
     MKE/RenderWindow.hpp
-
-    MKE/Primitives/2d/RectPrimitive.cpp
-    MKE/Primitives/2d/RectPrimitive.hpp
 )
 target_link_libraries(MKE-Graphics MKE-Base GLAD glfw stb)
 target_include_directories(MKE-Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

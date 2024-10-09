@@ -1,4 +1,5 @@
 #include "Window.hpp"
+#include "MKE/Init.hpp"
 #include "MKE/Event.hpp"
 #include "MKE/Input.hpp"
 #include "MKE/Math/Vector.hpp"
@@ -11,45 +12,31 @@
 #include <unordered_map>
 
 namespace {
-	void mk_initGlfw() {
-		static bool initialized_glfw = false;
-		if (!initialized_glfw) {
-			MK_ASSERT(glfwInit(), "Couldn\'t init glfw");
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-			initialized_glfw = true;
-		}
-	}
-
 	std::unordered_map<GLFWwindow*, std::reference_wrapper<mk::Window>> glfw_to_mk_window{};
 
 	void pushEvent(GLFWwindow* window, mk::Event event) {
 		glfw_to_mk_window.at(window).get().addEvent(event);
 	}
 
-	void window_close_callback(GLFWwindow* window) {
+	void windowCloseCallback(GLFWwindow* window) {
 		mk::Event event{};
 		event.window_close = mk::Events::WindowClose();
 		pushEvent(window, event);
 	}
 
-	void window_framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+	void windowFramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 		mk::Event event{};
 		event.window_resized = mk::Events::WindowResized(mk::math::Vector2u(width, height));
 		pushEvent(window, event);
 	}
 
-	void window_scale_factor_callback(GLFWwindow* window, float xscale, float yscale) {
+	void windowScaleFactorCallback(GLFWwindow* window, float xscale, float yscale) {
 		mk::Event event{};
 		event.window_scale_factor = mk::Events::WindowScaleFactorChanged({ xscale, yscale });
 		pushEvent(window, event);
 	}
 
-	void window_key_callback(
+	void windowKeyCallback(
 		GLFWwindow* window, int key, int /* scancode */, int action, int /* mods */
 	) {
 		mk::Event event;
@@ -65,7 +52,7 @@ namespace {
 		pushEvent(window, event);
 	}
 
-	void window_mouse_callback(
+	void windowMouseCallback(
 		GLFWwindow* /* window */, int /* button */, int /* action */, int /* mods */
 	) {}
 
@@ -81,15 +68,10 @@ mk::Window::Window(u32 width, u32 height, std::string_view title) { create(width
 
 mk::Window::Window(math::Vector2u size, std::string_view title) { create(size, title); }
 
-mk::Window::~Window() {
-	// This generates a problem if there were more than 2 windows opened...
-	if (initialized) glfwTerminate();
-}
-
 void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	MK_ASSERT_TRUE(!initialized, "Called create on initalized window");
 
-	mk_initGlfw();
+	init();
 
 	this->title = title;
 	window      = glfwCreateWindow(width, height, this->title.c_str(), NULL, NULL);
@@ -103,11 +85,11 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 
 	MK_ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
 
-	glfwSetWindowCloseCallback(window, window_close_callback);
-	glfwSetFramebufferSizeCallback(window, window_framebuffer_size_callback);
-	glfwSetWindowContentScaleCallback(window, window_scale_factor_callback);
-	glfwSetKeyCallback(window, window_key_callback);
-	glfwSetMouseButtonCallback(window, window_mouse_callback);
+	glfwSetWindowCloseCallback(window, windowCloseCallback);
+	glfwSetFramebufferSizeCallback(window, windowFramebufferSizeCallback);
+	glfwSetWindowContentScaleCallback(window, windowScaleFactorCallback);
+	glfwSetKeyCallback(window, windowKeyCallback);
+	glfwSetMouseButtonCallback(window, windowMouseCallback);
 
 	glfwGetWindowContentScale(window, &window_scale_factor.x, &window_scale_factor.y);
 	MK_ASSERT_TRUE(window_scale_factor.x > 0, "Invalid window native x_scale");
@@ -166,7 +148,6 @@ bool mk::Window::pollEvent(Event& event) {
 
 void mk::Window::clear(Color color) {
 	glClearColor(color.r, color.g, color.b, color.a);
-	// glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
