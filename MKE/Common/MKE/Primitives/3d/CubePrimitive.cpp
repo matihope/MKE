@@ -45,7 +45,7 @@ mk::CubePrimitive::CubePrimitive(mk::Color color) {
 	vertex_array.save();
 }
 
-void mk::CubePrimitive::draw3d(const RenderTarget& target, DrawContext context) const {
+void mk::CubePrimitive::draw3d(const RenderTarget3D& target, DrawContext context) const {
 	context.transform *= getTransform();
 	vertex_array.draw3d(target, context);
 }

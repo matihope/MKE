@@ -38,6 +38,7 @@ endmacro(add_example_assets)
 # Dependencies
 add_subdirectory(dependencies)
 find_package(glfw3 3.3 REQUIRED)
+find_package(Freetype REQUIRED)
 
 # Source files
 add_subdirectory(MKE)

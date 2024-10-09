@@ -2,6 +2,7 @@
 
 #include "GUI/Label.hpp"
 #include "JsonBridge/JsonBridge.hpp"
+#include "MKE/JsonBridge.hpp"
 #include "Updatable/Updatable.hpp"
 #include "WorldEntity/WorldEntity.hpp"
 #include "Math/Vector.hpp"
@@ -20,7 +21,7 @@ namespace mk {
 		bool             m_enable_print_fps         = false;
 		float            m_physics_update_call_freq = 1. / 60.;
 		float            m_physics_update_counter   = 0.f;
-		sf::Cursor::Type m_current_cursor_type;
+		// sf::Cursor::Type m_current_cursor_type;
 
 		sf::Clock                                m_clock;
 		JsonBridge                               m_game_settings;
@@ -30,11 +31,11 @@ namespace mk {
 		sf::Font*                                m_default_font;
 		gui::Label                               m_fps_label;
 		math::Vector2f                           m_mouse_pos;
-		sf::Image                                icon;
+		Image                                    icon;
 
 		void                                     updateViewportSize();
 		void                                     recalculateAvgFps();
-		std::queue<std::unique_ptr<WorldEntity>> m_safe_scene_delete_queue;
+		std::std::queue<std::unique_ptr<WorldEntity>> m_safe_scene_delete_queue;
 
 	public:
 		explicit Game(const ResPath& settings);
@@ -50,8 +51,8 @@ namespace mk {
 		bool              isRunning() const;
 		math::Vector2u    getWindowSize();
 		math::Vector2u    getViewportSize();
-		void              setViewportSize(sf::Vector2f newSize);
-		void              setViewportSize(sf::Vector2u newSize);
+		void              setViewportSize(math::Vector2f newSize);
+		void              setViewportSize(math::Vector2u newSize);
 		sf::RenderWindow& getRenderWindow();
 		bool              isWindowActive() const;
 

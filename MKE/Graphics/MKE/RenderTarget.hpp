@@ -5,22 +5,21 @@
 #include "MKE/Drawable.hpp"
 
 namespace mk {
-	class RenderTarget: public NonCopyable {
+	class RenderTarget2D: public NonCopyable {
 	public:
-		virtual ~RenderTarget() = 0;
-
-		virtual void render(const Drawable& drawable) const;
-	};
-
-	inline RenderTarget::~RenderTarget() {};
-
-	class RenderTarget2D: public RenderTarget {
-	public:
+		virtual ~RenderTarget2D()                               = 0;
+		virtual void render2d(const Drawable2D& drawable) const = 0;
 		virtual void render2d(const Drawable2D& drawable, DrawContext context) const;
 	};
 
-	class RenderTarget3D: public RenderTarget {
+	inline RenderTarget2D::~RenderTarget2D() {};
+
+	class RenderTarget3D: public NonCopyable {
 	public:
+		virtual ~RenderTarget3D()                               = 0;
+		virtual void render3d(const Drawable3D& drawable) const = 0;
 		virtual void render3d(const Drawable3D& drawable, DrawContext context) const;
 	};
+
+	inline RenderTarget3D::~RenderTarget3D() {};
 }

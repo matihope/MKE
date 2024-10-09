@@ -2,8 +2,6 @@
 #include "Drawable.hpp"
 #include "MKE/DrawContext.hpp"
 
-void mk::RenderTarget::render(const Drawable& drawable) const { drawable.draw(*this); }
-
 void mk::RenderTarget2D::render2d(const Drawable2D& drawable, DrawContext context) const {
 	drawable.draw2d(*this, context);
 }

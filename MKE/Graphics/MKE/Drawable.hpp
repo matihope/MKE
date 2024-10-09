@@ -1,25 +1,18 @@
 #pragma once
 
 namespace mk {
-	class RenderTarget;
+	class RenderTarget2D;
+	class RenderTarget3D;
 	struct DrawContext;
 
-	// Interface drawable, very nice
-	class Drawable {
+	class Drawable2D {
 	public:
-		virtual void draw(const RenderTarget& target) const = 0;
+		virtual void draw2d(const RenderTarget2D& target, DrawContext context) const = 0;
 	};
 
-	class Drawable2D: public Drawable {
+	class Drawable3D {
 	public:
-		void         draw(const RenderTarget& target) const override;
-		virtual void draw2d(const RenderTarget& target, DrawContext context) const = 0;
-	};
-
-	class Drawable3D: public Drawable {
-	public:
-		void         draw(const RenderTarget& target) const override;
-		virtual void draw3d(const RenderTarget& target, DrawContext context) const = 0;
+		virtual void draw3d(const RenderTarget3D& target, DrawContext context) const = 0;
 	};
 
 }

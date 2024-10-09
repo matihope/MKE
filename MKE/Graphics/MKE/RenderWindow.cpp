@@ -25,3 +25,23 @@ void mk::RenderWindow::updateCamera2D() {
 	camera_transform(1, 1) = -2.f / height;
 	setCamera(camera_transform);
 }
+
+void mk::RenderWindow::render2d(const Drawable2D& drawable) const {
+	DrawContext context;
+	context.camera = camera_transform;
+	render2d(drawable, context);
+}
+
+void mk::RenderWindow::render2d(const Drawable2D& drawable, DrawContext context) const {
+	RenderTarget2D::render2d(drawable, context);
+}
+
+void mk::RenderWindow::render3d(const Drawable3D& drawable) const {
+	DrawContext context;
+	context.camera = camera_transform;
+	render3d(drawable, context);
+}
+
+void mk::RenderWindow::render3d(const Drawable3D& drawable, DrawContext context) const {
+	RenderTarget3D::render3d(drawable, context);
+}

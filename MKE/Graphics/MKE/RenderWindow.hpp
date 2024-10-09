@@ -15,25 +15,10 @@ namespace mk {
 
 		void addEvent(Event event) override;
 
-		void render2d(const Drawable2D& drawable) const {
-			DrawContext context;
-			context.camera = camera_transform;
-			render2d(drawable, context);
-		}
-
-		void render2d(const Drawable2D& drawable, DrawContext context) const override {
-			RenderTarget2D::render2d(drawable, context);
-		}
-
-		void render3d(const Drawable3D& drawable) const {
-			DrawContext context;
-			context.camera = camera_transform;
-			render3d(drawable, context);
-		}
-
-		void render3d(const Drawable3D& drawable, DrawContext context) const override {
-			RenderTarget3D::render3d(drawable, context);
-		}
+		void render2d(const Drawable2D& drawable) const override;
+		void render2d(const Drawable2D& drawable, DrawContext context) const override;
+		void render3d(const Drawable3D& drawable) const override;
+		void render3d(const Drawable3D& drawable, DrawContext context) const override;
 
 		void setCamera(math::Matrix4f camera) { camera_transform = camera; }
 

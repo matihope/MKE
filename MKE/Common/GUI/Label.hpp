@@ -1,5 +1,4 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <WorldEntity/WorldEntity.hpp>
 
 namespace mk::gui {

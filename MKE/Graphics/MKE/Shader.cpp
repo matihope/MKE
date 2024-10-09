@@ -96,3 +96,7 @@ void mk::Shader::load(const char* vertex_shader, const char* fragment_shader) {
 
 	is_compiled = true;
 }
+
+void mk::Shader::setColor(const std::string& name, mk::Color color) const {
+	glUniform4f(glGetUniformLocation(program_id, name.c_str()), color.r, color.g, color.b, color.a);
+}

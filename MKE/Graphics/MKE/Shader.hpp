@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MKE/Color.hpp"
 #include "MKE/Ints.hpp"
 #include "MKE/Math/Matrix.hpp"
 #include "MKE/NonCopyable.hpp"
@@ -27,6 +28,8 @@ namespace mk {
 		void setBool(const std::string& name, bool value) const;
 		void setI32(const std::string& name, i32 value) const;
 		void setFloat(const std::string& name, float value) const;
+
+		void setColor(const std::string& name, mk::Color color) const;
 
 		void setMatrix4f(const std::string& name, const math::Matrix4f& value) const;
 
