@@ -1,5 +1,6 @@
 #include "RenderWindow.hpp"
 #include "MKE/Event.hpp"
+#include "MKE/RenderTarget.hpp"
 
 void mk::RenderWindow::enableCamera2D(bool enable) {
 	if (!enable_camera_2d) {
@@ -29,19 +30,23 @@ void mk::RenderWindow::updateCamera2D() {
 void mk::RenderWindow::render2d(const Drawable2D& drawable) const {
 	DrawContext context;
 	context.camera = camera_transform;
-	render2d(drawable, context);
-}
-
-void mk::RenderWindow::render2d(const Drawable2D& drawable, DrawContext context) const {
-	RenderTarget2D::render2d(drawable, context);
+	render2dContext(drawable, context);
 }
 
 void mk::RenderWindow::render3d(const Drawable3D& drawable) const {
 	DrawContext context;
 	context.camera = camera_transform;
-	render3d(drawable, context);
+	render3dContext(drawable, context);
 }
 
-void mk::RenderWindow::render3d(const Drawable3D& drawable, DrawContext context) const {
-	RenderTarget3D::render3d(drawable, context);
+mk::math::Matrix4f mk::RenderWindow::getCamera() const { return camera_transform; }
+
+void mk::RenderWindow::render2dContext(const Drawable2D& drawable, DrawContext context) const {
+	glViewport(0, 0, window_size.x * window_scale_factor.x, window_size.y * window_scale_factor.y);
+	defaultRender2D(drawable, context);
+}
+
+void mk::RenderWindow::render3dContext(const Drawable3D& drawable, DrawContext context) const {
+	glViewport(0, 0, window_size.x * window_scale_factor.x, window_size.y * window_scale_factor.y);
+	defaultRender3D(drawable, context);
 }

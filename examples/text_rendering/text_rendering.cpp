@@ -1,8 +1,12 @@
 #include "MKE/Color.hpp"
 #include "MKE/DrawContext.hpp"
 #include "MKE/Drawable.hpp"
+#include "MKE/Font.hpp"
+#include "MKE/Math/Matrix.hpp"
 #include "MKE/Math/Vector.hpp"
+#include "MKE/Primitives/2d/RectPrimitive.hpp"
 #include "MKE/RenderTarget.hpp"
+#include "MKE/RenderTexture.hpp"
 #include "MKE/RenderWindow.hpp"
 #include "MKE/ResPath.hpp"
 #include "MKE/Shader.hpp"
@@ -11,8 +15,8 @@
 #include "glad/glad.h"
 
 #include <ft2build.h>
-#include <unordered_map>
 #include FT_FREETYPE_H
+#include <unordered_map>
 
 struct FontVertex {
 	mk::math::Vector2f position;
@@ -45,31 +49,28 @@ public:
 	mk::Texture* texture;
 
 	void draw2d(const mk::RenderTarget2D&, mk::DrawContext context) const override {
-		static mk::Shader shader(mk::ResPath("vert.vs"), mk::ResPath("frag.fs"));
+		static mk::Shader  shader(mk::ResPath("vert.vs"), mk::ResPath("frag.fs"));
+		mk::math::Matrix4f transform{ 1 };
+		transform(1, 1) = -1;
+		transform(1, 3) = 50.f;
+
 		context.shader  = &shader;
 		context.texture = texture;
+		context.transform *= transform;
 		context.bind();
 		shader.setColor("textColor", color);
 		startDraw();
 	}
 };
 
-struct Character {
-	Character() = default;
-	mk::Texture        texture{};
-	mk::math::Vector2u size{};     // size of glyph
-	mk::math::Vector2u bearing{};  // offset from baseline to left/top of glyph
-	u32                advance{};  // offset to advance next glyph
-};
-
 void renderText(
-	const mk::RenderTarget2D&            target,
-	std::string                          text,
-	float                                x,
-	float                                y,
-	float                                scale,
-	mk::Color                            color,
-	std::unordered_map<char, Character>& chars
+	const mk::RenderTarget2D&                         target,
+	std::string                                       text,
+	float                                             x,
+	float                                             y,
+	float                                             scale,
+	mk::Color                                         color,
+	std::unordered_map<char8_t, mk::Font::Character>& chars
 ) {
 	static FontArray vertex_array(false);
 	vertex_array.setSize(6);
@@ -77,20 +78,20 @@ void renderText(
 
 	// write verts
 	for (char c: text) {
-		const Character& ch   = chars.at(c);
-		float            xpos = x + ch.bearing.x * scale;
-		float            ypos = y + (ch.size.y - ch.bearing.y) * scale;
-		float w = ch.size.x * scale;
-		float h = ch.size.y * scale;
+		const auto& ch   = chars.at(c);
+		float       xpos = x + ch.bearing.x * scale;
+		float       ypos = y + (ch.size.y - ch.bearing.y) * scale;
+		float       w    = ch.size.x * scale;
+		float       h    = ch.size.y * scale;
 
 		std::array vertices = {
-			FontVertex({ xpos, ypos }, { 0.0f, 0.0f }),
-			FontVertex({ xpos, ypos + h }, { 0.0f, 1.0f }),
-			FontVertex({ xpos + w, ypos + h }, { 1.0f, 1.0f }),
+			FontVertex({ xpos, ypos }, { 0.0f, 1.0f }),
+			FontVertex({ xpos, ypos + h }, { 0.0f, 0.0f }),
+			FontVertex({ xpos + w, ypos + h }, { 1.0f, 0.0f }),
 
-			FontVertex({ xpos, ypos }, { 0.0f, 0.0f }),
-			FontVertex({ xpos + w, ypos + h }, { 1.0f, 1.0f }),
-			FontVertex({ xpos + w, ypos }, { 1.0f, 0.0f }),
+			FontVertex({ xpos, ypos }, { 0.0f, 1.0f }),
+			FontVertex({ xpos + w, ypos + h }, { 1.0f, 0.0f }),
+			FontVertex({ xpos + w, ypos }, { 1.0f, 1.0f }),
 		};
 		vertex_array.texture = &chars.at(c).texture;
 		vertex_array.setVertexBuffer(vertices.data(), vertices.size());
@@ -105,66 +106,40 @@ int main() {
 	mk::RenderWindow window(800, 600, "Text rendering");
 	window.enableCamera2D(true);
 
-	FT_Library ft;
-	if (FT_Init_FreeType(&ft)) {
-		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-		return -1;
-	}
+	mk::Font font;
+	font.load("fonts/Roboto/Roboto-Medium.ttf");
+	font.setScaling(window.getScaleFactor().x);
+	font.setSize(64);
 
-	FT_Face face;
-	if (FT_New_Face(ft, mk::ResPath("fonts/Roboto/Roboto-Medium.ttf").strPath(), 0, &face)) {
-		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-		return -1;
-	}
-
-	FT_Set_Pixel_Sizes(face, 0, 48);
-
-
-	std::unordered_map<char, Character> chars;
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // disable byte-alignment restriction
-
-	for (unsigned char c = 0; c < 128; c++) {
-		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-			std::cout << "ERROR::FREETYTPE: Failed to load Glyph: " << int(c) << std::endl;
-			continue;
-		}
-
-		chars.try_emplace(c);
-		Character& character = chars.at(c);
-
-		glBindTexture(GL_TEXTURE_2D, character.texture.getNativeHandle());
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			GL_RED,
-			face->glyph->bitmap.width,
-			face->glyph->bitmap.rows,
-			0,
-			GL_RED,
-			GL_UNSIGNED_BYTE,
-			face->glyph->bitmap.buffer
-		);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		character.size    = mk::math::Vector2u(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-		character.bearing = mk::math::Vector2u(face->glyph->bitmap_left, face->glyph->bitmap_top),
-		character.advance = static_cast<u32>(face->glyph->advance.x);
-	}
-
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
+	mk::RenderTexture2D render_texture;
+	render_texture.create(window.getSize());
+	render_texture.setScalingFactor(window.getScaleFactor());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	mk::RectPrimitive rect(800, 600);
+
+	// glDisable(GL_DEPTH_TEST);
+
 	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
-		renderText(window, "Test", 0.f, 0.f, 1.f, { mk::Colors::WHITE }, chars);
+		render_texture.clear(mk::Colors::TRANSPARENT);
+		renderText(
+			render_texture,
+			"Test",
+			0.f,
+			0.f,
+			1.f / window.getScaleFactor().x,
+			mk::Colors::RED,
+			font.chars
+		);
+
+		mk::DrawContext context;
+		context.camera  = window.getCamera();
+		context.texture = &render_texture.getTexture();
+		window.render2dContext(rect, context);
+
 		window.display();
 	}
 }

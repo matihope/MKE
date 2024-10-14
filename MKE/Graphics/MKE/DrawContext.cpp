@@ -10,6 +10,6 @@ void mk::DrawContext::bind() {
 	shader->setMatrix4f("camera", camera);
 }
 
-mk::DrawContext::DrawContext(Shader* shader): shader(shader) {}
+mk::DrawContext::DrawContext(const Shader* shader): shader(shader) {}
 
-mk::DrawContext::DrawContext(Texture* texture): texture(texture) {}
+mk::DrawContext::DrawContext(const Texture* texture): texture(texture) {}

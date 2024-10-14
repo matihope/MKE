@@ -5,6 +5,8 @@ add_library(MKE-Common
     MKE/ResourceManager.hpp
     MKE/VertexArray.cpp
     MKE/VertexArray.hpp
+    MKE/Font.cpp
+    MKE/Font.hpp
 
     MKE/Primitives/2d/RectPrimitive.cpp
     MKE/Primitives/2d/RectPrimitive.hpp
@@ -16,5 +18,6 @@ add_library(MKE-Common
     # MKE/WorldEntity.cpp
     # MKE/WorldEntity.hpp
 )
-target_link_libraries(MKE-Common MKE-Base MKE-Graphics)
+target_link_libraries(MKE-Common MKE-Base MKE-Graphics ${FREETYPE_LIBRARIES})
+target_include_directories(MKE-Common PRIVATE ${FREETYPE_INCLUDE_DIRS})
 target_include_directories(MKE-Common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

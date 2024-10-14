@@ -7,6 +7,6 @@ uniform mat4 camera;
 uniform mat4 transform;
 
 void main() {
-    gl_Position = camera * vec4(pos, 0.0, 1.0);
+    gl_Position = camera * transform * vec4(pos, 0.0, 1.0);
     tex_coords = tex;
 }

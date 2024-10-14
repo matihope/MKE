@@ -167,7 +167,8 @@ namespace mk::math {
 
 	using Vector2f = Vector2<float>;
 	using Vector2i = Vector2<i32>;
-	using Vector2u = Vector2<u32>;
+	using Vector2u = Vector2<usize>;
+	using Vector2u32 = Vector2<u32>;
 
 	template<class T>
 	using Vector3 = Vector<impl::Vec, T, 3>;

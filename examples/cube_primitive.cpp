@@ -40,7 +40,7 @@ int main() {
 					   );
 
 		window.clear(mk::Colors::DARK);
-		window.render3d(cube, context);
+		window.render3dContext(cube, context);
 		window.display();
 	}
 }

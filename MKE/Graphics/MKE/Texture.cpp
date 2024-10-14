@@ -5,23 +5,11 @@ mk::Texture::Texture() { glGenTextures(1, &texture_id); }
 
 mk::Texture::~Texture() { glDeleteTextures(1, &texture_id); }
 
-void mk::Texture::loadFromImage(const Image& image) const {
-	glBindTexture(GL_TEXTURE_2D, texture_id);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	auto [width, height] = image.getSize().bind();
-	glTexImage2D(
-		GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getData()
-	);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
+void mk::Texture::loadFromImage(const Image& image) {
+	loadFromMemory(image.getSize().x, image.getSize().y, image.getData());
 }
 
-void mk::Texture::loadFromFile(const ResPath& file) const { loadFromImage(Image(file)); }
+void mk::Texture::loadFromFile(const ResPath& file) { loadFromImage(Image(file)); }
 
 mk::math::Vector2u mk::Texture::getSize() const { return size; }
 
@@ -48,4 +36,18 @@ void mk::Texture::bind(const Texture* texture) {
 		glBindTexture(GL_TEXTURE_2D, texture->texture_id);
 	else
 		glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void mk::Texture::loadFromMemory(usize width, usize height, const void* data, GLenum format) {
+	size = { width, height };
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

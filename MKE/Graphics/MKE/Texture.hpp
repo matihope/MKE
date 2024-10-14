@@ -4,6 +4,7 @@
 #include "MKE/Ints.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/NonCopyable.hpp"
+#include "glad/glad.h"
 
 namespace mk {
 	class Texture: public NonCopyable {
@@ -13,8 +14,9 @@ namespace mk {
 
 		static void bind(const Texture* texture);
 
-		void loadFromImage(const Image& image) const;
-		void loadFromFile(const ResPath& file) const;
+		void loadFromMemory(usize width, usize height, const void* data, GLenum format = GL_RGBA);
+		void loadFromImage(const Image& image);
+		void loadFromFile(const ResPath& file);
 
 		void setSmooth(bool smooth) const;
 

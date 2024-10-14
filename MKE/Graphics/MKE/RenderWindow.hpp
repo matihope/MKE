@@ -16,11 +16,13 @@ namespace mk {
 		void addEvent(Event event) override;
 
 		void render2d(const Drawable2D& drawable) const override;
-		void render2d(const Drawable2D& drawable, DrawContext context) const override;
+		void render2dContext(const Drawable2D& drawable, DrawContext context) const override;
 		void render3d(const Drawable3D& drawable) const override;
-		void render3d(const Drawable3D& drawable, DrawContext context) const override;
+		void render3dContext(const Drawable3D& drawable, DrawContext context) const override;
 
 		void setCamera(math::Matrix4f camera) { camera_transform = camera; }
+
+		math::Matrix4f getCamera() const;
 
 	private:
 		// Whether or not enable automatic RenderWindow's camera 2d features:
