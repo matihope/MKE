@@ -32,6 +32,8 @@ namespace mk {
 		[[nodiscard]]
 		bool exists() const;
 
+		bool operator==(const ResPath&) const = default;
+
 		bool operator()(const ResPath& other) const { return real_path == other.real_path; }
 
 		bool operator<(const ResPath& other) const { return real_path < other.real_path; }

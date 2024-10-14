@@ -1,40 +1,67 @@
 #include "Font.hpp"
+#include "MKE/ResPath.hpp"
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "MKE/Exceptions.hpp"
 #include "MKE/Panic.hpp"
 #include "glad/glad.h"
+
+namespace {
+	struct FontLib {
+		FT_Library                               ft;
+		std::unordered_map<mk::ResPath, FT_Face> faces;
+
+		FontLib() {
+			if (FT_Init_FreeType(&ft))
+				throw mk::exceptions::MkException("Could not init FreeType Library");
+		}
+
+		FT_Face getFace(const mk::ResPath& path) {
+			auto [face, new_face] = faces.try_emplace(path);
+			if (new_face) {
+				if (FT_New_Face(ft, path.strPath(), 0, &face->second))
+					throw mk::exceptions::MkException("Failed to load font: ", path.strPath());
+			}
+
+			return face->second;
+		}
+
+		~FontLib() {
+			FT_Done_FreeType(ft);
+			for (auto&& [_, face]: faces) FT_Done_Face(face);
+		}
+	};
+
+	FT_Face getFace(const mk::ResPath& path) {
+		static FontLib lib;
+		return lib.getFace(path);
+	}
+}
 
 mk::Font::Font(const ResPath& font) { load(font); }
 
 void mk::Font::load(const ResPath& font) {
 	MK_ASSERT_TRUE(!loaded, "Loading into a loaded font");
 	font_path = font;
-
-	if (FT_Init_FreeType(&ft)) throw exceptions::MkException("Could not init FreeType Library");
-
-	if (FT_New_Face(ft, font.strPath(), 0, &face))
-		throw exceptions::MkException("Failed to load font: ", font.strPath());
-
-	loaded = true;
-	reload();
+	loaded    = true;
 }
 
-mk::Font::~Font() {
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
-}
+const mk::Font::CharMap& mk::Font::getChars(const FontParams& font_params) {
+	if (!loaded) MK_PANIC("Cannot getChars() from an unloaded font...");
 
-void mk::Font::setSize(u32 font_size) {
-	this->font_size = font_size;
-	reload();
-}
+	// Try loading cache
+	auto [char_map, new_char_map] = chars.try_emplace(font_params);
 
-void mk::Font::reload() {
-	if (loaded) {
-		FT_Set_Pixel_Sizes(face, 0, font_size * scaling);
+	if (new_char_map) {
+		const FT_Face face = getFace(font_path);
+
+		// else load the font
+		FT_Set_Pixel_Sizes(face, 0, u32(font_params.char_size * font_params.char_scaling));
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // disable byte-alignment restriction
 
-		for (unsigned char c = 0; c < 128; c++) {
+		for (unsigned char c = 0; c < NUM_LOAD_CHARS; c++) {
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 				MK_LOG_ERROR(
 					"Failed to load Glyph: ", int(c), " during loading font: ", font_path.getPath()
@@ -42,8 +69,7 @@ void mk::Font::reload() {
 				continue;
 			}
 
-			chars.try_emplace(c);
-			Character& character = chars.at(c);
+			Character& character = char_map->second.at(c);
 
 			glBindTexture(GL_TEXTURE_2D, character.texture.getNativeHandle());
 			glTexImage2D(
@@ -72,6 +98,5 @@ void mk::Font::reload() {
 				character.advance = face->glyph->advance.x;
 		}
 	}
+	return char_map->second;
 }
-
-void mk::Font::setScaling(float scaling) { this->scaling = scaling; }

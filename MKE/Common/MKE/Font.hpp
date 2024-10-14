@@ -5,22 +5,18 @@
 #include "MKE/ResPath.hpp"
 #include "MKE/Texture.hpp"
 
-#include <ft2build.h>
 #include <unordered_map>
-#include FT_FREETYPE_H
 
 namespace mk {
 	class Font: NonCopyable {
 	public:
+		static constexpr usize NUM_LOAD_CHARS = 128;
+
 		Font() = default;
 		Font(const ResPath& font);
-		~Font();
+		~Font() = default;
 		void load(const ResPath& font);
 
-		void setSize(u32 font_size);
-		void setScaling(float scaling);
-
-		// Make those private
 		struct Character {
 			Texture        texture{};
 			math::Vector2u size{};     // size of glyph
@@ -28,16 +24,27 @@ namespace mk {
 			u32            advance{};  // offset to advance next glyph
 		};
 
-		std::unordered_map<char8_t, Character> chars;
+		using CharMap = std::array<Character, NUM_LOAD_CHARS>;
+
+		struct FontParams {
+			usize char_size    = 32;
+			float char_scaling = false;
+
+			bool operator==(const FontParams&) const = default;
+
+			std::size_t operator()(const mk::Font::FontParams& p) const noexcept {
+				return std::size_t(p.char_size * p.char_scaling);
+			}
+		};
+
+		const CharMap& getChars(const FontParams& font_params);
+
 	private:
+		// Float, because font_size * scaling is the key.
+		// FontParams has it's own hashing method
+		std::unordered_map<FontParams, CharMap, FontParams> chars{};
 
-		ResPath    font_path;
-		FT_Library ft;
-		FT_Face    face;
-		bool       loaded    = false;
-		u32        font_size = 48;
-		float      scaling   = 1.f;
-
-		void reload();
+		ResPath font_path;
+		bool    loaded = false;
 	};
 }

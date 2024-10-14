@@ -1,6 +1,5 @@
 #include "RenderWindow.hpp"
 #include "MKE/Event.hpp"
-#include "MKE/RenderTarget.hpp"
 
 void mk::RenderWindow::enableCamera2D(bool enable) {
 	if (!enable_camera_2d) {

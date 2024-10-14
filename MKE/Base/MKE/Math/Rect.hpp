@@ -7,7 +7,7 @@
 #include "Vector.hpp"
 #include <type_traits>
 
-namespace mk {
+namespace mk::math {
 	template<class T>
 	requires std::is_arithmetic_v<T> class Rect {
 	public:
@@ -22,6 +22,10 @@ namespace mk {
 		math::Vector2<T> getSize() const {
 			return { width, height };
 		}
+
+		constexpr T right() const { return left + width; }
+
+		constexpr T bottom() const { return top + height; }
 
 		template<class X>
 		bool overlaps(const Rect<X>& otherRect) {

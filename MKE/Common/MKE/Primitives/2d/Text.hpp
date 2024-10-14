@@ -1,18 +1,43 @@
 #pragma once
 
+#include "MKE/Color.hpp"
 #include "MKE/Drawable.hpp"
 #include "MKE/Font.hpp"
+#include "MKE/Math/Vector.hpp"
+#include "MKE/NonCopyable.hpp"
+#include "MKE/Primitives/2d/RectPrimitive.hpp"
+#include "MKE/Math/Rect.hpp"
+#include "MKE/RenderTexture.hpp"
 #include "MKE/Transformable.hpp"
 
 namespace mk {
-	class Text: public Drawable2D, public Transformable {
+	class Text2D: public Drawable2D, public Transformable, public NonCopyable {
 	public:
-		Text() = default;
+		Text2D() = default;
 
+		void setFont(mk::Font* font);
 		void setText(const std::string& text);
+		void setCharacterSize(usize size);
+		void setCharacterScaling(float scale);
+
+		void setColor(mk::Color color);
+
+		void draw2d(const RenderTarget2D& target, DrawContext context) const override;
 
 	private:
-        std::string text;
-		mk::Font* font;
+		void render();
+		bool isEmpty() const;
+
+		mk::Font*                font{};
+		mk::Color                color = Colors::WHITE;
+		const mk::Font::CharMap* chars = nullptr;
+
+		std::string text;
+		usize       char_size    = 32;
+		float       char_scaling = 1.;
+
+		math::RectF     text_bounds;
+		RenderTexture2D render_texture;
+		RectPrimitive   render_object{ { 1.f, 1.f } };
 	};
 }

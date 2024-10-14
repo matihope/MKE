@@ -1,8 +1,9 @@
 #pragma once
 
 #include "GUI/Label.hpp"
-#include "JsonBridge/JsonBridge.hpp"
 #include "MKE/JsonBridge.hpp"
+#include "MKE/RenderWindow.hpp"
+#include "MKE/WorldEntity.hpp"
 #include "Updatable/Updatable.hpp"
 #include "WorldEntity/WorldEntity.hpp"
 #include "Math/Vector.hpp"
@@ -14,28 +15,28 @@
 namespace mk {
 
 	class Game {
-		bool             m_run                      = false;
-		float            m_delta_time               = 0;
-		double           m_fps_sum                  = 0.0;
-		unsigned int     m_fps_frame_count          = 0;
-		bool             m_enable_print_fps         = false;
-		float            m_physics_update_call_freq = 1. / 60.;
-		float            m_physics_update_counter   = 0.f;
+		bool         m_run                      = false;
+		float        m_delta_time               = 0;
+		double       m_fps_sum                  = 0.0;
+		unsigned int m_fps_frame_count          = 0;
+		bool         m_enable_print_fps         = false;
+		float        m_physics_update_call_freq = 1. / 60.;
+		float        m_physics_update_counter   = 0.f;
 		// sf::Cursor::Type m_current_cursor_type;
 
 		sf::Clock                                m_clock;
 		JsonBridge                               m_game_settings;
-		sf::RenderWindow                         m_window;
+		mk::RenderWindow                         m_window;
 		std::stack<std::unique_ptr<WorldEntity>> m_scene_stack;
-		sf::View                                 m_view;
-		sf::Font*                                m_default_font;
+		// sf::View                                 m_view;
+		Font*                                    m_default_font;
 		gui::Label                               m_fps_label;
 		math::Vector2f                           m_mouse_pos;
 		Image                                    icon;
 
 		void                                     updateViewportSize();
 		void                                     recalculateAvgFps();
-		std::std::queue<std::unique_ptr<WorldEntity>> m_safe_scene_delete_queue;
+		std::queue<std::unique_ptr<WorldEntity>> m_safe_scene_delete_queue;
 
 	public:
 		explicit Game(const ResPath& settings);
@@ -66,8 +67,8 @@ namespace mk {
 
 		math::Vector2f  getMousePos();
 		const sf::View* getView();
-		void            setCameraCenterAt(const sf::Vector2f& pos);
-		void            setCursor(sf::Cursor::Type type);
+		void            setCamera2DCenterAt(const sf::Vector2f& pos);
+		// void            setCursor(sf::Cursor::Type type);
 		sf::Font*       getDefaultFont() const;
 	};
 

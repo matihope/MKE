@@ -10,6 +10,8 @@ add_library(MKE-Common
 
     MKE/Primitives/2d/RectPrimitive.cpp
     MKE/Primitives/2d/RectPrimitive.hpp
+    MKE/Primitives/2d/Text.cpp
+    MKE/Primitives/2d/Text.hpp
     MKE/Primitives/3d/CubePrimitive.cpp
     MKE/Primitives/3d/CubePrimitive.hpp
 
@@ -19,5 +21,5 @@ add_library(MKE-Common
     # MKE/WorldEntity.hpp
 )
 target_link_libraries(MKE-Common MKE-Base MKE-Graphics ${FREETYPE_LIBRARIES})
-target_include_directories(MKE-Common PRIVATE ${FREETYPE_INCLUDE_DIRS})
+target_include_directories(MKE-Common PUBLIC ${FREETYPE_INCLUDE_DIRS})
 target_include_directories(MKE-Common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

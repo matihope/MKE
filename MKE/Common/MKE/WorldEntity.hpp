@@ -79,6 +79,6 @@ namespace mk {
 	};
 
 	class WorldEntity2D: public WorldEntity, public Drawable2D {
-		public:
+	public:
 	};
 }  // namespace mk

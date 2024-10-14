@@ -1,5 +1,5 @@
 #pragma once
-#include <WorldEntity/WorldEntity.hpp>
+#include "MKE/Font.hpp"
 
 namespace mk::gui {
 	enum class HAlignment { LEFT, MIDDLE, RIGHT };
@@ -15,17 +15,17 @@ namespace mk::gui {
 
 	public:
 		Label();
-		explicit Label(sf::Font* font);
+		explicit Label(mk::Font* font);
 
-		Label(sf::Font* font, const std::string& text);
+		Label(mk::Font* font, const std::string& text);
 
-		void          setFont(sf::Font* font);
+		void          setFont(Font* font);
 		void          setText(const std::string& text);
 		void          setAlignment(HAlignment newHAlignment, VAlignment newVAlignment);
 		void          setTextSize(unsigned int newSize);
-		void          setColor(sf::Color newColor);
-		void          onDraw(sf::RenderTarget& target, sf::RenderStates states) const override;
-		sf::FloatRect getBounds() const;
+		void          setColor(Color newColor);
+		void          onDraw(RenderTarget& target, RenderStates states) const override;
+		RectF getBounds() const;
 
 		const std::string& getText() const;
 	};

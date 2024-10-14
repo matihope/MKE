@@ -1,5 +1,6 @@
 
 #include "Game.hpp"
+#include "MKE/Color.hpp"
 
 #include <ResourceManager/ResourceManager.hpp>
 #include <CollisionComponent/CollisionComponent.hpp>
@@ -38,7 +39,7 @@ namespace mk {
 	Game::~Game() { m_window.close(); }
 
 	void Game::draw() {
-		m_window.clear(sf::Color(21, 21, 21));
+		m_window.clear(Colors::DARK);
 
 		if (!m_scene_stack.empty()) m_window.draw(*m_scene_stack.top());
 
@@ -136,7 +137,7 @@ namespace mk {
 
 	math::Vector2u Game::getViewportSize() { return math::Vector2u(m_view.getSize()); }
 
-	sf::RenderWindow& Game::getRenderWindow() { return m_window; }
+	RenderWindow& Game::getRenderWindow() { return m_window; }
 
 	void Game::updateViewportSize() {
 		math::Vector2f viewportScale
