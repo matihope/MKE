@@ -32,7 +32,7 @@ u32 mk::RenderTexture2D::getFBO() const { return frame_buffer_id; }
 
 void mk::RenderTexture2D::clear(mk::Color color) const {
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
-	glClearColor(color.r, color.g, color.b, 1.0);
+	glClearColor(color.r, color.g, color.b, color.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

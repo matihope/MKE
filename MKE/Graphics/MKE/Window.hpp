@@ -5,6 +5,7 @@
 #include "MKE/NonCopyable.hpp"
 #include <MKE/Math/Vector.hpp>
 #include <queue>
+#include <unordered_map>
 
 struct GLFWwindow;
 
@@ -34,6 +35,7 @@ namespace mk {
 		bool         pollEvent(Event& event);
 
 		bool isKeyPressed(input::KEY key) const;
+		bool isKeyJustPressed(input::KEY key) const;
 
 		void enableVerticalSync(bool enable);
 
@@ -49,5 +51,9 @@ namespace mk {
 		math::Vector2f    window_scale_factor{};
 		GLFWwindow*       window = nullptr;
 		std::queue<Event> events;
+
+		// A map of {key, just_pressed}
+		std::array<bool, ((usize) input::KEY::_LAST - (usize) input::KEY::_FIRST) + 1>
+			just_pressed_keys{};
 	};
 }

@@ -2,6 +2,7 @@
 #include "MKE/DrawContext.hpp"
 #include "MKE/Drawable.hpp"
 #include "MKE/Font.hpp"
+#include "MKE/Input.hpp"
 #include "MKE/Math/Matrix.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/Primitives/2d/RectPrimitive.hpp"
@@ -120,18 +121,20 @@ int main() {
 
 	mk::RectPrimitive rect(800, 600);
 
-	// glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
+	bool rendert = true;
 	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
 		render_texture.clear(mk::Colors::TRANSPARENT);
+
 		renderText(
-			render_texture,
-			"Test",
+			window,
+			rendert ? "RenderT" : "Window",
 			0.f,
 			0.f,
 			1.f / window.getScaleFactor().x,
-			mk::Colors::RED,
+			mk::Colors::WHITE,
 			font.chars
 		);
 

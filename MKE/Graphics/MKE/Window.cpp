@@ -119,6 +119,7 @@ void mk::Window::setSize(u32 width, u32 height) { setSize({ width, height }); }
 
 void mk::Window::display() {
 	glfwSwapBuffers(window);
+	just_pressed_keys.fill(false);
 	glfwPollEvents();
 }
 
@@ -132,6 +133,10 @@ void mk::Window::addEvent(Event event) {
 		setSize(event.window_resized.new_size);
 	} else if (event.type == EventType::WindowClose) {
 		setExitRequested(true);
+	}
+
+	else if (event.type == EventType::KeyPressed) {
+		just_pressed_keys[(usize) event.key_pressed.key] = true;
 	}
 
 	events.push(event);
@@ -169,3 +174,5 @@ mk::math::Vector2f mk::Window::getScaleFactor() const { return window_scale_fact
 bool mk::Window::isExitRequested() const { return exit_requested; }
 
 void mk::Window::setExitRequested(bool value) { exit_requested = value; }
+
+bool mk::Window::isKeyJustPressed(input::KEY key) const { return just_pressed_keys[(usize) key]; }
