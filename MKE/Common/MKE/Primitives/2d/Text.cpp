@@ -119,7 +119,6 @@ void mk::Text2D::render() {
 		draw_queue.emplace(c, char_bounds);
 	}
 	// Currently (width,height) are (right,bottom) of the rect
-	std::cout << vertex_array.y_delta << '\n';
 	text_bounds.width -= text_bounds.left;
 	text_bounds.height -= text_bounds.top;
 
@@ -158,7 +157,7 @@ void mk::Text2D::draw2d(const RenderTarget2D& target, DrawContext context) const
 	if (!isEmpty()) {
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		// target.render2dContext(render_object, context);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		context.texture = &render_texture.getTexture();
 		target.render2dContext(render_object, context);
 	}
