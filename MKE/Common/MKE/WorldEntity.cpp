@@ -1,4 +1,6 @@
 #include "WorldEntity.hpp"
+#include "MKE/DrawContext.hpp"
+#include "MKE/RenderTarget.hpp"
 
 namespace mk {
 
@@ -30,17 +32,6 @@ namespace mk {
 			for (auto& entity: layer.second) entity->physicsUpdate(game, dt);
 	}
 
-	void WorldEntity::draw(RenderTarget& target) const {
-		if (m_show) {
-			sf::RenderStates copied_states(states);
-			copied_states.transform *= getTransform();
-			onDraw(target, states);
-
-			for (const auto& layer: m_entity_pool)
-				for (auto& entity: layer.second) target.draw(*entity, copied_states);
-		}
-	}
-
 	void WorldEntity::addParent(WorldEntity* parent) { m_parent = parent; }
 
 	WorldEntity* WorldEntity::getParent() { return m_parent; }
@@ -56,15 +47,15 @@ namespace mk {
 
 	void WorldEntity::hide() { m_show = false; }
 
-	sf::Transform WorldEntity::getGlobalTransform() const {
-		if (m_parent == nullptr) return getTransform();
-		return m_parent->getGlobalTransform() * getTransform();
-	}
+	// sf::Transform WorldEntity::getGlobalTransform() const {
+	// 	if (m_parent == nullptr) return getTransform();
+	// 	return m_parent->getGlobalTransform() * getTransform();
+	// }
 
-	sf::Vector2f WorldEntity::getGlobalPosition() const {
-		if (m_parent == nullptr) return getPosition();
-		return getPosition() + m_parent->getGlobalPosition();
-	}
+	// sf::Vector2f WorldEntity::getGlobalPosition() const {
+	// 	if (m_parent == nullptr) return getPosition();
+	// 	return getPosition() + m_parent->getGlobalPosition();
+	// }
 
 	void WorldEntity::ready(Game& game) {
 		if (!m_called_ready) {
@@ -72,6 +63,17 @@ namespace mk {
 			onReady(game);
 			for (const auto& layer: m_entity_pool)
 				for (auto& entity: layer.second) entity->ready(game);
+		}
+	}
+
+	void WorldEntity2D::draw2d(const RenderTarget2D& target, DrawContext context) const {
+		if (m_show) {
+			DrawContext copied_context(context);
+			copied_context.transform *= getTransform();
+			onDraw(target, context);
+
+			for (const auto& layer: m_entity_pool)
+				for (auto& entity: layer.second) target.render2dContext(*entity, copied_context);
 		}
 	}
 }  // namespace mk

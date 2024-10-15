@@ -1,5 +1,6 @@
 #pragma once
 #include "MKE/Drawable.hpp"
+#include "MKE/Event.hpp"
 #include "MKE/Transformable.hpp"
 #include <MKE/Updatable.hpp>
 #include <list>
@@ -24,8 +25,6 @@ namespace mk {
 		bool m_called_ready = false;
 
 	public:
-		friend class BoxyWorldEntity;
-
 		WorldEntity();
 		~WorldEntity() override = default;
 
@@ -59,7 +58,7 @@ namespace mk {
 		void ready(Game& game) override;
 		void update(Game& game, float dt) override;
 		void physicsUpdate(Game& game, float dt) override;
-		void draw(RenderTarget& target) const override;
+		// void draw(RenderTarget& target) const override;
 
 		virtual void onReady(Game& game) {}
 
@@ -67,18 +66,23 @@ namespace mk {
 
 		virtual void onPhysicsUpdate(Game& game, float dt) {}
 
-		virtual void onDraw(sf::RenderTarget& target, sf::RenderStates states) const {}
+		// virtual void onDraw(sf::RenderTarget& target, sf::RenderStates states) const {}
 
-		virtual void handleEvent(Game& game, const sf::Event& event) {}
+		virtual void handleEvent(Game& game, const Event& event) {}
 
 		void show();
 		void hide();
 
-		sf::Vector2f  getGlobalPosition() const;
-		sf::Transform getGlobalTransform() const;
+		// sf::Vector2f  getGlobalPosition() const;
+		// sf::Transform getGlobalTransform() const;
 	};
 
 	class WorldEntity2D: public WorldEntity, public Drawable2D {
+	public:
+		void draw2d(const RenderTarget2D &target, DrawContext context) const override;
+
+	};
+	class WorldEntity3D: public WorldEntity, public Drawable3D {
 	public:
 	};
 }  // namespace mk
