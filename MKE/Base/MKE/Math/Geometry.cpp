@@ -83,6 +83,7 @@ namespace mk::math {
 		return { px, py };
 	}
 
+	// Bresenham algorithm
 	std::vector<Vector2i> drawLine(Vector2i start, Vector2i end) {
 		if (start == end) return { start };
 

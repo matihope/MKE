@@ -20,6 +20,8 @@ namespace mk {
 			  b(b / 255.f),
 			  a(a / 255.f) {};
 		constexpr Color(): Color(0, 0, 0) {};
+
+		constexpr bool operator==(const mk::Color& rhs) const = default;
 	};
 
 	namespace Colors {

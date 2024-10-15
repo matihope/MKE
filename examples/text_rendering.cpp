@@ -1,3 +1,4 @@
+#include "MKE/Input.hpp"
 #include "MKE/Primitives/2d/Text.hpp"
 #include "MKE/RenderWindow.hpp"
 #include "MKE/Font.hpp"
@@ -11,12 +12,17 @@ int main() {
 
 	mk::Text2D text;
 	text.setFont(&font);
-	text.setText("Test");
-	text.setCharacterSize(64);
+	text.setCharacterSize(128);
 	text.setCharacterScaling(window.getScaleFactor().x);
 
 	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
+
+		if (window.isKeyPressed(mk::input::KEY::SPACE))
+			text.setText("space");
+		else
+			text.setText("Test");
+
 		window.render2d(text);
 		window.display();
 	}

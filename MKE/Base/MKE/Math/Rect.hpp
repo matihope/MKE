@@ -11,7 +11,7 @@ namespace mk::math {
 	template<class T>
 	requires std::is_arithmetic_v<T> class Rect {
 	public:
-		T left, top, width, height;
+		T left{}, top{}, width{}, height{};
 
 		[[nodiscard]]
 		math::Vector2<T> getPosition() const {
@@ -34,6 +34,12 @@ namespace mk::math {
 			if (top + height < otherRect.top) return false;
 			if (otherRect.top + otherRect.height < top) return false;
 			return true;
+		}
+
+		friend std::ostream& operator<<(std::ostream& stream, const Rect& rect) {
+			stream << "(" << rect.left << ", " << rect.top << ", " << rect.width << ", "
+				   << rect.height << ")";
+			return stream;
 		}
 	};
 

@@ -28,8 +28,8 @@ namespace {
 		}
 
 		~FontLib() {
-			FT_Done_FreeType(ft);
 			for (auto&& [_, face]: faces) FT_Done_Face(face);
+			FT_Done_FreeType(ft);
 		}
 	};
 
@@ -92,10 +92,12 @@ const mk::Font::CharMap& mk::Font::getChars(const FontParams& font_params) {
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			character.size
-				= mk::math::Vector2u(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-				character.bearing
-				= mk::math::Vector2u(face->glyph->bitmap_left, face->glyph->bitmap_top),
-				character.advance = face->glyph->advance.x;
+				= mk::math::Vector2u(face->glyph->bitmap.width, face->glyph->bitmap.rows);
+
+			character.bearing
+				= mk::math::Vector2u(face->glyph->bitmap_left, face->glyph->bitmap_top);
+
+			character.advance = face->glyph->advance.x;
 		}
 	}
 	return char_map->second;

@@ -74,6 +74,8 @@ public:
 		context.transform *= transform;
 		context.bind();
 		shader.setColor("textColor", color);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
 		startDraw();
 	}
 };
@@ -87,21 +89,24 @@ void mk::Text2D::render() {
 	vertex_array.setSize(6);
 	vertex_array.color = color;
 
-	float x     = 0;
-	float y     = 0;
-	text_bounds = math::RectF();
+	float x              = 0;
+	float y              = 0;
+	vertex_array.y_delta = 0;
+	text_bounds          = math::RectF();
 
 	std::queue<std::pair<char, math::RectF>> draw_queue;
-
 	for (char c: text) {
 		const auto& ch = chars->at(c);
 
 		math::RectF char_bounds{};
 		char_bounds.left   = x + ch.bearing.x / char_scaling;
-		char_bounds.top    = y + (ch.size.y - ch.bearing.y) / char_scaling;
+		char_bounds.top    = y - (ch.size.y - ch.bearing.y) / char_scaling;
 		char_bounds.width  = ch.size.x / char_scaling;
 		char_bounds.height = ch.size.y / char_scaling;
+		std::cout << char_bounds << '\n';
 
+		text_bounds.left   = std::min(text_bounds.left, char_bounds.left);
+		text_bounds.top    = std::min(text_bounds.top, char_bounds.top);
 		text_bounds.width  = std::max(text_bounds.width, char_bounds.right());
 		text_bounds.height = std::max(text_bounds.height, char_bounds.bottom());
 
@@ -109,10 +114,12 @@ void mk::Text2D::render() {
 
 		draw_queue.emplace(c, char_bounds);
 	}
+	text_bounds.width -= text_bounds.left;
+	text_bounds.height -= text_bounds.top;
+	// Currently (width,height) are (right,bottom) of the rect
+	vertex_array.y_delta = std::ceil(text_bounds.bottom());
 
-	vertex_array.y_delta = text_bounds.height;
-
-	render_texture.create(text_bounds.width, text_bounds.height);
+	render_texture.create(std::ceil(text_bounds.width), std::ceil(text_bounds.height + 0.5));
 	render_texture.setScalingFactor(char_scaling);
 	render_object.setScale(text_bounds.width, text_bounds.height, 1);
 
@@ -121,13 +128,13 @@ void mk::Text2D::render() {
 		draw_queue.pop();
 
 		std::array vertices = {
-			FontVertex({ bounds.left, bounds.top }, { 0.0f, 1.0f }),
 			FontVertex({ bounds.left, bounds.bottom() }, { 0.0f, 0.0f }),
-			FontVertex({ bounds.right(), bounds.bottom() }, { 1.0f, 0.0f }),
-
 			FontVertex({ bounds.left, bounds.top }, { 0.0f, 1.0f }),
-			FontVertex({ bounds.right(), bounds.bottom() }, { 1.0f, 0.0f }),
 			FontVertex({ bounds.right(), bounds.top }, { 1.0f, 1.0f }),
+
+			FontVertex({ bounds.left, bounds.bottom() }, { 0.0f, 0.0f }),
+			FontVertex({ bounds.right(), bounds.top }, { 1.0f, 1.0f }),
+			FontVertex({ bounds.right(), bounds.bottom() }, { 1.0f, 0.0f }),
 		};
 		vertex_array.texture = &chars->at(c).texture;
 		vertex_array.setVertexBuffer(vertices.data(), vertices.size());
@@ -145,8 +152,8 @@ void mk::Text2D::draw2d(const RenderTarget2D& target, DrawContext context) const
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (!isEmpty()) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		target.render2dContext(render_object, context);
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		// target.render2dContext(render_object, context);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		context.texture = &render_texture.getTexture();
 		target.render2dContext(render_object, context);
@@ -154,28 +161,38 @@ void mk::Text2D::draw2d(const RenderTarget2D& target, DrawContext context) const
 }
 
 void mk::Text2D::setFont(mk::Font* font) {
-	this->font = font;
-	render();
+	if (this->font != font) {
+		this->font = font;
+		render();
+	}
 }
 
 void mk::Text2D::setText(const std::string& text) {
-	this->text = text;
-	render();
+	if (this->text != text) {
+		this->text = text;
+		render();
+	}
 }
 
 void mk::Text2D::setColor(mk::Color color) {
-	this->color = color;
-	render();
+	if (this->color != color) {
+		this->color = color;
+		render();
+	}
 }
 
 bool mk::Text2D::isEmpty() const { return !font || !char_size || text.empty(); }
 
 void mk::Text2D::setCharacterSize(usize size) {
-	char_size = size;
-	render();
+	if (char_size != size) {
+		char_size = size;
+		render();
+	}
 }
 
 void mk::Text2D::setCharacterScaling(float scale) {
-	char_scaling = scale;
-	render();
+	if (char_scaling != scale) {
+		char_scaling = scale;
+		render();
+	}
 }
