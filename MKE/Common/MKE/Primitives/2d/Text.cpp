@@ -107,9 +107,6 @@ void mk::Text2D::render() {
 		char_bounds.top    = (ch.size.y - ch.bearing.y) / -char_scaling;
 		char_bounds.width  = ch.size.x / char_scaling;
 		char_bounds.height = ch.size.y / char_scaling;
-		std::cout << c << '\n';
-		std::cout << char_bounds << '\n';
-		std::cout << ch.size << ", " << ch.bearing << '\n';
 
 		text_bounds.left   = std::min(text_bounds.left, char_bounds.left);
 		text_bounds.top    = std::min(text_bounds.top, char_bounds.top);
@@ -130,11 +127,6 @@ void mk::Text2D::render() {
 		std::ceil(std::max(text_bounds.right(), text_bounds.width - text_bounds.left)),
 		std::ceil(std::max(text_bounds.bottom(), text_bounds.height - text_bounds.top))
 	};
-	std::cout << "Tex_size: " << tex_size << '\n';
-
-	// vertex_array.y_delta = text_bounds.bottom();
-	std::cout << "Text_bounds: " << text_bounds << '\n';
-	std::cout << "y_delta: " << vertex_array.y_delta << '\n';
 
 	render_texture.create(tex_size.x, tex_size.y);
 	render_texture.setScalingFactor(char_scaling);
