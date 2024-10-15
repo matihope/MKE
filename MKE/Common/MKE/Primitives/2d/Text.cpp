@@ -1,7 +1,9 @@
 #include "Text.hpp"
 #include "MKE/Math/Rect.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/Primitives/2d/RectPrimitive.hpp"
 #include "MKE/VertexArray.hpp"
+#include <cmath>
 #include <queue>
 
 namespace {
@@ -90,9 +92,11 @@ void mk::Text2D::render() {
 	vertex_array.color = color;
 
 	float x              = 0;
-	float y              = 0;
 	vertex_array.y_delta = 0;
-	text_bounds          = math::RectF();
+	text_bounds.top      = INFINITY;
+	text_bounds.left     = INFINITY;
+	text_bounds.width    = 0;
+	text_bounds.height   = 0;
 
 	std::queue<std::pair<char, math::RectF>> draw_queue;
 	for (char c: text) {
@@ -100,28 +104,41 @@ void mk::Text2D::render() {
 
 		math::RectF char_bounds{};
 		char_bounds.left   = x + ch.bearing.x / char_scaling;
-		char_bounds.top    = y - (ch.size.y - ch.bearing.y) / char_scaling;
+		char_bounds.top    = (ch.size.y - ch.bearing.y) / -char_scaling;
 		char_bounds.width  = ch.size.x / char_scaling;
 		char_bounds.height = ch.size.y / char_scaling;
+		std::cout << c << '\n';
 		std::cout << char_bounds << '\n';
+		std::cout << ch.size << ", " << ch.bearing << '\n';
 
 		text_bounds.left   = std::min(text_bounds.left, char_bounds.left);
 		text_bounds.top    = std::min(text_bounds.top, char_bounds.top);
 		text_bounds.width  = std::max(text_bounds.width, char_bounds.right());
 		text_bounds.height = std::max(text_bounds.height, char_bounds.bottom());
+		vertex_array.y_delta
+			= std::max(vertex_array.y_delta, std::ceil(ch.bearing.y / char_scaling + 0.5f));
 
 		x += (ch.advance >> 6) / char_scaling;
 
 		draw_queue.emplace(c, char_bounds);
 	}
+	// Currently (width,height) are (right,bottom) of the rect
 	text_bounds.width -= text_bounds.left;
 	text_bounds.height -= text_bounds.top;
-	// Currently (width,height) are (right,bottom) of the rect
-	vertex_array.y_delta = std::ceil(text_bounds.bottom());
 
-	render_texture.create(std::ceil(text_bounds.width), std::ceil(text_bounds.height + 0.5));
+	math::Vector2f tex_size{
+		std::ceil(std::max(text_bounds.right(), text_bounds.width - text_bounds.left)),
+		std::ceil(std::max(text_bounds.bottom(), text_bounds.height - text_bounds.top))
+	};
+	std::cout << "Tex_size: " << tex_size << '\n';
+
+	// vertex_array.y_delta = text_bounds.bottom();
+	std::cout << "Text_bounds: " << text_bounds << '\n';
+	std::cout << "y_delta: " << vertex_array.y_delta << '\n';
+
+	render_texture.create(tex_size.x, tex_size.y);
 	render_texture.setScalingFactor(char_scaling);
-	render_object.setScale(text_bounds.width, text_bounds.height, 1);
+	render_object.setScale(tex_size.x, tex_size.y, 1);
 
 	while (!draw_queue.empty()) {
 		auto [c, bounds] = draw_queue.front();

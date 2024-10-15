@@ -13,7 +13,7 @@ int main() {
 	mk::Text2D text;
 	text.setFont(&font);
 	text.setCharacterSize(128);
-	text.setCharacterScaling(window.getScaleFactor().x);
+	text.setCharacterScaling(window.getScaleFactor().x * 2);
 
 	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
