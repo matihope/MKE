@@ -15,13 +15,13 @@
 namespace mk {
 
 	class Game {
-		bool         m_run                      = false;
-		float        m_delta_time               = 0;
-		double       m_fps_sum                  = 0.0;
-		unsigned int m_fps_frame_count          = 0;
-		bool         m_enable_print_fps         = false;
-		float        m_physics_update_call_freq = 1. / 60.;
-		float        m_physics_update_counter   = 0.f;
+		bool   m_run                      = false;
+		float  m_delta_time               = 0;
+		double m_fps_sum                  = 0.0;
+		u32    m_fps_frame_count          = 0;
+		bool   m_enable_print_fps         = false;
+		float  m_physics_update_call_freq = 1. / 60.;
+		float  m_physics_update_counter   = 0.f;
 		// sf::Cursor::Type m_current_cursor_type;
 
 		sf::Clock                                m_clock;
@@ -29,10 +29,10 @@ namespace mk {
 		mk::RenderWindow                         m_window;
 		std::stack<std::unique_ptr<WorldEntity>> m_scene_stack;
 		// sf::View                                 m_view;
-		Font*                                    m_default_font;
-		gui::Label                               m_fps_label;
-		math::Vector2f                           m_mouse_pos;
-		Image                                    icon;
+		Font*          m_default_font;
+		gui::Label     m_fps_label;
+		math::Vector2f m_mouse_pos;
+		Image          icon;
 
 		void                                     updateViewportSize();
 		void                                     recalculateAvgFps();
@@ -48,14 +48,14 @@ namespace mk {
 		void pollEvents();
 		void stop();
 
-		void              setPrintFPS(const bool& printFPS);
-		bool              isRunning() const;
-		math::Vector2u    getWindowSize();
-		math::Vector2u    getViewportSize();
-		void              setViewportSize(math::Vector2f newSize);
-		void              setViewportSize(math::Vector2u newSize);
-		sf::RenderWindow& getRenderWindow();
-		bool              isWindowActive() const;
+		void           setPrintFPS(const bool& printFPS);
+		bool           isRunning() const;
+		math::Vector2u getWindowSize();
+		math::Vector2u getViewportSize();
+		void           setViewportSize(math::Vector2f newSize);
+		void           setViewportSize(math::Vector2u newSize);
+		RenderWindow&  getRenderWindow();
+		bool           isWindowActive() const;
 
 		void addScene(std::unique_ptr<WorldEntity> newScene);
 		void replaceTopScene(std::unique_ptr<WorldEntity> newScene);
@@ -69,7 +69,7 @@ namespace mk {
 		const sf::View* getView();
 		void            setCamera2DCenterAt(const sf::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
-		sf::Font*       getDefaultFont() const;
+		sf::Font* getDefaultFont() const;
 	};
 
 }  // namespace mk

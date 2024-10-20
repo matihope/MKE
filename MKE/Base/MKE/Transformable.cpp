@@ -80,3 +80,9 @@ void mk::Transformable::setScale(float xscale, float yscale, float zscale) {
 void mk::Transformable::setRotation(float d_pitch, float d_yaw, float d_roll) {
 	this->rotation = { d_pitch, d_yaw, d_roll };
 }
+
+mk::math::Vector3f mk::Transformable::getPosition() const { return position; }
+
+mk::math::Matrix4f mk::Transformable::getTransform() const {
+	return transform * getRotationTransform();
+}
