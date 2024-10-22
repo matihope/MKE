@@ -7,6 +7,8 @@ add_library(MKE-Common
     MKE/VertexArray.hpp
     MKE/Font.cpp
     MKE/Font.hpp
+    MKE/Clock.cpp
+    MKE/Clock.hpp
 
     MKE/Primitives/2d/RectPrimitive.cpp
     MKE/Primitives/2d/RectPrimitive.hpp

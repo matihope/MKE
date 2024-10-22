@@ -49,7 +49,7 @@ namespace mk {
 	}
 
 	void Game::update() {
-		m_delta_time = m_clock.restart().asSeconds();
+		m_delta_time = m_clock.restart();
 		m_mouse_pos  = math::Vector2f(
             getRenderWindow().mapPixelToCoords(sf::Mouse::getPosition(getRenderWindow()))
         );

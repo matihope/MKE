@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GUI/Label.hpp"
+#include "MKE/Clock.hpp"
 #include "MKE/JsonBridge.hpp"
 #include "MKE/RenderWindow.hpp"
 #include "MKE/WorldEntity.hpp"
@@ -24,7 +25,7 @@ namespace mk {
 		float  m_physics_update_counter   = 0.f;
 		// sf::Cursor::Type m_current_cursor_type;
 
-		sf::Clock                                m_clock;
+		mk::Clock                                m_clock;
 		JsonBridge                               m_game_settings;
 		mk::RenderWindow                         m_window;
 		std::stack<std::unique_ptr<WorldEntity>> m_scene_stack;
