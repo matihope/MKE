@@ -11,18 +11,24 @@
 #include "MKE/Transformable.hpp"
 
 namespace mk {
-	class Text2D: public Drawable2D, public Transformable, public NonCopyable {
+	class Text2D: public Drawable, public Transformable, public NonCopyable {
 	public:
 		Text2D() = default;
 
-		void setFont(mk::Font* font);
-		void setText(const std::string& text);
-		void setCharacterSize(usize size);
-		void setCharacterScaling(float scale);
+		void               setFont(mk::Font* font);
+		void               setString(const std::string& text);
+		const std::string& getString() const;
+
+		void  setCharacterSize(usize size);
+		usize getCharacterSize() const;
+		void  setCharacterScaling(float scale);
 
 		void setColor(mk::Color color);
 
-		void draw2d(const RenderTarget2D& target, DrawContext context) const override;
+		void draw(const RenderTarget& target, DrawContext context) const override;
+
+		math::RectF getLocalBounds() const;
+		math::RectF getGlobalBounds() const;
 
 	private:
 		void render();

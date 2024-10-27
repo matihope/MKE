@@ -125,17 +125,17 @@ namespace mk {
 		}
 	};
 
-	class VertexArray2D: public VertexArray<Vertex2D>, public Drawable2D {
+	class VertexArray2D: public VertexArray<Vertex2D>, public Drawable {
 	public:
 		using VertexArray::VertexArray;
 		~VertexArray2D() = default;
-		void draw2d(const RenderTarget2D& target, DrawContext context) const override;
+		void draw(const RenderTarget& target, DrawContext context) const override;
 	};
 
-	class VertexArray3D: public VertexArray<Vertex3D>, public Drawable3D {
+	class VertexArray3D: public VertexArray<Vertex3D>, public Drawable {
 	public:
 		using VertexArray::VertexArray;
 		~VertexArray3D() = default;
-		void draw3d(const RenderTarget3D& target, DrawContext context) const override;
+		void draw(const RenderTarget& target, DrawContext context) const override;
 	};
 }

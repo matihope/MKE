@@ -12,7 +12,6 @@ add_library(MKE-Graphics
     MKE/Texture.hpp
     MKE/Vertex.cpp
     MKE/Vertex.hpp
-    MKE/Drawable.cpp
     MKE/Drawable.hpp
     MKE/RenderTarget.cpp
     MKE/RenderTarget.hpp

@@ -9,6 +9,8 @@ add_library(MKE-Common
     MKE/Font.hpp
     MKE/Clock.cpp
     MKE/Clock.hpp
+    MKE/Camera.cpp
+    MKE/Camera.hpp
 
     MKE/Primitives/2d/RectPrimitive.cpp
     MKE/Primitives/2d/RectPrimitive.hpp

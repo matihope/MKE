@@ -5,12 +5,12 @@
 #include "MKE/VertexArray.hpp"
 
 namespace mk {
-	class RectPrimitive: public Transformable, public Drawable2D {
+	class RectPrimitive: public Transformable, public Drawable {
 	public:
 		RectPrimitive(math::Vector2f size);
 		RectPrimitive(float width, float height);
 
-		void draw2d(const RenderTarget2D& target, DrawContext context) const override;
+		void draw(const RenderTarget& target, DrawContext context) const override;
 
 	private:
 		VertexArray2D  vertices{ true };

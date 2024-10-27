@@ -1,18 +1,11 @@
 #pragma once
 
 namespace mk {
-	class RenderTarget2D;
-	class RenderTarget3D;
+	class RenderTarget;
 	struct DrawContext;
 
-	class Drawable2D {
+	class Drawable {
 	public:
-		virtual void draw2d(const RenderTarget2D& target, DrawContext context) const = 0;
+		virtual void draw(const RenderTarget& target, DrawContext context) const = 0;
 	};
-
-	class Drawable3D {
-	public:
-		virtual void draw3d(const RenderTarget3D& target, DrawContext context) const = 0;
-	};
-
 }

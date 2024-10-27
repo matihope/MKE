@@ -3,6 +3,7 @@
 #include "MKE/Drawable.hpp"
 #include "MKE/Event.hpp"
 #include "MKE/Math/Matrix.hpp"
+#include "MKE/RenderTarget.hpp"
 #include "MKE/Transformable.hpp"
 #include <MKE/Updatable.hpp>
 #include <list>
@@ -16,20 +17,21 @@ namespace mk {
 		EntityID id_counter();
 	}
 
-	template<class WE>
-	class WorldEntityBase: public Transformable, public Updatable {
+	enum class DrawMode { Mode2D, Mode3D, ModeUI };
+
+	class WorldEntity: public Transformable, public Updatable {
 	protected:
 		EntityID m_entityId;
 
-		bool m_toKill = false;
-		WE*  m_parent;
+		bool         m_toKill = false;
+		WorldEntity* m_parent;
 
 		bool m_show;
 
 		void cleanEntities() {
 			for (auto& layer: m_entity_pool) {
 				for (auto it = layer.second.begin(); it != layer.second.end(); it++) {
-					WE* entity = it->get();
+					WorldEntity* entity = it->get();
 					if (entity->isDying()) it = layer.second.erase(it);
 				}
 			}
@@ -38,7 +40,7 @@ namespace mk {
 		bool m_called_ready = false;
 
 	public:
-		WorldEntityBase(): m_entityId(detail::id_counter()) {
+		WorldEntity(): m_entityId(detail::id_counter()) {
 			m_parent = nullptr;
 			m_show   = true;
 		}
@@ -50,14 +52,15 @@ namespace mk {
 		const bool& isDying() const { return m_toKill; }
 
 		// We want to it be ordered to be able to iterate in an ordered way.
-		std::map<usize, std::list<std::unique_ptr<WE>>> m_entity_pool;
+		std::map<usize, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
 
-		void addParent(WE* parent) { m_parent = parent; }
+		void addParent(WorldEntity* parent) { m_parent = parent; }
 
-		WE* getParent() { return m_parent; }
+		WorldEntity* getParent() { return m_parent; }
 
 		template<class T, unsigned int drawOrder = 0>
-		requires std::is_base_of_v<WE, T> T* addChild(Game& game, std::unique_ptr<T> child) {
+		requires std::is_base_of_v<WorldEntity, T>
+		T* addChild(Game& game, std::unique_ptr<T> child) {
 			child->addParent(this);
 			auto my_child = child.get();
 			m_entity_pool[drawOrder].push_back(std::move(child));
@@ -66,7 +69,7 @@ namespace mk {
 		}
 
 		template<class T, unsigned int drawOrder = 0, class... Args>
-		requires std::is_base_of_v<WE, T> T* addChild(Game& game, Args&&... args) {
+		requires std::is_base_of_v<WorldEntity, T> T* addChild(Game& game, Args&&... args) {
 			auto new_child     = std::make_unique<T>(std::forward<Args>(args)...);
 			auto new_child_ptr = new_child.get();
 			return addChild<T, drawOrder>(game, std::move(new_child));
@@ -100,11 +103,11 @@ namespace mk {
 
 		virtual void onPhysicsUpdate(Game& game, float dt) {}
 
+		virtual void onDraw(
+			[[maybe_unused]] const RenderTarget& target, [[maybe_unused]] DrawContext context
+		) const {}
+
 		virtual void handleEvent(Game& game, const Event& event) {}
-
-		void show() { m_show = true; }
-
-		void hide() { m_show = false; }
 
 		math::Vector3f getGlobalPosition() const {
 			if (m_parent == nullptr) return getPosition();
@@ -115,31 +118,36 @@ namespace mk {
 			if (m_parent == nullptr) return getTransform();
 			return m_parent->getGlobalTransform() * getTransform();
 		}
+
+		virtual void beginDraw(const RenderTarget& target, const Game& game) const = 0;
+
+		void drawEntity(const RenderTarget& target, DrawContext context) const {
+			if (m_show) {
+				DrawContext copied_context(context);
+				copied_context.transform *= getTransform();
+				onDraw(target, context);
+
+				for (const auto& layer: m_entity_pool)
+					for (auto& entity: layer.second) entity->drawEntity(target, copied_context);
+			}
+		}
 	};
 
-	class WorldEntity2D: public WorldEntityBase<WorldEntity2D>, public Drawable2D {
+	class WorldEntity2D: public WorldEntity {
 	public:
-		using WorldEntityBase<WorldEntity2D>::WorldEntityBase;
+		using WorldEntity::WorldEntity;
 
 		~WorldEntity2D() = default;
 
-		void draw2d(const RenderTarget2D& target, DrawContext context) const override;
-
-		virtual void onDraw2d(
-			[[maybe_unused]] const RenderTarget2D& target, [[maybe_unused]] DrawContext context
-		) const {}
+		void beginDraw(const RenderTarget& target, const Game& game) const;
 	};
 
-	class WorldEntity3D: public WorldEntityBase<WorldEntity3D>, public Drawable3D {
+	class WorldEntity3D: public WorldEntity {
 	public:
-		using WorldEntityBase<WorldEntity3D>::WorldEntityBase;
+		using WorldEntity::WorldEntity;
 
 		~WorldEntity3D() = default;
 
-		void draw3d(const RenderTarget3D& target, DrawContext context) const override;
-
-		virtual void onDraw3d(
-			[[maybe_unused]] const RenderTarget3D& target, [[maybe_unused]] DrawContext context
-		) const {}
+		void beginDraw(const RenderTarget& target, const Game& game) const;
 	};
 }  // namespace mk

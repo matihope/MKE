@@ -6,7 +6,7 @@
 #include "MKE/Window.hpp"
 
 namespace mk {
-	class RenderWindow: public Window, public RenderTarget2D, public RenderTarget3D {
+	class RenderWindow: public Window, public RenderTarget {
 	public:
 		using Window::Window;
 		~RenderWindow() = default;
@@ -15,10 +15,8 @@ namespace mk {
 
 		void addEvent(Event event) override;
 
-		void render2d(const Drawable2D& drawable) const override;
-		void render2dContext(const Drawable2D& drawable, DrawContext context) const override;
-		void render3d(const Drawable3D& drawable) const override;
-		void render3dContext(const Drawable3D& drawable, DrawContext context) const override;
+		void render(const Drawable& drawable) const override;
+		void renderContext(const Drawable& drawable, DrawContext context) const override;
 
 		void setCamera(math::Matrix4f camera) { camera_transform = camera; }
 

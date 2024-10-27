@@ -19,11 +19,11 @@ int main() {
 		window.clear(mk::Colors::DARK);
 
 		if (window.isKeyPressed(mk::input::KEY::SPACE))
-			text.setText("space");
+			text.setString("space");
 		else
-			text.setText("Test");
+			text.setString("Test");
 
-		window.render2d(text);
+		window.render(text);
 		window.display();
 	}
 }

@@ -7,10 +7,10 @@
 
 void mk::RenderTexture2D::create(usize width, usize height) { create({ width, height }); }
 
-void mk::RenderTexture2D::render2d(const Drawable2D& drawable) const {
+void mk::RenderTexture2D::render(const Drawable& drawable) const {
 	DrawContext context;
 	context.camera = camera_transform;
-	render2dContext(drawable, context);
+	renderContext(drawable, context);
 }
 
 mk::RenderTexture2D::~RenderTexture2D() {
@@ -18,11 +18,11 @@ mk::RenderTexture2D::~RenderTexture2D() {
 	glDeleteRenderbuffers(1, &render_buffer_object);
 }
 
-void mk::RenderTexture2D::render2dContext(const Drawable2D& drawable, DrawContext context) const {
+void mk::RenderTexture2D::renderContext(const Drawable& drawable, DrawContext context) const {
 	if (size.x == 0 || size.y == 0) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
 	glViewport(0, 0, size.x * scaling_factor.x, size.y * scaling_factor.y);
-	defaultRender2D(drawable, context);
+	defaultRender(drawable, context);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

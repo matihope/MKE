@@ -1,19 +1,19 @@
 #pragma once
 
 #include "GUI/Label.hpp"
+#include "MKE/Camera.hpp"
 #include "MKE/Clock.hpp"
 #include "MKE/JsonBridge.hpp"
 #include "MKE/RenderWindow.hpp"
 #include "MKE/WorldEntity.hpp"
-#include "Updatable/Updatable.hpp"
-#include "WorldEntity/WorldEntity.hpp"
-#include "Math/Vector.hpp"
 
+#include <cstddef>
 #include <memory>
 #include <queue>
 #include <stack>
 
 namespace mk {
+
 
 	class Game {
 		bool   m_run                      = false;
@@ -29,7 +29,10 @@ namespace mk {
 		JsonBridge                               m_game_settings;
 		mk::RenderWindow                         m_window;
 		std::stack<std::unique_ptr<WorldEntity>> m_scene_stack;
-		// sf::View                                 m_view;
+
+		Camera2D* m_camera2d_pointer = nullptr;
+		Camera3D* m_camera3d_pointer = nullptr;
+
 		Font*          m_default_font;
 		gui::Label     m_fps_label;
 		math::Vector2f m_mouse_pos;
@@ -41,7 +44,6 @@ namespace mk {
 
 	public:
 		explicit Game(const ResPath& settings);
-		~Game();
 
 		void run();
 		void draw();
@@ -66,11 +68,11 @@ namespace mk {
 		 */
 		void popScene();
 
-		math::Vector2f  getMousePos();
-		const sf::View* getView();
-		void            setCamera2DCenterAt(const sf::Vector2f& pos);
+		math::Vector2f getMousePos();
+		// const sf::View* getView();
+		void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
-		sf::Font* getDefaultFont() const;
+		mk::Font* getDefaultFont() const;
 	};
 
 }  // namespace mk

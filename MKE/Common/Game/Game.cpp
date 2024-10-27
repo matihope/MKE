@@ -1,10 +1,10 @@
 
 #include "Game.hpp"
 #include "MKE/Color.hpp"
+#include "MKE/Event.hpp"
+#include "MKE/Input.hpp"
 
-#include <ResourceManager/ResourceManager.hpp>
-#include <CollisionComponent/CollisionComponent.hpp>
-#include <SFML/Graphics.hpp>
+#include <MKE/ResourceManager.hpp>
 
 namespace {
 	mk::math::Vector2f
@@ -36,14 +36,12 @@ namespace mk {
 		}
 	}
 
-	Game::~Game() { m_window.close(); }
-
 	void Game::draw() {
 		m_window.clear(Colors::DARK);
 
-		if (!m_scene_stack.empty()) m_window.draw(*m_scene_stack.top());
+		if (!m_scene_stack.empty()) m_scene_stack.top()->beginDraw(m_window, *this);
 
-		if (m_enable_print_fps) m_window.draw(m_fps_label);
+		if (m_enable_print_fps) m_fps_label->beginDraw(m_window, *this);
 
 		m_window.display();
 	}
@@ -98,17 +96,17 @@ namespace mk {
 	}
 
 	void Game::pollEvents() {
-		sf::Event event{};
+		mk::Event event{};
 		while (m_window.pollEvent(event)) {
 			if (!m_scene_stack.empty()) m_scene_stack.top()->handleEvent(*this, event);
 
 			switch (event.type) {
-			case sf::Event::Closed:
+			case mk::EventType::WindowClose:
 				stop();
 				break;
-			case sf::Event::KeyPressed:
-				switch (event.key.code) {
-				case sf::Keyboard::Tilde:
+			case mk::EventType::KeyPressed:
+				switch (event.key_pressed.key) {
+				case mk::input::KEY::GRAVE:
 					popScene();
 					if (m_scene_stack.empty()) stop();
 					break;
@@ -117,7 +115,7 @@ namespace mk {
 					break;
 				}
 				break;
-			case sf::Event::Resized:
+			case mk::EventType::WindowResized:
 				updateViewportSize();
 				break;
 			default:
@@ -199,7 +197,7 @@ namespace mk {
 		));
 
 		if (!icon.loadFromFile(ResPath("icon.png").strPath()))
-			throw std::runtime_error("Cannot find icon.png in assets");
+			throw mk::Panic("Cannot find icon.png in assets");
 
 		m_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
@@ -217,8 +215,8 @@ namespace mk {
 		m_fps_label.setAlignment(gui::HAlignment::RIGHT, gui::VAlignment::TOP);
 
 		// lastly, set cursor
-		m_current_cursor_type = sf::Cursor::Arrow;
-		setCursor(sf::Cursor::Arrow);
+		// m_current_cursor_type = sf::Cursor::Arrow;
+		// setCursor(sf::Cursor::Arrow);
 	}
 
 	sf::Font* Game::getDefaultFont() const { return m_default_font; }

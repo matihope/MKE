@@ -31,7 +31,7 @@ int main() {
 
 	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
-		window.render2d(vertex_array);
+		window.render(vertex_array);
 		window.display();
 	}
 }

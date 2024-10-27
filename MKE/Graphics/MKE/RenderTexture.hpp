@@ -8,7 +8,7 @@
 
 namespace mk {
 	// https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
-	class RenderTexture2D: public RenderTarget2D {
+	class RenderTexture2D: public RenderTarget {
 	public:
 		RenderTexture2D();
 
@@ -24,8 +24,8 @@ namespace mk {
 		void create(usize width, usize height);
 		void create(math::Vector2u size);
 
-		void render2d(const Drawable2D& drawable) const override;
-		void render2dContext(const Drawable2D& drawable, DrawContext context) const override;
+		void render(const Drawable& drawable) const override;
+		void renderContext(const Drawable& drawable, DrawContext context) const override;
 
 		void clear(mk::Color color) const;
 

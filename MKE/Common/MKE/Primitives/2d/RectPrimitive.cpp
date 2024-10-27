@@ -30,7 +30,7 @@ mk::RectPrimitive::RectPrimitive(math::Vector2f size): size(size) {
 mk::RectPrimitive::RectPrimitive(float width, float height):
 	  mk::RectPrimitive(math::Vector2f{ width, height }) {}
 
-void mk::RectPrimitive::draw2d(const RenderTarget2D& target, DrawContext context) const {
+void mk::RectPrimitive::draw(const RenderTarget& target, DrawContext context) const {
 	context.transform *= getTransform();
-	vertices.draw2d(target, context);
+	vertices.draw(target, context);
 }

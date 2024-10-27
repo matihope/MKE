@@ -176,3 +176,5 @@ bool mk::Window::isExitRequested() const { return exit_requested; }
 void mk::Window::setExitRequested(bool value) { exit_requested = value; }
 
 bool mk::Window::isKeyJustPressed(input::KEY key) const { return just_pressed_keys[(usize) key]; }
+
+mk::Window::~Window() { glfwDestroyWindow(window); }

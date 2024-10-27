@@ -56,6 +56,9 @@ namespace mk::input {
 		X = 'X',
 		Y = 'Y',
 		Z = 'Z',
+
+		GRAVE = '`',
+
 		// Arrow keys
 		ARROW_RIGHT = 262,
 		ARROW_LEFT  = 263,

@@ -57,7 +57,7 @@ struct FontVertex {
 	}
 };
 
-class FontArray: public mk::VertexArray<FontVertex>, public mk::Drawable2D {
+class FontArray: public mk::VertexArray<FontVertex>, public mk::Drawable {
 public:
 	using mk::VertexArray<FontVertex>::VertexArray;
 	~FontArray() = default;
@@ -66,7 +66,7 @@ public:
 	const mk::Texture* texture;
 	float              y_delta = 0.0;
 
-	void draw2d(const mk::RenderTarget2D&, mk::DrawContext context) const override {
+	void draw(const mk::RenderTarget&, mk::DrawContext context) const override {
 		static mk::Shader  shader(vertex_shader, fragment_shader);
 		mk::math::Matrix4f transform{ 1 };
 		transform(1, 1) = -1;
@@ -145,11 +145,11 @@ void mk::Text2D::render() {
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		render_texture.render2d(vertex_array);
+		render_texture.render(vertex_array);
 	}
 }
 
-void mk::Text2D::draw2d(const RenderTarget2D& target, DrawContext context) const {
+void mk::Text2D::draw(const RenderTarget& target, DrawContext context) const {
 	context.transform *= getTransform();
 
 	glEnable(GL_BLEND);
@@ -159,7 +159,7 @@ void mk::Text2D::draw2d(const RenderTarget2D& target, DrawContext context) const
 		// target.render2dContext(render_object, context);
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		context.texture = &render_texture.getTexture();
-		target.render2dContext(render_object, context);
+		target.renderContext(render_object, context);
 	}
 }
 
@@ -170,7 +170,7 @@ void mk::Text2D::setFont(mk::Font* font) {
 	}
 }
 
-void mk::Text2D::setText(const std::string& text) {
+void mk::Text2D::setString(const std::string& text) {
 	if (this->text != text) {
 		this->text = text;
 		render();
@@ -198,4 +198,26 @@ void mk::Text2D::setCharacterScaling(float scale) {
 		char_scaling = scale;
 		render();
 	}
+}
+
+const std::string& mk::Text2D::getString() const { return text; }
+
+usize mk::Text2D::getCharacterSize() const { return char_size; }
+
+mk::math::RectF mk::Text2D::getLocalBounds() const { return text_bounds; }
+
+mk::math::RectF mk::Text2D::getGlobalBounds() const {
+	auto transform    = getTransform();
+	auto top_left     = getPosition2D();
+	auto bottom_right = top_left + text_bounds.getSize();
+
+	auto new_top_left     = transform * top_left;
+	auto new_bottom_right = transform * bottom_right;
+
+	auto min_x = std::min(new_top_left.x, new_bottom_right.x);
+	auto max_x = std::max(new_top_left.x, new_bottom_right.x);
+	auto min_y = std::min(new_top_left.y, new_bottom_right.y);
+	auto max_y = std::max(new_top_left.y, new_bottom_right.y);
+
+	return math::RectF(min_x, min_y, max_x - min_x, max_y - min_y);
 }

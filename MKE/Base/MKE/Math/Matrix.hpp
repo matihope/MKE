@@ -80,4 +80,14 @@ namespace mk::math {
 	}
 
 	using Matrix4f = Matrix<float, 4, 4>;
+
+	// This is bonkers, but really handy - allow to multiply the transform matrix by ANY vector.
+	template<template<class, usize> class DATA, class T, usize VW>
+	constexpr Vector<DATA, T, VW> operator*(Matrix4f lhs, const Vector<DATA, T, VW>& rhs) {
+		Vector<DATA, T, VW> result(0);
+		for (usize row = 0; row < 4; row++)
+			for (usize col = 0; col < VW; col++)
+				result.vec_data.at(col) += rhs.vec_data.at(row) * lhs(row, col);
+		return result;
+	}
 }  // namespace mk::Math

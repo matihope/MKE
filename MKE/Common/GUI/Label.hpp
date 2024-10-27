@@ -1,5 +1,9 @@
 #pragma once
+#include "MKE/DrawContext.hpp"
 #include "MKE/Font.hpp"
+#include "MKE/Font.hpp"
+#include "MKE/Primitives/2d/Text.hpp"
+#include "MKE/WorldEntity.hpp"
 
 namespace mk::gui {
 	enum class HAlignment { LEFT, MIDDLE, RIGHT };
@@ -7,10 +11,10 @@ namespace mk::gui {
 	enum class VAlignment { TOP, CENTER, BOTTOM };
 
 	class Label: public WorldEntity {
-		sf::Font*   m_font{};
+		Font*       m_font{};
 		HAlignment  m_halignment = HAlignment::LEFT;
 		VAlignment  m_valignment = VAlignment::TOP;
-		sf::Text    m_text;
+		Text2D      m_text;
 		std::string m_string;
 
 	public:
@@ -19,13 +23,16 @@ namespace mk::gui {
 
 		Label(mk::Font* font, const std::string& text);
 
-		void          setFont(Font* font);
-		void          setText(const std::string& text);
-		void          setAlignment(HAlignment newHAlignment, VAlignment newVAlignment);
-		void          setTextSize(unsigned int newSize);
-		void          setColor(Color newColor);
-		void          onDraw(RenderTarget& target, RenderStates states) const override;
-		RectF getBounds() const;
+		void setFont(Font* font);
+		void setString(const std::string& text);
+		const std::string& getString() const;
+
+		void setAlignment(HAlignment newHAlignment, VAlignment newVAlignment);
+		void setTextSize(unsigned int newSize);
+		void setColor(Color newColor);
+		void onDraw(const RenderTarget& target, DrawContext context) const override;
+
+		math::RectF getBounds() const;
 
 		const std::string& getText() const;
 	};
