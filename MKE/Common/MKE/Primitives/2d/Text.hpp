@@ -25,7 +25,7 @@ namespace mk {
 
 		void setColor(mk::Color color);
 
-		void draw(const RenderTarget& target, DrawContext context) const override;
+		void draw(RenderTarget& target, DrawContext context) const override;
 
 		math::RectF getLocalBounds() const;
 		math::RectF getGlobalBounds() const;

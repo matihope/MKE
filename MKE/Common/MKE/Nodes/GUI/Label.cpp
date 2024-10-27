@@ -54,7 +54,7 @@ namespace mk::gui {
 		m_text.setPosition((int) newPos.x, (int) newPos.y);
 	}
 
-	void Label::onDraw(const RenderTarget& target, DrawContext context) const {
+	void Label::onDraw(RenderTarget& target, DrawContext context, const Game&) const {
 		if (m_text.getString() == "") return;
 		context.transform *= getTransform();
 		target.renderContext(m_text, context);
@@ -63,15 +63,15 @@ namespace mk::gui {
 	void Label::setTextSize(const unsigned int newSize) {
 		m_text.setCharacterSize(newSize);
 		setAlignment(m_halignment, m_valignment);
-		m_text.setCharacterScaling(2.0);
+		// m_text.setCharacterScaling(2.0);
 	}
 
 	void Label::setColor(const mk::Color newColor) { m_text.setColor(newColor); }
 
 	math::RectF Label::getBounds() const {
 		auto bounds = m_text.getGlobalBounds();
-		bounds.left += getPosition().x;
-		bounds.top += getPosition().y;
+		bounds.left += getPosition2D().x;
+		bounds.top += getPosition2D().y;
 		return bounds;
 	}
 

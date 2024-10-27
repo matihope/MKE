@@ -23,7 +23,7 @@ namespace mk {
 		void setSize(math::Vector2u size);
 		void setSize(unsigned int width, unsigned int height);
 
-		math::Vector2f getScaleFactor() const;
+		math::Vector2f getScalingFactor() const;
 
 		math::Vector2u getSize() const;
 

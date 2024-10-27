@@ -5,21 +5,18 @@
 #include "RectShape.hpp"
 
 namespace mk {
-	RectShape::RectShape(sf::Color myColor, mk::math::Vector2f size) {
-		rect.setFillColor(myColor);
-		rect.setSize(size.as<sf::Vector2f>());
+	RectShape::RectShape(Color color, mk::math::Vector2f size): rect(size) { rect.setColor(color); }
+
+	void RectShape::setColor(Color color) { rect.setColor(color); }
+
+	void RectShape::setSize(const mk::math::Vector2f& size) { rect.setSize(size); }
+
+	mk::math::Vector2f RectShape::getSize() const { return rect.getSize(); }
+
+	void RectShape::onDraw(RenderTarget& target, DrawContext context, const Game&) const {
+		context.transform *= getTransform();
+		target.renderContext(rect, context);
 	}
 
-	void RectShape::onDraw(sf::RenderTarget& target, sf::RenderStates states) const {
-		states.transform *= getTransform();
-		target.draw(rect, states);
-	}
-
-	void RectShape::setColor(const sf::Color& color) { rect.setFillColor(color); }
-
-	void RectShape::setSize(const mk::math::Vector2f& size) {
-		rect.setSize(size.as<sf::Vector2f>());
-	}
-
-	mk::math::Vector2f RectShape::getSize() const { return { rect.getSize().x, rect.getSize().y }; }
+	RectShape::RectShape(): RectShape(Colors::WHITE, { 0, 0 }) {}
 }  // namespace mk

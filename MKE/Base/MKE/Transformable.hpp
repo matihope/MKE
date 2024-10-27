@@ -9,7 +9,11 @@ namespace mk {
 		virtual ~Transformable() {}
 
 		math::Vector2f getPosition2D() const;
-		math::Vector3f getPosition3D() const;
+
+		void setOrigin(math::Vector2f origin);
+		void setOrigin(math::Vector3f origin);
+		void setOrigin(float x, float y);
+		void setOrigin(float x, float y, float z);
 
 		void setPosition(math::Vector2f position);
 		void setPosition(math::Vector3f position);
@@ -26,10 +30,12 @@ namespace mk {
 		void rotate(math::Vector3f delta) { rotate(delta.x, delta.y, delta.z); }
 
 		void rotate(float d_pitch, float d_yaw, float d_roll);
+		void rotate(float d_pitch);
 
 		void setRotation(float d_pitch, float d_yaw, float d_roll);
 		void setRotation(math::Vector3f rotation);
 
+		void setScale(math::Vector3f scale);
 		void setScale(float xscale, float yscale, float zscale);
 
 		math::Matrix4f getTransform() const;
@@ -37,8 +43,8 @@ namespace mk {
 
 	private:
 		math::Vector3f position;
+		math::Vector3f origin;
 		math::Vector3f rotation;
 		math::Vector3f scale{ 1 };
-		math::Matrix4f transform{ 1 };
 	};
 }

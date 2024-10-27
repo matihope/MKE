@@ -65,7 +65,7 @@ public:
 	const mk::Texture* texture;
 	float              y_delta = 0.0;
 
-	void draw(const mk::RenderTarget&, mk::DrawContext context) const override {
+	void draw(mk::RenderTarget&, mk::DrawContext context) const override {
 		static mk::Shader  shader(vertex_shader, fragment_shader);
 		mk::math::Matrix4f transform{ 1 };
 		transform(1, 1) = -1;
@@ -84,7 +84,7 @@ public:
 
 void mk::Text2D::render() {
 	text_bounds = math::RectF();
-	render_texture.clear(Colors::BLACK);
+	render_texture.clear(Colors::TRANSPARENT);
 	render_texture.setSmooth(font->isSmooth());
 
 	if (isEmpty()) return;
@@ -123,6 +123,7 @@ void mk::Text2D::render() {
 	text_bounds.height -= text_bounds.top;
 
 	render_texture.create(text_bounds.width, text_bounds.height);
+	render_texture.clear(Colors::TRANSPARENT);
 	render_texture.setScalingFactor(char_scaling);
 	render_object.setScale(text_bounds.width / char_scaling, text_bounds.height / char_scaling, 1);
 
@@ -149,7 +150,7 @@ void mk::Text2D::render() {
 	}
 }
 
-void mk::Text2D::draw(const RenderTarget& target, DrawContext context) const {
+void mk::Text2D::draw(RenderTarget& target, DrawContext context) const {
 	context.transform *= getTransform();
 
 	glEnable(GL_BLEND);

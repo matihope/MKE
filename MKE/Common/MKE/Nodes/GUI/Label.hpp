@@ -23,14 +23,14 @@ namespace mk::gui {
 
 		Label(mk::Font* font, const std::string& text);
 
-		void setFont(Font* font);
-		void setString(const std::string& text);
+		void               setFont(Font* font);
+		void               setString(const std::string& text);
 		const std::string& getString() const;
 
 		void setAlignment(HAlignment newHAlignment, VAlignment newVAlignment);
 		void setTextSize(unsigned int newSize);
 		void setColor(Color newColor);
-		void onDraw(const RenderTarget& target, DrawContext context) const override;
+		void onDraw(RenderTarget& target, DrawContext context, const Game& game) const override;
 
 		math::RectF getBounds() const;
 	};

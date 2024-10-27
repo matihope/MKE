@@ -4,17 +4,17 @@
 
 #pragma once
 
-#include "WorldEntity/WorldEntity.hpp"
+#include "MKE/WorldEntity.hpp"
 
 namespace mk {
 	class RayShape: public WorldEntity {
 	public:
 		RayShape() = default;
-		RayShape(sf::Color color, float width, float length, float wingLength);
-		void onDraw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		RayShape(Color color, float width, float length, float wingLength);
+		void onDraw(RenderTarget& target, DrawContext context, const Game& game) const override;
 		void setSize(float width, float length, float wingLength);
-		void setColor(sf::Color color);
-		void pointAt(sf::Vector2f arrowHead);
+		void setColor(Color color);
+		void pointAt(math::Vector2f arrowHead);
 
 	private:
 		float              width{}, length{}, wingLength{};

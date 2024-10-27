@@ -28,35 +28,25 @@ namespace mk {
 
 		bool m_show;
 
-		void cleanEntities() {
-			for (auto& layer: m_entity_pool) {
-				for (auto it = layer.second.begin(); it != layer.second.end(); it++) {
-					WorldEntity* entity = it->get();
-					if (entity->isDying()) it = layer.second.erase(it);
-				}
-			}
-		}
+		void cleanEntities();
 
 		bool m_called_ready = false;
 
 	public:
-		WorldEntity(): m_entityId(detail::id_counter()) {
-			m_parent = nullptr;
-			m_show   = true;
-		}
+		WorldEntity();
 
-		EntityID getId() const { return m_entityId; }
+		EntityID getId() const;
 
-		void queueFree() { m_toKill = true; }
+		void queueFree();
 
-		const bool& isDying() const { return m_toKill; }
+		const bool& isDying() const;
 
 		// We want to it be ordered to be able to iterate in an ordered way.
 		std::map<usize, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
 
-		void addParent(WorldEntity* parent) { m_parent = parent; }
+		void addParent(WorldEntity* parent);
 
-		WorldEntity* getParent() { return m_parent; }
+		WorldEntity* getParent();
 
 		template<class T, unsigned int drawOrder = 0>
 		requires std::is_base_of_v<WorldEntity, T>
@@ -75,103 +65,64 @@ namespace mk {
 			return addChild<T, drawOrder>(game, std::move(new_child));
 		}
 
-		void ready(Game& game) override {
-			if (!m_called_ready) {
-				m_called_ready = true;
-				onReady(game);
-				for (const auto& layer: m_entity_pool)
-					for (auto& entity: layer.second) entity->ready(game);
-			}
+		void ready(Game& game) override;
+
+		void update(Game& game, float dt) override;
+
+		void physicsUpdate(Game& game, const float dt) override;
+
+		virtual void onReady([[maybe_unused]] Game& game) {}
+
+		virtual void onUpdate([[maybe_unused]] Game& game, [[maybe_unused]] float dt) {}
+
+		virtual void onPhysicsUpdate([[maybe_unused]] Game& game, [[maybe_unused]] float dt) {}
+
+		virtual void onDraw(
+			[[maybe_unused]] RenderTarget& target,
+			[[maybe_unused]] DrawContext   context,
+			[[maybe_unused]] const Game&   game
+		) const {}
+
+		virtual void handleEvent([[maybe_unused]] Game& game, [[maybe_unused]] const Event& event) {
 		}
 
-		void update(Game& game, float dt) override {
-			cleanEntities();
-			onUpdate(game, dt);
-			for (const auto& layer: m_entity_pool)
-				for (auto& entity: layer.second) entity->update(game, dt);
-		}
+		math::Vector3f getGlobalPosition() const;
 
-		void physicsUpdate(Game& game, const float dt) override {
-			onPhysicsUpdate(game, dt);
-			for (const auto& layer: m_entity_pool)
-				for (auto& entity: layer.second) entity->physicsUpdate(game, dt);
-		}
-
-		virtual void onReady(Game& game) {}
-
-		virtual void onUpdate(Game& game, float dt) {}
-
-		virtual void onPhysicsUpdate(Game& game, float dt) {}
-
-		virtual void
-			onDraw(const RenderTarget& target, DrawContext context, const Game& game) const {}
-
-		virtual void handleEvent(Game& game, const Event& event) {}
-
-		math::Vector3f getGlobalPosition() const {
-			if (m_parent == nullptr) return getPosition();
-			return getPosition() + m_parent->getGlobalPosition();
-		}
-
-		math::Matrix4f getGlobalTransform() const {
-			if (m_parent == nullptr) return getTransform();
-			return m_parent->getGlobalTransform() * getTransform();
-		}
+		math::Matrix4f getGlobalTransform() const;
 
 		virtual DrawMode getDrawMode() const = 0;
 
-		virtual void beginDraw(const RenderTarget& target, const Game& game) const = 0;
+		virtual void beginDraw(RenderTarget& target, const Game& game) const = 0;
 
 		virtual void drawEntity(
-			const RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
-		) const {
-			if (m_show) {
-				if (auto new_mode = getDrawMode();
-				    draw_mode != new_mode && new_mode == DrawMode::ModeUI) {
-					beginDraw(target, game);
-				} else {
-					DrawContext copied_context(context);
-					copied_context.transform *= getTransform();
-					onDraw(target, context, game);
-
-					for (const auto& layer: m_entity_pool)
-						for (auto& entity: layer.second)
-							entity->drawEntity(target, copied_context, game, draw_mode);
-				}
-			}
-		}
+			RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
+		) const;
 	};
 
 	class WorldEntity2D: public WorldEntity {
 	public:
 		using WorldEntity::WorldEntity;
 
-		~WorldEntity2D() = default;
+		void beginDraw(RenderTarget& target, const Game& game) const override;
 
-		void beginDraw(const RenderTarget& target, const Game& game) const override;
-
-		DrawMode getDrawMode() const override { return DrawMode::Mode2D; }
+		DrawMode getDrawMode() const override;
 	};
 
 	class WorldEntity3D: public WorldEntity {
 	public:
 		using WorldEntity::WorldEntity;
 
-		~WorldEntity3D() = default;
+		void beginDraw(RenderTarget& target, const Game& game) const override;
 
-		void beginDraw(const RenderTarget& target, const Game& game) const override;
-
-		DrawMode getDrawMode() const override { return DrawMode::Mode3D; }
+		DrawMode getDrawMode() const override;
 	};
 
 	class WorldEntityUI: public WorldEntity {
 	public:
 		using WorldEntity::WorldEntity;
 
-		~WorldEntityUI() {}
+		void beginDraw(RenderTarget& target, const Game& game) const override;
 
-		void beginDraw(const RenderTarget& target, const Game& game) const override;
-
-		DrawMode getDrawMode() const override { return DrawMode::ModeUI; }
+		DrawMode getDrawMode() const override;
 	};
 }  // namespace mk

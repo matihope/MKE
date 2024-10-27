@@ -163,7 +163,7 @@ void mk::Window::enableVerticalSync(bool enable) {
 		glfwSwapInterval(0);
 }
 
-mk::math::Vector2f mk::Window::getScaleFactor() const { return window_scale_factor; }
+mk::math::Vector2f mk::Window::getScalingFactor() const { return window_scale_factor; }
 
 bool mk::Window::isExitRequested() const { return exit_requested; }
 

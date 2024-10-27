@@ -129,13 +129,13 @@ namespace mk {
 	public:
 		using VertexArray::VertexArray;
 		~VertexArray2D() = default;
-		void draw(const RenderTarget& target, DrawContext context) const override;
+		void draw(RenderTarget& target, DrawContext context) const override;
 	};
 
 	class VertexArray3D: public VertexArray<Vertex3D>, public Drawable {
 	public:
 		using VertexArray::VertexArray;
 		~VertexArray3D() = default;
-		void draw(const RenderTarget& target, DrawContext context) const override;
+		void draw(RenderTarget& target, DrawContext context) const override;
 	};
 }

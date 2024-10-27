@@ -64,4 +64,6 @@ namespace mk {
 
 		setRotation(angle);
 	}
+
+	void RayShape::onDraw(RenderTarget& target, DrawContext context, const Game& game) const {}
 }  // namespace mk

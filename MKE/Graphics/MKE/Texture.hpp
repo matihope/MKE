@@ -18,7 +18,7 @@ namespace mk {
 		void loadFromImage(const Image& image);
 		void loadFromFile(const ResPath& file);
 
-		void setSmooth(bool smooth) const;
+		void setSmooth(bool smooth);
 
 		void generateMipmaps() const;
 
@@ -29,5 +29,6 @@ namespace mk {
 	private:
 		math::Vector2u size{};
 		u32            texture_id{};
+		bool           is_smooth = true;
 	};
 }

@@ -25,6 +25,8 @@ add_library(MKE-Common
 
     MKE/Nodes/GUI/Label.cpp
     MKE/Nodes/GUI/Label.hpp
+    MKE/Nodes/2d/RectShape.cpp
+    MKE/Nodes/2d/RectShape.hpp
 
     # MKE/Nodes/2d/RectShape.cpp
     # MKE/Nodes/2d/RectShape.hpp

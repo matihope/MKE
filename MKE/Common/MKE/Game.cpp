@@ -5,6 +5,7 @@
 #include "MKE/Input.hpp"
 
 #include <MKE/ResourceManager.hpp>
+#include <memory>
 
 namespace {
 	mk::math::Vector2f
@@ -41,7 +42,7 @@ namespace mk {
 
 		if (!m_scene_stack.empty()) m_scene_stack.top()->beginDraw(m_window, *this);
 
-		if (m_enable_print_fps) m_fps_label.beginDraw(m_window, *this);
+		if (m_enable_print_fps) m_fps_label->beginDraw(m_window, *this);
 
 		m_window.display();
 	}
@@ -71,7 +72,7 @@ namespace mk {
 			++m_fps_frame_count;
 			m_fps_sum += m_delta_time;
 			if (m_fps_sum >= 1.f) {
-				m_fps_label.setString(std::to_string(m_fps_frame_count));
+				m_fps_label->setString(std::to_string(m_fps_frame_count));
 				m_fps_sum         = 0.f;
 				m_fps_frame_count = 0;
 			}
@@ -182,6 +183,8 @@ namespace mk {
 	// }
 
 	Game::Game(const ResPath& settingsPath) {
+		init::init();
+
 		m_game_settings.load(settingsPath);
 		m_window.create(
 			m_game_settings["window"]["width"],
@@ -210,11 +213,12 @@ namespace mk {
 		);
 		m_default_font->setSmooth(bool(m_game_settings["engine"]["fontSmooth"]));
 
-		m_fps_label.setFont(m_default_font);
-		m_fps_label.setString("0");
-		m_fps_label.setTextSize(64);
-		m_fps_label.setAlignment(gui::HAlignment::RIGHT, gui::VAlignment::TOP);
-		m_fps_label.setPosition({ (float) getWindowSize().x, 0.f });
+		m_fps_label = std::make_unique<gui::Label>(m_default_font);
+		m_fps_label->setFont(m_default_font);
+		m_fps_label->setString("0");
+		m_fps_label->setTextSize(32);
+		m_fps_label->setAlignment(gui::HAlignment::RIGHT, gui::VAlignment::TOP);
+		m_fps_label->setPosition({ (float) getWindowSize().x, 0.f });
 
 		// lastly, set cursor
 		// m_current_cursor_type = sf::Cursor::Arrow;
@@ -223,4 +227,7 @@ namespace mk {
 
 	mk::Font* Game::getDefaultFont() const { return m_default_font; }
 
+	bool Game::isKeyPressed(input::KEY key) const { return m_window.isKeyPressed(key); }
+
+	bool Game::isKeyJustPressed(input::KEY key) const { return m_window.isKeyJustPressed(key); }
 }  // namespace mk

@@ -9,7 +9,7 @@ namespace mk {
 	class CubePrimitive: public Transformable, public Drawable {
 	public:
 		CubePrimitive(mk::Color color = Colors::WHITE);
-		void draw(const RenderTarget& target, DrawContext context) const override;
+		void draw(RenderTarget& target, DrawContext context) const override;
 
 	private:
 		VertexArray3D vertex_array{ false };

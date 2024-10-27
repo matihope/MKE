@@ -34,10 +34,10 @@ namespace mk {
 		Camera2D* m_camera2d_pointer = nullptr;
 		Camera3D* m_camera3d_pointer = nullptr;
 
-		Font*          m_default_font;
-		gui::Label     m_fps_label;
-		math::Vector2f m_mouse_pos;
-		Image          icon;
+		Font*                       m_default_font;
+		std::unique_ptr<gui::Label> m_fps_label;
+		math::Vector2f              m_mouse_pos;
+		Image                       icon;
 
 		// void                                     updateViewportSize();
 		void                                     recalculateAvgFps();
@@ -73,6 +73,9 @@ namespace mk {
 		// void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
 		mk::Font* getDefaultFont() const;
+
+		bool isKeyPressed(input::KEY key) const;
+		bool isKeyJustPressed(input::KEY key) const;
 	};
 
 }  // namespace mk

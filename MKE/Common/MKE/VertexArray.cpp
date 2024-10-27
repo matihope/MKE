@@ -1,7 +1,7 @@
 #include "VertexArray.hpp"
 #include "MKE/Shaders/SimpleShader.hpp"
 
-void mk::VertexArray2D::draw(const RenderTarget&, DrawContext context) const {
+void mk::VertexArray2D::draw(RenderTarget&, DrawContext context) const {
 	if (!vertex_buffer_size) return;
 	// Context has to be bound at the last possible moment (after all the changes could've been
 	// done).
@@ -15,7 +15,7 @@ void mk::VertexArray2D::draw(const RenderTarget&, DrawContext context) const {
 	startDraw();
 }
 
-void mk::VertexArray3D::draw(const RenderTarget&, DrawContext context) const {
+void mk::VertexArray3D::draw(RenderTarget&, DrawContext context) const {
 	if (!vertex_buffer_size) return;
 	// Context has to be bound at the last possible moment (after all the changes could've been
 	// done).

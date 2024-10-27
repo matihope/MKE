@@ -6,6 +6,6 @@ namespace mk {
 
 	class Drawable {
 	public:
-		virtual void draw(const RenderTarget& target, DrawContext context) const = 0;
+		virtual void draw(RenderTarget& target, DrawContext context) const = 0;
 	};
 }

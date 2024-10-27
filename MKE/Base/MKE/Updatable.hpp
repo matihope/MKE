@@ -1,15 +1,14 @@
 #pragma once
-#include <memory>
 
 namespace mk {
 	class Game;
 
 	class Updatable {
 	public:
-		virtual void update(Game& game, const float dt) {}
+		virtual void update([[maybe_unused]] Game& game, [[maybe_unused]] const float dt) {}
 
-		virtual void physicsUpdate(Game& game, const float dt) {}
+		virtual void physicsUpdate([[maybe_unused]] Game& game, [[maybe_unused]] const float dt) {}
 
-		virtual void ready(Game& game) {}
+		virtual void ready([[maybe_unused]] Game& game) {}
 	};
 }  // namespace mk
