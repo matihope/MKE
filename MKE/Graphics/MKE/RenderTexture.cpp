@@ -7,19 +7,14 @@
 
 void mk::RenderTexture2D::create(usize width, usize height) { create({ width, height }); }
 
-void mk::RenderTexture2D::render(const Drawable& drawable) {
-	DrawContext context;
-	context.camera = camera_transform;
-	renderContext(drawable, context);
-}
-
 mk::RenderTexture2D::~RenderTexture2D() {
 	glDeleteFramebuffers(1, &frame_buffer_id);
 	glDeleteRenderbuffers(1, &render_buffer_object);
 }
 
-void mk::RenderTexture2D::renderContext(const Drawable& drawable, DrawContext context) {
+void mk::RenderTexture2D::render(const Drawable& drawable, DrawContext context) {
 	if (size.x == 0 || size.y == 0) return;
+	// context.camera(1, 1) *= -1;
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
 	glViewport(0, 0, size.x * scaling_factor.x, size.y * scaling_factor.y);
 	defaultRender(drawable, context);
@@ -50,7 +45,6 @@ mk::RenderTexture2D::RenderTexture2D() {
 }
 
 void mk::RenderTexture2D::regenerateBuffers() {
-	auto [width, height]               = size.bind();
 	auto [scaled_width, scaled_height] = (size.type<float>() * scaling_factor).bind();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
@@ -72,10 +66,11 @@ void mk::RenderTexture2D::regenerateBuffers() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	camera_transform(0, 0) = 2.f / width;
-	camera_transform(1, 1) = 2.f / height;  // No - sign, because it's a texture
-	camera_transform(0, 3) = -1;
-	camera_transform(1, 3) = -1;
+	// auto [width, height]               = size.bind();
+	// camera_transform(0, 0) = 2.f / width;
+	// camera_transform(1, 1) = 2.f / height;  // No - sign, because it's a texture
+	// camera_transform(0, 3) = -1;
+	// camera_transform(1, 3) = -1;
 }
 
 void mk::RenderTexture2D::create(math::Vector2u size) {

@@ -146,7 +146,7 @@ void mk::Text2D::render() {
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		render_texture.render(vertex_array);
+		render_texture.render(vertex_array, render_texture.getCurrentView2D()->getTransform());
 	}
 }
 
@@ -160,7 +160,7 @@ void mk::Text2D::draw(RenderTarget& target, DrawContext context) const {
 		// target.render2dContext(render_object, context);
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		context.texture = &render_texture.getTexture();
-		target.renderContext(render_object, context);
+		target.render(render_object, context);
 	}
 }
 

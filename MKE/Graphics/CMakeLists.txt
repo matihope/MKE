@@ -21,6 +21,8 @@ add_library(MKE-Graphics
     MKE/RenderWindow.hpp
     MKE/RenderTexture.cpp
     MKE/RenderTexture.hpp
+    MKE/View.cpp
+    MKE/View.hpp
 )
 target_link_libraries(MKE-Graphics MKE-Base GLAD glfw stb)
 target_include_directories(MKE-Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -57,7 +57,7 @@ namespace mk::gui {
 	void Label::onDraw(RenderTarget& target, DrawContext context, const Game&) const {
 		if (m_text.getString() == "") return;
 		context.transform *= getTransform();
-		target.renderContext(m_text, context);
+		target.render(m_text, context);
 	}
 
 	void Label::setTextSize(const unsigned int newSize) {

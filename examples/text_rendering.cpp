@@ -5,7 +5,6 @@
 
 int main() {
 	mk::RenderWindow window(800, 600, "Text rendering");
-	window.enableCamera2D(true);
 
 	mk::Font font;
 	font.load("fonts/Roboto/Roboto-Medium.ttf");
@@ -23,7 +22,7 @@ int main() {
 		else
 			text.setString("Test");
 
-		window.render(text);
+		window.render(text, window.getCurrentView2D()->getTransform());
 		window.display();
 	}
 }

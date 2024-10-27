@@ -31,9 +31,6 @@ namespace mk {
 		mk::RenderWindow                         m_window;
 		std::stack<std::unique_ptr<WorldEntity>> m_scene_stack;
 
-		Camera2D* m_camera2d_pointer = nullptr;
-		Camera3D* m_camera3d_pointer = nullptr;
-
 		Font*                       m_default_font;
 		std::unique_ptr<gui::Label> m_fps_label;
 		math::Vector2f              m_mouse_pos;

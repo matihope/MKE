@@ -47,4 +47,6 @@ namespace mk {
 		math::Vector3f rotation;
 		math::Vector3f scale{ 1 };
 	};
+
+	class DummyTransformable: public Transformable {};
 }

@@ -9,8 +9,9 @@ namespace mk {
 		DrawContext() = default;
 
 		DrawContext(const Shader* shader);
-
 		DrawContext(const Texture* texture);
+
+		DrawContext(const math::Matrix4f& camera);
 
 		virtual void bind();
 

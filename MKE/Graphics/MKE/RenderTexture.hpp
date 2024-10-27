@@ -25,8 +25,7 @@ namespace mk {
 		void create(usize width, usize height);
 		void create(math::Vector2u size);
 
-		void render(const Drawable& drawable) override;
-		void renderContext(const Drawable& drawable, DrawContext context) override;
+		void render(const Drawable& drawable, DrawContext context) override;
 
 		void clear(mk::Color color) const;
 
@@ -39,6 +38,5 @@ namespace mk {
 		Texture        texture;
 		u32            frame_buffer_id{};
 		u32            render_buffer_object{};
-		math::Matrix4f camera_transform{ 1.f };
 	};
 }

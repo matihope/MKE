@@ -3,7 +3,6 @@
 
 int main() {
 	mk::RenderWindow window(800, 600, "RectPrimitive");
-	window.enableCamera2D(true);
 
 	mk::RectPrimitive rect(mk::math::Vector2f(400, 300));
 
@@ -16,7 +15,7 @@ int main() {
 		rect.move(mk::math::Vector2f{ diff_x, diff_y } * 5.f);
 
 		window.clear(mk::Colors::DARK);
-		window.render(rect);
+		window.render(rect, window.getCurrentView2D()->getTransform());
 		window.display();
 	}
 }

@@ -15,7 +15,7 @@ namespace mk {
 
 	void RectShape::onDraw(RenderTarget& target, DrawContext context, const Game&) const {
 		context.transform *= getTransform();
-		target.renderContext(rect, context);
+		target.render(rect, context);
 	}
 
 	RectShape::RectShape(): RectShape(Colors::WHITE, { 0, 0 }) {}
