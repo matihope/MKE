@@ -21,6 +21,6 @@ namespace mk {
 		const Texture* getTexture(const ResPath& path);
 		void           setTextureSmooth(const ResPath& path, bool smooth);
 
-		const Font*    getFont(const ResPath& path);
+		Font*    getFont(const ResPath& path);
 	};
 }  // namespace mk

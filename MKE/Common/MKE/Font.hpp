@@ -39,12 +39,16 @@ namespace mk {
 
 		const CharMap& getChars(const FontParams& font_params);
 
+		void setSmooth(bool smooth);
+		bool isSmooth() const;
+
 	private:
 		// Float, because font_size * scaling is the key.
 		// FontParams has it's own hashing method
 		std::unordered_map<FontParams, CharMap, FontParams> chars{};
 
 		ResPath font_path;
-		bool    loaded = false;
+		bool    loaded    = false;
+		bool    is_smooth = true;
 	};
 }

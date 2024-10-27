@@ -102,3 +102,7 @@ const mk::Font::CharMap& mk::Font::getChars(const FontParams& font_params) {
 	}
 	return char_map->second;
 }
+
+void mk::Font::setSmooth(bool smooth) { is_smooth = smooth; }
+
+bool mk::Font::isSmooth() const { return is_smooth; }

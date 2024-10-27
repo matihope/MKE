@@ -10,7 +10,7 @@ namespace mk::gui {
 
 	enum class VAlignment { TOP, CENTER, BOTTOM };
 
-	class Label: public WorldEntity {
+	class Label: public WorldEntityUI {
 		Font*       m_font{};
 		HAlignment  m_halignment = HAlignment::LEFT;
 		VAlignment  m_valignment = VAlignment::TOP;
@@ -33,7 +33,5 @@ namespace mk::gui {
 		void onDraw(const RenderTarget& target, DrawContext context) const override;
 
 		math::RectF getBounds() const;
-
-		const std::string& getText() const;
 	};
 }  // namespace mk::gui

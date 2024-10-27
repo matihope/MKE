@@ -52,7 +52,7 @@ namespace mk::math {
 			Vector<DATA, T, W> result(0);
 			for (usize row = 0; row < H; row++)
 				for (usize col = 0; col < W; col++)
-					result.vec_data.at(col) += rhs.vec_data.at(row) * operator()(row, col);
+					result.vec_data[col] += rhs.vec_data[row] * operator()(row, col);
 			return result;
 		}
 
@@ -87,7 +87,7 @@ namespace mk::math {
 		Vector<DATA, T, VW> result(0);
 		for (usize row = 0; row < 4; row++)
 			for (usize col = 0; col < VW; col++)
-				result.vec_data.at(col) += rhs.vec_data.at(row) * lhs(row, col);
+				result.vec_data.at(col) += rhs.vec_data[row] * lhs(row, col);
 		return result;
 	}
 }  // namespace mk::Math

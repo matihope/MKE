@@ -1,5 +1,5 @@
 #include "MKE/DrawContext.hpp"
-#include <GUI/Label.hpp>
+#include "Label.hpp"
 
 namespace mk::gui {
 	Label::Label() { m_text.setCharacterSize(32); }
@@ -63,6 +63,7 @@ namespace mk::gui {
 	void Label::setTextSize(const unsigned int newSize) {
 		m_text.setCharacterSize(newSize);
 		setAlignment(m_halignment, m_valignment);
+		m_text.setCharacterScaling(2.0);
 	}
 
 	void Label::setColor(const mk::Color newColor) { m_text.setColor(newColor); }
@@ -73,8 +74,6 @@ namespace mk::gui {
 		bounds.top += getPosition().y;
 		return bounds;
 	}
-
-	const std::string& Label::getText() const { return m_string; }
 
 	const std::string& Label::getString() const { return m_string; }
 }  // namespace mk::GUI

@@ -71,19 +71,13 @@ mk::Window::Window(math::Vector2u size, std::string_view title) { create(size, t
 void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	MK_ASSERT_TRUE(!initialized, "Called create on initalized window");
 
-	init();
+	window = mk::init::getWindow();
+	glfw_to_mk_window.insert({ window, (*this) });
 
 	this->title = title;
-	window      = glfwCreateWindow(width, height, this->title.c_str(), NULL, NULL);
-	if (window == NULL) {
-		glfwTerminate();
-		MK_PANIC("Couldn\'t create GLFW window");
-	}
 
-	glfw_to_mk_window.insert({ window, (*this) });
-	glfwMakeContextCurrent(window);
-
-	MK_ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
+	glfwSetWindowSize(window, width, height);
+	glfwSetWindowTitle(window, title.begin());
 
 	glfwSetWindowCloseCallback(window, windowCloseCallback);
 	glfwSetFramebufferSizeCallback(window, windowFramebufferSizeCallback);

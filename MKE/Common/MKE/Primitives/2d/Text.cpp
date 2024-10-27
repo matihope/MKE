@@ -4,7 +4,6 @@
 #include "MKE/Math/Vector.hpp"
 #include "MKE/Primitives/2d/RectPrimitive.hpp"
 #include "MKE/VertexArray.hpp"
-#include <cmath>
 #include <queue>
 
 namespace {
@@ -86,6 +85,7 @@ public:
 void mk::Text2D::render() {
 	text_bounds = math::RectF();
 	render_texture.clear(Colors::BLACK);
+	render_texture.setSmooth(font->isSmooth());
 
 	if (isEmpty()) return;
 
@@ -204,12 +204,14 @@ const std::string& mk::Text2D::getString() const { return text; }
 
 usize mk::Text2D::getCharacterSize() const { return char_size; }
 
-mk::math::RectF mk::Text2D::getLocalBounds() const { return text_bounds; }
+mk::math::RectF mk::Text2D::getLocalBounds() const {
+	return math::RectF(0, 0, text_bounds.width / char_scaling, text_bounds.height / char_scaling);
+}
 
 mk::math::RectF mk::Text2D::getGlobalBounds() const {
 	auto transform    = getTransform();
 	auto top_left     = getPosition2D();
-	auto bottom_right = top_left + text_bounds.getSize();
+	auto bottom_right = top_left + getLocalBounds().getSize();
 
 	auto new_top_left     = transform * top_left;
 	auto new_bottom_right = transform * bottom_right;

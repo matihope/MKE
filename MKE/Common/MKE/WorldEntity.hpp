@@ -103,9 +103,8 @@ namespace mk {
 
 		virtual void onPhysicsUpdate(Game& game, float dt) {}
 
-		virtual void onDraw(
-			[[maybe_unused]] const RenderTarget& target, [[maybe_unused]] DrawContext context
-		) const {}
+		virtual void
+			onDraw(const RenderTarget& target, DrawContext context, const Game& game) const {}
 
 		virtual void handleEvent(Game& game, const Event& event) {}
 
@@ -119,16 +118,26 @@ namespace mk {
 			return m_parent->getGlobalTransform() * getTransform();
 		}
 
+		virtual DrawMode getDrawMode() const = 0;
+
 		virtual void beginDraw(const RenderTarget& target, const Game& game) const = 0;
 
-		void drawEntity(const RenderTarget& target, DrawContext context) const {
+		virtual void drawEntity(
+			const RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
+		) const {
 			if (m_show) {
-				DrawContext copied_context(context);
-				copied_context.transform *= getTransform();
-				onDraw(target, context);
+				if (auto new_mode = getDrawMode();
+				    draw_mode != new_mode && new_mode == DrawMode::ModeUI) {
+					beginDraw(target, game);
+				} else {
+					DrawContext copied_context(context);
+					copied_context.transform *= getTransform();
+					onDraw(target, context, game);
 
-				for (const auto& layer: m_entity_pool)
-					for (auto& entity: layer.second) entity->drawEntity(target, copied_context);
+					for (const auto& layer: m_entity_pool)
+						for (auto& entity: layer.second)
+							entity->drawEntity(target, copied_context, game, draw_mode);
+				}
 			}
 		}
 	};
@@ -139,7 +148,9 @@ namespace mk {
 
 		~WorldEntity2D() = default;
 
-		void beginDraw(const RenderTarget& target, const Game& game) const;
+		void beginDraw(const RenderTarget& target, const Game& game) const override;
+
+		DrawMode getDrawMode() const override { return DrawMode::Mode2D; }
 	};
 
 	class WorldEntity3D: public WorldEntity {
@@ -148,6 +159,19 @@ namespace mk {
 
 		~WorldEntity3D() = default;
 
-		void beginDraw(const RenderTarget& target, const Game& game) const;
+		void beginDraw(const RenderTarget& target, const Game& game) const override;
+
+		DrawMode getDrawMode() const override { return DrawMode::Mode3D; }
+	};
+
+	class WorldEntityUI: public WorldEntity {
+	public:
+		using WorldEntity::WorldEntity;
+
+		~WorldEntityUI() {}
+
+		void beginDraw(const RenderTarget& target, const Game& game) const override;
+
+		DrawMode getDrawMode() const override { return DrawMode::ModeUI; }
 	};
 }  // namespace mk

@@ -18,7 +18,7 @@ namespace mk {
 		getMutTexture(path)->setSmooth(smooth);
 	}
 
-	const Font* ResourceManager::getFont(const ResPath& path) {
+	Font* ResourceManager::getFont(const ResPath& path) {
 		auto&& [font, new_font] = fonts.try_emplace(path);
 		if (new_font) font->second.load(path);
 		return &font->second;

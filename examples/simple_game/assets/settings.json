@@ -1,0 +1,21 @@
+{
+    "window": {
+        "width": 800,
+        "height": 800,
+        "title": "MKE Simple Game",
+        "vsync": false
+    },
+    "viewport": {
+        "width": 800,
+        "height": 800
+    },
+    "debug": {
+        "printFPS": true,
+        "drawCollisionShapes": false
+    },
+    "engine": {
+        "physicsUpdateCallFreq": 60,
+        "fontPath": "fonts/Roboto/Roboto-Medium.ttf",
+        "fontSmooth": true
+    }
+}

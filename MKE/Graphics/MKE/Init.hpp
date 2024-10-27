@@ -1,5 +1,8 @@
 #pragma once
 
-namespace mk {
-	void init();
+struct GLFWwindow;
+
+namespace mk::init {
+	void        init();
+	GLFWwindow* getWindow();
 }

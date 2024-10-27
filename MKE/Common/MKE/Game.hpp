@@ -1,9 +1,10 @@
 #pragma once
 
-#include "GUI/Label.hpp"
 #include "MKE/Camera.hpp"
 #include "MKE/Clock.hpp"
+#include "MKE/Font.hpp"
 #include "MKE/JsonBridge.hpp"
+#include "MKE/Nodes/GUI/Label.hpp"
 #include "MKE/RenderWindow.hpp"
 #include "MKE/WorldEntity.hpp"
 
@@ -38,7 +39,7 @@ namespace mk {
 		math::Vector2f m_mouse_pos;
 		Image          icon;
 
-		void                                     updateViewportSize();
+		// void                                     updateViewportSize();
 		void                                     recalculateAvgFps();
 		std::queue<std::unique_ptr<WorldEntity>> m_safe_scene_delete_queue;
 
@@ -53,12 +54,11 @@ namespace mk {
 
 		void           setPrintFPS(const bool& printFPS);
 		bool           isRunning() const;
-		math::Vector2u getWindowSize();
-		math::Vector2u getViewportSize();
-		void           setViewportSize(math::Vector2f newSize);
-		void           setViewportSize(math::Vector2u newSize);
-		RenderWindow&  getRenderWindow();
-		bool           isWindowActive() const;
+		math::Vector2u getWindowSize() const;
+		// math::Vector2u getViewportSize();
+		// void           setViewportSize(math::Vector2u newSize);
+		RenderWindow& getRenderWindow();
+		bool          isWindowActive() const;
 
 		void addScene(std::unique_ptr<WorldEntity> newScene);
 		void replaceTopScene(std::unique_ptr<WorldEntity> newScene);
@@ -70,7 +70,7 @@ namespace mk {
 
 		math::Vector2f getMousePos();
 		// const sf::View* getView();
-		void setCamera2DCenterAt(const math::Vector2f& pos);
+		// void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
 		mk::Font* getDefaultFont() const;
 	};

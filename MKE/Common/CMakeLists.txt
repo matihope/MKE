@@ -11,6 +11,10 @@ add_library(MKE-Common
     MKE/Clock.hpp
     MKE/Camera.cpp
     MKE/Camera.hpp
+    MKE/Game.cpp
+    MKE/Game.hpp
+    MKE/WorldEntity.cpp
+    MKE/WorldEntity.hpp
 
     MKE/Primitives/2d/RectPrimitive.cpp
     MKE/Primitives/2d/RectPrimitive.hpp
@@ -18,6 +22,9 @@ add_library(MKE-Common
     MKE/Primitives/2d/Text.hpp
     MKE/Primitives/3d/CubePrimitive.cpp
     MKE/Primitives/3d/CubePrimitive.hpp
+
+    MKE/Nodes/GUI/Label.cpp
+    MKE/Nodes/GUI/Label.hpp
 
     # MKE/Nodes/2d/RectShape.cpp
     # MKE/Nodes/2d/RectShape.hpp
