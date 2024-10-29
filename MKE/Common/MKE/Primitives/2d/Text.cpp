@@ -89,7 +89,7 @@ void mk::Text2D::render() {
 
 	if (isEmpty()) return;
 
-	chars = &font->getChars(Font::FontParams(char_size, char_scaling));
+	chars = &font->getChars(FontParams(char_size, char_scaling));
 
 	static FontArray vertex_array(false);
 	vertex_array.setSize(6);
