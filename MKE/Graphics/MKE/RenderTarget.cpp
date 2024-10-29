@@ -6,6 +6,12 @@ void mk::RenderTarget::defaultRender(const Drawable& drawable, DrawContext conte
 	drawable.draw(*this, context);
 }
 
-const mk::View2D& mk::RenderTarget::getCurrentView2D() const { return current_view2d; }
+const mk::View2D& mk::RenderTarget::getCurrentView2D() const {
+	if (custom_view2d) return *custom_view2d;
+	return getDefaultView2D();
+}
 
-const mk::View3D& mk::RenderTarget::getCurrentView3D() const { return current_view3d; }
+const mk::View3D& mk::RenderTarget::getCurrentView3D() const {
+	if (custom_view3d) return *custom_view3d;
+	return getDefaultView3D();
+}

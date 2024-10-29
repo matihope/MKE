@@ -146,7 +146,7 @@ void mk::Text2D::render() {
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		render_texture.render(vertex_array, render_texture.getCurrentView2D()->getTransform());
+		render_texture.render(vertex_array, render_texture.getCurrentView2D().getTransform());
 	}
 }
 

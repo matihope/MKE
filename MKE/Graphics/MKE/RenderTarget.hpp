@@ -5,7 +5,6 @@
 #include "MKE/DrawContext.hpp"
 #include "MKE/Drawable.hpp"
 #include "MKE/View.hpp"
-#include <memory>
 
 namespace mk {
 	class RenderTarget: public NonCopyable {
@@ -16,15 +15,17 @@ namespace mk {
 		virtual math::Vector2u getSize() const          = 0;
 		virtual math::Vector2f getScalingFactor() const = 0;
 
-		void setView2D(const View2D& view2d) { current_view2d = view2d; }
+		void setView2D(const View2D& view2d) { custom_view2d = view2d; }
 
-		void setView3D(const View3D& view3d) { current_view3d = view3d; }
+		void setView3D(const View3D& view3d) { custom_view3d = view3d; }
 
 		const View2D& getCurrentView2D() const;
 		const View3D& getCurrentView3D() const;
 
 		const View2D& getDefaultView2D() const {
-			static View2D view({ 0, 0 }, getSize());
+			static View2D view({ 0, 0 }, { 1, 1 });
+			view.setSize(getSize().type<float>());
+			view.setCenter(getSize().type<float>() / 2.f);
 			return view;
 		}
 
@@ -37,8 +38,8 @@ namespace mk {
 		void defaultRender(const Drawable& drawable, DrawContext context);
 
 	private:
-		View2D current_view2d;
-		View3D current_view3d;
+		std::optional<View2D> custom_view2d;
+		std::optional<View3D> custom_view3d;
 	};
 
 	inline RenderTarget::~RenderTarget() {}

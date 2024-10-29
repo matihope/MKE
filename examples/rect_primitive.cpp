@@ -15,7 +15,7 @@ int main() {
 		rect.move(mk::math::Vector2f{ diff_x, diff_y } * 5.f);
 
 		window.clear(mk::Colors::DARK);
-		window.render(rect, window.getCurrentView2D()->getTransform());
+		window.render(rect, window.getCurrentView2D().getTransform());
 		window.display();
 	}
 }

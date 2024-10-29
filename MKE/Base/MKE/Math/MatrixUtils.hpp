@@ -23,6 +23,17 @@ namespace mk::math {
 		return projection;
 	}
 
+	constexpr Matrix4f camera2D([[maybe_unused]] float width, [[maybe_unused]] float height) {
+		Matrix4f projection{ 1.f };
+
+		projection(0, 0) = 2.f / width;
+		projection(1, 1) = -2.f / height;
+		projection(0, 3) = -1;
+		projection(1, 3) = 1;
+
+		return projection;
+	}
+
 	constexpr Matrix4f orthogonal([[maybe_unused]] float width, [[maybe_unused]] float height) {
 		Matrix4f projection{ 1.f };
 

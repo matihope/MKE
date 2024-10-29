@@ -8,10 +8,7 @@ mk::View2D::View2D(math::Vector2f center, math::Vector2u size):
 	  view(center.x, center.y, size.x, size.y) {}
 
 mk::math::Matrix4f mk::View2D::getTransform() const {
-	DummyTransformable transformable;
-	transformable.setScale({ 1.f, -1.f, 1.f });
-	transformable.setPosition(view.left, view.top);
-	return math::orthogonal(view.width, view.height) * transformable.getTransform();
+	return math::camera2D(view.width, view.height);
 }
 
 void mk::View2D::setSize(math::Vector2f size) {
