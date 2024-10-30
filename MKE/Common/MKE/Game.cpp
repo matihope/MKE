@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "MKE/Collisions/CollisionComponent/CollisionComponent.hpp"
 #include "MKE/Color.hpp"
 #include "MKE/Event.hpp"
 #include "MKE/Init.hpp"
@@ -38,7 +39,7 @@ namespace mk {
 	}
 
 	void Game::draw() {
-		m_window.clear(Colors::DARK);
+		m_window.clear(Color(21, 21, 21));
 
 		if (!m_scene_stack.empty()) m_scene_stack.top()->beginDraw(m_window, *this);
 
@@ -78,11 +79,6 @@ namespace mk {
 				m_fps_frame_count = 0;
 			}
 		}
-	}
-
-	void Game::addScene(std::unique_ptr<WorldEntity> newScene) {
-		if (isRunning()) newScene->ready(*this);
-		m_scene_stack.push(std::move(newScene));
 	}
 
 	void Game::popScene() {
@@ -207,7 +203,7 @@ namespace mk {
 		m_physics_update_call_freq
 			= 1.f / float(m_game_settings["engine"]["physicsUpdateCallFreq"]);
 
-		// Debug::setDebugCollisionDraw(m_game_settings["debug"]["drawCollisionShapes"]);
+		Debug::setDebugCollisionDraw(m_game_settings["debug"]["drawCollisionShapes"]);
 
 		m_default_font = res_man.getFont(std::string(m_game_settings["engine"]["fontPath"]));
 		m_default_font->setSmooth(bool(m_game_settings["engine"]["fontSmooth"]));

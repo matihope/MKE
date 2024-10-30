@@ -13,6 +13,7 @@
 #include <memory>
 #include <queue>
 #include <stack>
+#include <type_traits>
 
 namespace mk {
 
@@ -60,7 +61,19 @@ namespace mk {
 		RenderWindow& getRenderWindow();
 		bool          isWindowActive() const;
 
-		void addScene(std::unique_ptr<WorldEntity> newScene);
+		template<class T, class... Args>
+		T* addScene(Args&&... args) {
+			return addScene<T>(std::make_unique<T>(std::forward<Args>(args)...));
+		}
+
+		template<class T, class... Args>
+		T* addScene(std::unique_ptr<T> new_scene) {
+			if (isRunning()) new_scene->ready(*this);
+			T* ref = new_scene.get();
+			m_scene_stack.push(std::move(new_scene));
+			return ref;
+		}
+
 		void replaceTopScene(std::unique_ptr<WorldEntity> newScene);
 
 		/**
