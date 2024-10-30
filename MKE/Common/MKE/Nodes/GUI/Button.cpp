@@ -1,7 +1,6 @@
-#include <GUI/Button.hpp>
-#include <Game/Game.hpp>
-#include <SFML/Graphics.hpp>
-#include <Updatable/Updatable.hpp>
+#include "Button.hpp"
+#include "MKE/Math/Rect.hpp"
+#include "MKE/Nodes/GUI/Label.hpp"
 
 namespace mk::gui {
 	Button::Button() {
@@ -9,7 +8,7 @@ namespace mk::gui {
 		m_background.setColor(m_background_color_normal);
 	}
 
-	Button::Button(sf::Font* font, const std::string& text): Button() {
+	Button::Button(Font* font, const std::string& text): Button() {
 		setFont(font);
 		setText(text);
 	}
@@ -21,14 +20,14 @@ namespace mk::gui {
 		fixLabelPosition();
 	}
 
-	void Button::setFont(sf::Font* newFont) {
+	void Button::setFont(Font* newFont) {
 		m_label.setFont(newFont);
 		updateDefaultCollisionShape();
 		fixLabelPosition();
 	}
 
 	void Button::setText(const std::string& newText) {
-		m_label.setText(newText);
+		m_label.setString(newText);
 		fixLabelPosition();
 		updateDefaultCollisionShape();
 	}
@@ -39,14 +38,13 @@ namespace mk::gui {
 		updateDefaultCollisionShape();
 	}
 
-	void Button::onDraw(sf::RenderTarget& target, sf::RenderStates states) const {
-		states.transform *= getTransform();
-		target.draw(m_background, states);
-		target.draw(m_label, states);
+	void Button::onDraw(RenderTarget& target, DrawContext context, const Game& game) const {
+		context.transform *= getTransform();
+		m_background.drawEntity(target, context, game, getDrawMode());
+		m_label.drawEntity(target, context, game, getDrawMode());
 
 #if (DEBUG)
-		// debugs:
-		target.draw(*m_collision_shape, states);
+		target.render(*m_collision_shape, context);
 #endif
 	}
 
@@ -65,19 +63,17 @@ namespace mk::gui {
 		m_background.setColor(m_background_color_press);
 	}
 
-	void Button::update(Game& game, const float dt) { Clickable::update(game, dt); }
-
 	void Button::updateDefaultCollisionShape() {
 		if (m_has_custom_collision_shape) return;
 
-		sf::FloatRect bounds = getBounds();
+		math::RectF bounds = getBounds();
 
 		m_collision_shape = std::make_unique<RectCollision>(this, bounds.width, bounds.height);
 		setClickCollisionShape(m_collision_shape.get());
 
 		m_background.setSize({ bounds.width, bounds.height });
 
-		sf::Vector2f newOrigin{};
+		math::Vector2f newOrigin{};
 		switch (m_valignment) {
 		case VAlignment::TOP:
 			break;
@@ -110,7 +106,7 @@ namespace mk::gui {
 		m_collision_shape = std::move(shape);
 	}
 
-	sf::FloatRect Button::getBounds() const {
+	math::RectF Button::getBounds() const {
 		// override this when inheriting from Button
 
 		auto bounds = m_label.getBounds();
@@ -148,15 +144,13 @@ namespace mk::gui {
 		return bounds;
 	}
 
-	void Button::setBackgroundColors(sf::Color normal, sf::Color hover, sf::Color press) {
+	void Button::setBackgroundColors(Color normal, Color hover, Color press) {
 		m_background_color_normal = normal;
 		m_background_color_hover  = hover;
 		m_background_color_press  = press;
 	}
 
-	void Button::setBackgroundColors(sf::Color colors) {
-		setBackgroundColors(colors, colors, colors);
-	}
+	void Button::setBackgroundColors(Color colors) { setBackgroundColors(colors, colors, colors); }
 
 	void Button::setMinSpaceBetween(math::Vector2f space) {
 		minSpaceBetween = space;
@@ -171,8 +165,8 @@ namespace mk::gui {
 	}
 
 	void Button::fixLabelPosition() {
-		auto         bounds = getBounds();
-		sf::Vector2f offset = { bounds.width / 2.f, bounds.height / 2.f };
+		auto           bounds = getBounds();
+		math::Vector2f offset = { bounds.width / 2.f, bounds.height / 2.f };
 		switch (m_valignment) {
 		case VAlignment::TOP:
 			break;
@@ -198,9 +192,9 @@ namespace mk::gui {
 		m_label.setPosition(offset);
 	}
 
-	void Button::setFontColors(sf::Color colors) { setFontColors(colors, colors, colors); }
+	void Button::setFontColors(Color colors) { setFontColors(colors, colors, colors); }
 
-	void Button::setFontColors(sf::Color normal, sf::Color hover, sf::Color press) {
+	void Button::setFontColors(Color normal, Color hover, Color press) {
 		m_font_color_normal = normal;
 		m_font_color_hover  = hover;
 		m_font_color_press  = press;

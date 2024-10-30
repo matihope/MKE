@@ -52,7 +52,7 @@ namespace mk::math {
 			Vector<DATA, T, W> result(0);
 			for (usize row = 0; row < H; row++)
 				for (usize col = 0; col < W; col++)
-					result.vec_data[col] += rhs.vec_data[row] * operator()(row, col);
+					result.vec_data[row] += rhs.vec_data[col] * operator()(row, col);
 			return result;
 		}
 
@@ -83,11 +83,14 @@ namespace mk::math {
 
 	// This is bonkers, but really handy - allow to multiply the transform matrix by ANY vector.
 	template<template<class, usize> class DATA, class T, usize VW>
-	constexpr Vector<DATA, T, VW> operator*(Matrix4f lhs, const Vector<DATA, T, VW>& rhs) {
+	constexpr Vector<DATA, T, VW> operator^(Matrix4f lhs, const Vector<DATA, T, VW>& rhs) {
+		Vector4f rhs_better{ 0 };
+		rhs_better.w = 1;
+		std::memcpy(rhs_better.vec_data.data(), rhs.vec_data.data(), VW * sizeof(T));
 		Vector<DATA, T, VW> result(0);
-		for (usize row = 0; row < 4; row++)
-			for (usize col = 0; col < VW; col++)
-				result.vec_data.at(col) += rhs.vec_data[row] * lhs(row, col);
+		for (usize row = 0; row < VW; row++)
+			for (usize col = 0; col < 4; col++)
+				result.vec_data.at(row) += rhs_better.vec_data[col] * lhs(row, col);
 		return result;
 	}
 }  // namespace mk::Math

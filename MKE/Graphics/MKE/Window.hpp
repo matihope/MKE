@@ -35,6 +35,9 @@ namespace mk {
 
 		bool isKeyPressed(input::KEY key) const;
 		bool isKeyJustPressed(input::KEY key) const;
+		bool isMousePressed(input::MOUSE key) const;
+		bool isMouseJustPressed(input::MOUSE key) const;
+		math::Vector2i getMousePosition() const;
 
 		void enableVerticalSync(bool enable);
 
@@ -53,6 +56,9 @@ namespace mk {
 
 		// A map of {key, just_pressed}
 		std::array<bool, ((usize) input::KEY::_LAST - (usize) input::KEY::_FIRST) + 1>
-			just_pressed_keys{};
+			just_pressed_key{};
+
+		std::array<bool, ((usize) input::MOUSE::BUTTON_8 - (usize) input::MOUSE::BUTTON_1) + 1>
+			just_pressed_mouse{};
 	};
 }

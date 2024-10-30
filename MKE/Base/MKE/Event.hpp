@@ -11,11 +11,14 @@ namespace mk {
 		WindowScaleFactorChanged,
 		KeyPressed,
 		KeyReleased,
+		MouseButtonPressed,
+		MouseButtonReleased,
 	};
 
 	namespace Events {
 		struct WindowClose {
-			WindowClose(): type(EventType::WindowClose) {};
+			WindowClose(): type(EventType::WindowClose) {}
+
 			EventType type;
 		};
 
@@ -38,20 +41,40 @@ namespace mk {
 		};
 
 		struct KeyPressed {
-			KeyPressed(input::KEY key): type(EventType::KeyPressed), key(key) {};
+			KeyPressed(input::KEY key): type(EventType::KeyPressed), key(key) {}
+
 			EventType  type;
 			input::KEY key;
 		};
 
 		struct KeyReleased {
-			KeyReleased(input::KEY key): type(EventType::KeyReleased), key(key) {};
+			KeyReleased(input::KEY key): type(EventType::KeyReleased), key(key) {}
+
 			EventType  type;
 			input::KEY key;
+		};
+
+		struct MouseButtonPressed {
+			MouseButtonPressed(input::MOUSE button):
+				  type(EventType::MouseButtonPressed),
+				  button(button) {}
+
+			EventType    type;
+			input::MOUSE button;
+		};
+
+		struct MouseButtonReleased {
+			MouseButtonReleased(input::MOUSE button):
+				  type(EventType::MouseButtonReleased),
+				  button(button) {}
+
+			EventType    type;
+			input::MOUSE button;
 		};
 	}
 
 	union Event {
-		Event() {};
+		Event() {}
 
 		EventType                        type{};  // As everywhere
 		Events::WindowClose              window_close;
@@ -59,5 +82,7 @@ namespace mk {
 		Events::WindowScaleFactorChanged window_scale_factor;
 		Events::KeyPressed               key_pressed;
 		Events::KeyReleased              key_released;
+		Events::MouseButtonPressed       mouse_pressed;
+		Events::MouseButtonReleased      mouse_released;
 	};
 }

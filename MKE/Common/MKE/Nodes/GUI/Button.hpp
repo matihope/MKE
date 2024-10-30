@@ -1,28 +1,26 @@
 #pragma once
-#include "Math/Vector.hpp"
-#include "Nodes/RectShape.hpp"
 
-#include <Clickable/Clickable.hpp>
-#include <CollisionShape/CollisionShape.hpp>
-#include <GUI/Label.hpp>
-#include <SFML/Graphics.hpp>
-#include <Updatable/Updatable.hpp>
-#include <memory>
+#include "MKE/Collisions/CollisionShape/CollisionShape.hpp"
+#include "MKE/Math/Rect.hpp"
+#include "MKE/Nodes/2d/RectShape.hpp"
+#include "MKE/Nodes/GUI/Clickable.hpp"
+#include "MKE/Nodes/GUI/Label.hpp"
+#include "MKE/WorldEntity.hpp"
 
 namespace mk::gui {
-	class Button: public WorldEntity, public Clickable {
+	class Button: public WorldEntityUI, public Clickable {
 		Button();
 
-		Label         m_label;
-		mk::RectShape m_background;
+		Label     m_label;
+		RectShape m_background;
 
-		sf::Color m_background_color_normal = sf::Color(60, 60, 60);
-		sf::Color m_background_color_hover  = sf::Color(50, 50, 50);
-		sf::Color m_background_color_press  = sf::Color(40, 40, 40);
+		Color m_background_color_normal = Color(60, 60, 60);
+		Color m_background_color_hover  = Color(50, 50, 50);
+		Color m_background_color_press  = Color(40, 40, 40);
 
-		sf::Color m_font_color_normal = sf::Color(255, 255, 255);
-		sf::Color m_font_color_hover  = sf::Color(200, 200, 200);
-		sf::Color m_font_color_press  = sf::Color(125, 125, 125);
+		Color m_font_color_normal = Color(255, 255, 255);
+		Color m_font_color_hover  = Color(200, 200, 200);
+		Color m_font_color_press  = Color(125, 125, 125);
 
 		std::unique_ptr<RectCollision> m_collision_shape;
 		bool                           m_has_custom_collision_shape = false;
@@ -44,25 +42,26 @@ namespace mk::gui {
 		void onHold() override;
 
 	public:
-		Button(sf::Font* font, const std::string& text);
+		Button(Font* font, const std::string& text);
 
 		void setAlignment(HAlignment newHAlignment, VAlignment newVAlignment);
 
-		void setFont(sf::Font* font);
+		void setFont(Font* font);
 		void setText(const std::string& newText);
 		void setTextSize(unsigned int newSize);
 
-		void update(Game& game, float dt) override;
-		void onDraw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		void onDraw(RenderTarget& target, DrawContext context, const Game& game) const override;
 
-		void          updateDefaultCollisionShape();
-		void          setCollisionShape(std::unique_ptr<RectCollision> shape);
-		sf::FloatRect getBounds() const;
+		void onUpdate(Game& game, float dt) override { Clickable::update(game, dt); }
 
-		void setBackgroundColors(sf::Color normal, sf::Color hover, sf::Color press);
-		void setBackgroundColors(sf::Color colors);
-		void setFontColors(sf::Color normal, sf::Color hover, sf::Color press);
-		void setFontColors(sf::Color colors);
+		void        updateDefaultCollisionShape();
+		void        setCollisionShape(std::unique_ptr<RectCollision> shape);
+		math::RectF getBounds() const;
+
+		void setBackgroundColors(Color normal, Color hover, Color press);
+		void setBackgroundColors(Color colors);
+		void setFontColors(Color normal, Color hover, Color press);
+		void setFontColors(Color colors);
 
 		void setMinSpaceBetween(math::Vector2f space);
 		void setMinSize(math::Vector2f size);

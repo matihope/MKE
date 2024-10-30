@@ -1,7 +1,6 @@
 #pragma once
-#include <CollisionComponent/CollisionComponent.hpp>
-#include <Updatable/Updatable.hpp>
-#include <memory>
+#include "MKE/Collisions/CollisionComponent/CollisionComponent.hpp"
+#include "MKE/Updatable.hpp"
 
 namespace mk {
 	class Clickable: public Updatable {

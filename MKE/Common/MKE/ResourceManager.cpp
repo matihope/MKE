@@ -1,11 +1,6 @@
 #include "ResourceManager.hpp"
 
 namespace mk {
-	ResourceManager& ResourceManager::get() {
-		static ResourceManager instance;
-		return instance;
-	}
-
 	Texture* ResourceManager::getMutTexture(const ResPath& path) {
 		auto&& [texture, new_texture] = textures.try_emplace(path);
 		if (new_texture) texture->second.loadFromFile(path);

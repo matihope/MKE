@@ -34,6 +34,8 @@ namespace mk {
 			return view;
 		}
 
+		math::Vector2f mapPixelToCoords2D(const math::Vector2i& point) const;
+
 	protected:
 		void defaultRender(const Drawable& drawable, DrawContext context);
 

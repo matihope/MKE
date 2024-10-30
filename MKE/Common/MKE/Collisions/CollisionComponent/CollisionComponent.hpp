@@ -1,7 +1,8 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <vector>
-#include "Math/Vector.hpp"
+#include "MKE/Color.hpp"
+#include "MKE/DrawContext.hpp"
+#include "MKE/Drawable.hpp"
+#include "MKE/Transformable.hpp"
 
 namespace mk {
 	namespace Debug {
@@ -12,12 +13,12 @@ namespace mk {
 
 	class WorldEntity;
 
-	class CollisionComponent: public sf::Drawable, public sf::Transformable {
+	class CollisionComponent: public Drawable, public Transformable {
 	protected:
 		bool m_draw = false;
 
-		sf::Color m_outline_color = sf::Color(200.f, 100.f, 125.f, 175.f);
-		sf::Color m_fill_color    = sf::Color(50.f, 175.f, 255.f, 100.f);
+		Color m_outline_color = Color(200, 100, 125, 175);
+		Color m_fill_color    = Color(50, 175, 255, 100);
 
 		WorldEntity* m_parent;
 
@@ -30,6 +31,6 @@ namespace mk {
 
 		bool shouldDraw() const;
 		void setDraw(bool draw);
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		void draw(RenderTarget& target, DrawContext context) const override;
 	};
 }  // namespace mk

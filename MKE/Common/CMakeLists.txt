@@ -25,13 +25,17 @@ add_library(MKE-Common
 
     MKE/Nodes/GUI/Label.cpp
     MKE/Nodes/GUI/Label.hpp
+    MKE/Nodes/GUI/Clickable.cpp
+    MKE/Nodes/GUI/Clickable.hpp
+    MKE/Nodes/GUI/Button.cpp
+    MKE/Nodes/GUI/Button.hpp
     MKE/Nodes/2d/RectShape.cpp
     MKE/Nodes/2d/RectShape.hpp
 
-    # MKE/Nodes/2d/RectShape.cpp
-    # MKE/Nodes/2d/RectShape.hpp
-    # MKE/WorldEntity.cpp
-    # MKE/WorldEntity.hpp
+    MKE/Collisions/CollisionComponent/CollisionComponent.cpp
+    MKE/Collisions/CollisionComponent/CollisionComponent.hpp
+    MKE/Collisions/CollisionShape/CollisionShape.cpp
+    MKE/Collisions/CollisionShape/CollisionShape.hpp
 )
 target_link_libraries(MKE-Common MKE-Base MKE-Graphics ${FREETYPE_LIBRARIES})
 target_include_directories(MKE-Common PUBLIC ${FREETYPE_INCLUDE_DIRS})

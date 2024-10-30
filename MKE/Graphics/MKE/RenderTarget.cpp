@@ -15,3 +15,7 @@ const mk::View3D& mk::RenderTarget::getCurrentView3D() const {
 	if (custom_view3d) return *custom_view3d;
 	return getDefaultView3D();
 }
+
+mk::math::Vector2f mk::RenderTarget::mapPixelToCoords2D(const math::Vector2i& point) const {
+	
+}

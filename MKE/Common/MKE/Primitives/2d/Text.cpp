@@ -214,8 +214,8 @@ mk::math::RectF mk::Text2D::getGlobalBounds() const {
 	auto top_left     = getPosition2D();
 	auto bottom_right = top_left + getLocalBounds().getSize();
 
-	auto new_top_left     = transform * top_left;
-	auto new_bottom_right = transform * bottom_right;
+	auto new_top_left     = transform ^ top_left;
+	auto new_bottom_right = transform ^ bottom_right;
 
 	auto min_x = std::min(new_top_left.x, new_bottom_right.x);
 	auto max_x = std::max(new_top_left.x, new_bottom_right.x);

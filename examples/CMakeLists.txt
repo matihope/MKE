@@ -11,7 +11,6 @@ endforeach()
 add_example(hello_window USES MKE-Engine)
 add_example(hello_triangle USES MKE-Engine)
 add_example(hello_rectangle USES MKE-Engine glfw)
-add_example(fun USES MKE-Engine)
 
 add_example(vertex_array USES MKE-Engine)
 add_example_assets(vertex_array)

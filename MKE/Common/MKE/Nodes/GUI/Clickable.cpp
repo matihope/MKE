@@ -1,7 +1,6 @@
 #include "Clickable.hpp"
-
-#include <Clickable/Clickable.hpp>
-#include <Game/Game.hpp>
+#include "MKE/Game.hpp"
+#include "MKE/Input.hpp"
 
 namespace mk {
 	Clickable::Clickable() {
@@ -16,13 +15,12 @@ namespace mk {
 
 	void Clickable::update(Game& game, float dt) {
 		if (!m_collision_shape) return;
-		if (!game.isWindowActive()) return;
 		math::Vector2f mousePos = game.getMousePos();
 		m_is_held               = false;
 		m_is_pressed            = false;
 
 		if (m_collision_shape->contains(mousePos)) {
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			if (game.isMousePressed(input::MOUSE_LEFT)) {
 				if (m_is_pressable) {
 					m_is_held = true;
 					onHold();

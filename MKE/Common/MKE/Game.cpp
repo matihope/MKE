@@ -49,6 +49,7 @@ namespace mk {
 
 	void Game::update() {
 		m_delta_time = m_clock.restart();
+		m_mouse_pos  = m_window.getMousePosition().type<float>();
 		// m_mouse_pos  = math::Vector2f(
 		//     getRenderWindow().mapPixelToCoords(sf::Mouse::getPosition(getRenderWindow()))
 		// );
@@ -208,9 +209,7 @@ namespace mk {
 
 		// Debug::setDebugCollisionDraw(m_game_settings["debug"]["drawCollisionShapes"]);
 
-		m_default_font = ResourceManager::get().getFont(
-			ResPath(std::string(m_game_settings["engine"]["fontPath"]))
-		);
+		m_default_font = res_man.getFont(std::string(m_game_settings["engine"]["fontPath"]));
 		m_default_font->setSmooth(bool(m_game_settings["engine"]["fontSmooth"]));
 
 		m_fps_label = std::make_unique<gui::Label>(m_default_font);
@@ -230,4 +229,10 @@ namespace mk {
 	bool Game::isKeyPressed(input::KEY key) const { return m_window.isKeyPressed(key); }
 
 	bool Game::isKeyJustPressed(input::KEY key) const { return m_window.isKeyJustPressed(key); }
+
+	bool Game::isMousePressed(input::MOUSE button) const { return m_window.isMousePressed(button); }
+
+	bool Game::isMouseJustPressed(input::MOUSE button) const {
+		return m_window.isMouseJustPressed(button);
+	}
 }  // namespace mk

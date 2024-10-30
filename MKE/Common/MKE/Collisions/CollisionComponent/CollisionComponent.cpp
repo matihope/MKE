@@ -1,6 +1,5 @@
-#include <CollisionComponent/CollisionComponent.hpp>
-#include <Math/Math.hpp>
-#include <iostream>
+#include "CollisionComponent.hpp"
+#include "MKE/DrawContext.hpp"
 
 namespace mk {
 	namespace Debug {
@@ -15,7 +14,7 @@ namespace mk {
 		// m_shape_repr.setOutlineThickness(1.f);
 	}
 
-	void CollisionComponent::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	void CollisionComponent::draw(RenderTarget&, DrawContext) const {
 		if (!m_draw && !Debug::debugDraw) return;
 	}
 

@@ -102,6 +102,8 @@ namespace mk {
 	}
 
 	void WorldEntity2D::beginDraw(RenderTarget& target, const Game& game) const {
+		glDisable(GL_DEPTH_TEST);
+
 		DrawContext context;
 		auto [width, height] = target.getSize().bind();
 		context.camera(0, 0) = 2.f / width;

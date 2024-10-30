@@ -6,21 +6,14 @@
 
 namespace mk {
 	class ResourceManager {
-	private:
-		ResourceManager() = default;
-		Texture*                             getMutTexture(const ResPath& path);
-		std::unordered_map<ResPath, Texture> textures;
-		std::unordered_map<ResPath, Font>    fonts;
-
 	public:
-		// singleton stuff
-		ResourceManager(const ResourceManager&)                   = delete;
-		void                    operator=(const ResourceManager&) = delete;
-		static ResourceManager& get();
-
 		const Texture* getTexture(const ResPath& path);
 		void           setTextureSmooth(const ResPath& path, bool smooth);
 
-		Font*    getFont(const ResPath& path);
+		Font* getFont(const ResPath& path);
+	private:
+		Texture*                             getMutTexture(const ResPath& path);
+		std::unordered_map<ResPath, Texture> textures;
+		std::unordered_map<ResPath, Font>    fonts;
 	};
 }  // namespace mk

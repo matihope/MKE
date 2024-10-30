@@ -2,7 +2,6 @@
 #include "MKE/DrawContext.hpp"
 #include "MKE/Drawable.hpp"
 #include "MKE/Event.hpp"
-#include "MKE/Math/Matrix.hpp"
 #include "MKE/RenderTarget.hpp"
 #include "MKE/Transformable.hpp"
 #include <MKE/Updatable.hpp>
@@ -61,7 +60,6 @@ namespace mk {
 		template<class T, unsigned int drawOrder = 0, class... Args>
 		requires std::is_base_of_v<WorldEntity, T> T* addChild(Game& game, Args&&... args) {
 			auto new_child     = std::make_unique<T>(std::forward<Args>(args)...);
-			auto new_child_ptr = new_child.get();
 			return addChild<T, drawOrder>(game, std::move(new_child));
 		}
 

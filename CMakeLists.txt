@@ -34,7 +34,6 @@ macro(add_example_assets example_name)
     target_compile_definitions(${example_name} PUBLIC "CUSTOM_ASSETS_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/assets\"")
 endmacro(add_example_assets)
 
-
 # Dependencies
 add_subdirectory(dependencies)
 find_package(glfw3 3.4 REQUIRED)
@@ -45,6 +44,7 @@ add_subdirectory(MKE)
 
 # Examples
 option(BUILD_EXAMPLES "Build examples" ON)
+
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)

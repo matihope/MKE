@@ -12,7 +12,6 @@ namespace mk {
 		RectPrimitive(float width, float height);
 
 		void draw(RenderTarget& target, DrawContext context) const override;
-		void setColor();
 
 		void setSize(float width, float height);
 		void setSize(math::Vector2f size);
@@ -22,7 +21,7 @@ namespace mk {
 		void setColor(Color color);
 
 	private:
-		void           update();
+		void update();
 
 		Color          color = Colors::WHITE;
 		VertexArray2D  vertices{ true };

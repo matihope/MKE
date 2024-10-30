@@ -4,7 +4,6 @@
 #include "MKE/Math/Matrix.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/Texture.hpp"
-#include "MKE/Transformable.hpp"
 #include "glad/glad.h"
 
 void mk::RenderTexture2D::create(usize width, usize height) { create({ width, height }); }

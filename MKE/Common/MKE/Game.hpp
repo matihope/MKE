@@ -1,12 +1,13 @@
 #pragma once
 
-#include "MKE/Camera.hpp"
-#include "MKE/Clock.hpp"
-#include "MKE/Font.hpp"
+#include "MKE/Input.hpp"
 #include "MKE/JsonBridge.hpp"
+#include "MKE/Math/Vector.hpp"
 #include "MKE/Nodes/GUI/Label.hpp"
 #include "MKE/RenderWindow.hpp"
+#include "MKE/ResourceManager.hpp"
 #include "MKE/WorldEntity.hpp"
+#include "MKE/Clock.hpp"
 
 #include <cstddef>
 #include <memory>
@@ -25,6 +26,8 @@ namespace mk {
 		float  m_physics_update_call_freq = 1. / 60.;
 		float  m_physics_update_counter   = 0.f;
 		// sf::Cursor::Type m_current_cursor_type;
+
+		ResourceManager res_man;
 
 		mk::Clock                                m_clock;
 		JsonBridge                               m_game_settings;
@@ -66,13 +69,19 @@ namespace mk {
 		void popScene();
 
 		math::Vector2f getMousePos();
+		bool           isMousePressed(input::MOUSE button) const;
+		bool           isMouseJustPressed(input::MOUSE button) const;
+
 		// const sf::View* getView();
 		// void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
+
 		mk::Font* getDefaultFont() const;
 
 		bool isKeyPressed(input::KEY key) const;
 		bool isKeyJustPressed(input::KEY key) const;
+
+		ResourceManager& resources() { return res_man; }
 	};
 
 }  // namespace mk

@@ -128,6 +128,8 @@ namespace mk::math {
 
 		constexpr Vector operator-(const auto& rhs) const { return Vector(*this) -= rhs; }
 
+		constexpr Vector operator-() const { return Vector(*this) *= -1; }
+
 		constexpr Vector operator*(const auto& rhs) const { return Vector(*this) *= rhs; }
 
 		constexpr Vector operator/(const auto& rhs) const { return Vector(*this) /= rhs; }
@@ -165,9 +167,9 @@ namespace mk::math {
 	template<class T>
 	using Vector2 = Vector<impl::Vec, T, 2>;
 
-	using Vector2f = Vector2<float>;
-	using Vector2i = Vector2<i32>;
-	using Vector2u = Vector2<usize>;
+	using Vector2f   = Vector2<float>;
+	using Vector2i   = Vector2<i32>;
+	using Vector2u   = Vector2<usize>;
 	using Vector2u32 = Vector2<u32>;
 
 	template<class T>
