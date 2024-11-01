@@ -59,7 +59,7 @@ namespace mk {
 
 		template<class T, unsigned int drawOrder = 0, class... Args>
 		requires std::is_base_of_v<WorldEntity, T> T* addChild(Game& game, Args&&... args) {
-			auto new_child     = std::make_unique<T>(std::forward<Args>(args)...);
+			auto new_child = std::make_unique<T>(std::forward<Args>(args)...);
 			return addChild<T, drawOrder>(game, std::move(new_child));
 		}
 
@@ -75,13 +75,18 @@ namespace mk {
 
 		virtual void onPhysicsUpdate([[maybe_unused]] Game& game, [[maybe_unused]] float dt) {}
 
+		virtual void onEvent([[maybe_unused]] Game& game, [[maybe_unused]] const Event& dt) {}
+
 		virtual void onDraw(
 			[[maybe_unused]] RenderTarget& target,
 			[[maybe_unused]] DrawContext   context,
 			[[maybe_unused]] const Game&   game
 		) const {}
 
-		virtual void handleEvent([[maybe_unused]] Game& game, [[maybe_unused]] const Event& event) {
+		virtual void event([[maybe_unused]] Game& game, [[maybe_unused]] const Event& event) {
+			onEvent(game, event);
+			for (const auto& layer: m_entity_pool)
+				for (auto& entity: layer.second) entity->event(game, event);
 		}
 
 		math::Vector3f getGlobalPosition() const;

@@ -13,7 +13,6 @@
 #include <memory>
 #include <queue>
 #include <stack>
-#include <type_traits>
 
 namespace mk {
 
@@ -53,13 +52,13 @@ namespace mk {
 		void pollEvents();
 		void stop();
 
-		void           setPrintFPS(const bool& printFPS);
-		bool           isRunning() const;
+		void setPrintFPS(const bool& printFPS);
+		bool isRunning() const;
+		[[nodiscard]]
 		math::Vector2u getWindowSize() const;
 		// math::Vector2u getViewportSize();
 		// void           setViewportSize(math::Vector2u newSize);
 		RenderWindow& getRenderWindow();
-		bool          isWindowActive() const;
 
 		template<class T, class... Args>
 		T* addScene(Args&&... args) {

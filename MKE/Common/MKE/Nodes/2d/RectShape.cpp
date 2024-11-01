@@ -3,9 +3,12 @@
 //
 
 #include "RectShape.hpp"
+#include "MKE/WorldEntity.hpp"
 
 namespace mk {
-	RectShape::RectShape(Color color, mk::math::Vector2f size): rect(size) { rect.setColor(color); }
+	RectShape::RectShape(Color color, mk::math::Vector2f size): WorldEntity2D(), rect(size) {
+		rect.setColor(color);
+	}
 
 	void RectShape::setColor(Color color) { rect.setColor(color); }
 

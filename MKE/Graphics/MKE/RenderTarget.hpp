@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MKE/Math/MatrixUtils.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/NonCopyable.hpp"
 #include "MKE/DrawContext.hpp"
@@ -30,7 +31,7 @@ namespace mk {
 		}
 
 		const View3D& getDefaultView3D() const {
-			static View3D view(math::Vector3f{ 0.f });
+			static View3D view(math::Vector3f{ 0.f }, math::Vector3f{ -1.f, 0.f, 0.f });
 			return view;
 		}
 

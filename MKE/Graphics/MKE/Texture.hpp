@@ -14,7 +14,7 @@ namespace mk {
 
 		static void bind(const Texture* texture);
 
-		void loadFromMemory(usize width, usize height, const void* data, GLenum format = GL_RGBA);
+		void loadFromMemory(u32 width, u32 height, const void* data, GLenum format = GL_RGBA);
 		void loadFromImage(const Image& image);
 		void loadFromFile(const ResPath& file);
 

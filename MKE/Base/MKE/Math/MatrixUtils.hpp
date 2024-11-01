@@ -43,10 +43,11 @@ namespace mk::math {
 		return projection;
 	}
 
-	constexpr Matrix4f lookAt(Vector3f from, Vector3f at, Vector3f up) {
-		Vector3f forward_vec = (from - at).normalizeOrZero();
-		Vector3f right_vec   = cross(up, forward_vec).normalizeOrZero();
-		Vector3f up_vec      = cross(forward_vec, right_vec).normalizeOrZero();
+	constexpr Matrix4f lookAtDirection(Vector3f from, Vector3f direction, Vector3f up) {
+		direction = -direction.normalizeOrZero();
+
+		Vector3f right_vec = cross(up, direction).normalizeOrZero();
+		Vector3f up_vec    = cross(direction, right_vec).normalizeOrZero();
 
 		Matrix4f look_at{ 1.f };
 		look_at(0, 0) = right_vec.x;
@@ -57,9 +58,9 @@ namespace mk::math {
 		look_at(1, 1) = up_vec.y;
 		look_at(1, 2) = up_vec.z;
 
-		look_at(2, 0) = forward_vec.x;
-		look_at(2, 1) = forward_vec.y;
-		look_at(2, 2) = forward_vec.z;
+		look_at(2, 0) = direction.x;
+		look_at(2, 1) = direction.y;
+		look_at(2, 2) = direction.z;
 
 		Matrix4f translation{ 1.f };
 		translation(0, 3) = -from.x;
@@ -67,5 +68,9 @@ namespace mk::math {
 		translation(2, 3) = -from.z;
 
 		return look_at * translation;
+	}
+
+	constexpr Matrix4f lookAt(Vector3f from, Vector3f at, Vector3f up) {
+		return lookAtDirection(from, at - from, up);
 	}
 }

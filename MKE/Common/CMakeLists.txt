@@ -31,6 +31,8 @@ add_library(MKE-Common
     MKE/Nodes/GUI/Button.hpp
     MKE/Nodes/2d/RectShape.cpp
     MKE/Nodes/2d/RectShape.hpp
+    MKE/Nodes/3d/CubeShape.cpp
+    MKE/Nodes/3d/CubeShape.hpp
 
     MKE/Collisions/CollisionComponent/CollisionComponent.cpp
     MKE/Collisions/CollisionComponent/CollisionComponent.hpp

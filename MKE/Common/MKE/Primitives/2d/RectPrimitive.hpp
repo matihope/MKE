@@ -21,7 +21,7 @@ namespace mk {
 		void setColor(Color color);
 
 	private:
-		void update();
+		void updateVertices();
 
 		Color          color = Colors::WHITE;
 		VertexArray2D  vertices{ true };

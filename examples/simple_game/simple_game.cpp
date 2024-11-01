@@ -17,7 +17,7 @@ public:
 		texture = game.resources().getTexture("arrow.png");
 	}
 
-	void onUpdate(mk::Game& game, float dt) override {
+	void onPhysicsUpdate(mk::Game& game, float dt) override {
 		bool right = game.isKeyPressed(mk::input::KEY::ARROW_RIGHT);
 		bool left  = game.isKeyPressed(mk::input::KEY::ARROW_LEFT);
 		bool up    = game.isKeyPressed(mk::input::KEY::ARROW_UP);
@@ -44,6 +44,9 @@ public:
 };
 
 class World: public mk::WorldEntity2D {
+	Player*          player = nullptr;
+	mk::gui::Button* button = nullptr;
+
 public:
 	void onReady(mk::Game& game) override {
 		player = addChild<Player>(game);
@@ -60,9 +63,6 @@ public:
 			                      mk::Random::getReal<float>(0, h) });
 		}
 	}
-
-	Player*          player = nullptr;
-	mk::gui::Button* button = nullptr;
 };
 
 int main() {

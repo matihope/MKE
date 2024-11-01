@@ -7,7 +7,6 @@ namespace mk {
 	public:
 		enum class ClickMode { PressOnRelease, PressOnClick };
 
-		Clickable();
 		virtual ~Clickable() = 0;
 		[[nodiscard]]
 		bool isPressed() const;
@@ -27,12 +26,14 @@ namespace mk {
 		virtual void onPressed() {}  // callback
 
 	private:
-		ClickMode           m_click_mode = ClickMode::PressOnRelease;
-		CollisionComponent* m_collision_shape;
-		bool                m_is_held;
-		bool                m_is_pressable;
-		bool                m_was_held_prev;
-		bool                m_is_pressed;
-		void                makePress();
+		ClickMode           click_mode      = ClickMode::PressOnRelease;
+		CollisionComponent* collision_shape = nullptr;
+
+		bool is_help{};
+		bool is_pressable{};
+		bool was_help_prev{};
+		bool is_pressed{};
+
+		void makePress();
 	};
 }  // namespace mk

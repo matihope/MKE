@@ -35,7 +35,7 @@ void mk::RectPrimitive::draw(RenderTarget& target, DrawContext context) const {
 	vertices.draw(target, context);
 }
 
-void mk::RectPrimitive::update() {
+void mk::RectPrimitive::updateVertices() {
 	auto&& v1     = vertices(0);
 	v1.position   = { 0.0, 0.0 };
 	v1.tex_coords = { 0.0, 0.0 };
@@ -61,14 +61,14 @@ void mk::RectPrimitive::setSize(float width, float height) { setSize({ width, he
 void mk::RectPrimitive::setSize(math::Vector2f size) {
 	if (this->size != size) {
 		this->size = size;
-		update();
+		updateVertices();
 	}
 }
 
 void mk::RectPrimitive::setColor(Color color) {
 	if (this->color != color) {
 		this->color = color;
-		update();
+		updateVertices();
 	}
 }
 

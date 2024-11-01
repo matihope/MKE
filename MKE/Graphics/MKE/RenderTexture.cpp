@@ -6,7 +6,7 @@
 #include "MKE/Texture.hpp"
 #include "glad/glad.h"
 
-void mk::RenderTexture2D::create(usize width, usize height) { create({ width, height }); }
+void mk::RenderTexture2D::create(u32 width, u32 height) { create({ width, height }); }
 
 mk::RenderTexture2D::~RenderTexture2D() {
 	glDeleteFramebuffers(1, &frame_buffer_id);

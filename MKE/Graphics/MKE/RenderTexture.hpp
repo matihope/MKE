@@ -22,7 +22,7 @@ namespace mk {
 
 		u32 getFBO() const;
 
-		void create(usize width, usize height);
+		void create(u32 width, u32 height);
 		void create(math::Vector2u size);
 
 		void render(const Drawable& drawable, DrawContext context) override;

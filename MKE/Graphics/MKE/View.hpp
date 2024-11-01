@@ -3,6 +3,7 @@
 #include "MKE/Math/Matrix.hpp"
 #include "MKE/Math/Rect.hpp"
 #include "MKE/Math/Vector.hpp"
+#include "MKE/Updatable.hpp"
 
 namespace mk {
 	class View {
@@ -33,12 +34,31 @@ namespace mk {
 	public:
 		View3D();
 		View3D(math::Vector3f position);
+		View3D(math::Vector3f position, math::Vector3f direction);
 
 		~View3D() = default;
 
+		void           lookAt(math::Vector3f look_at);
 		math::Matrix4f getTransform() const override;
 
+		void           setPosition(math::Vector3f position);
+		math::Vector3f getPosition() const;
+
+		void           setDirection(math::Vector3f direction);
+		math::Vector3f getDirection() const;
+
+		void setFov(float fov);
+		void setAspect(float aspect);
+
+
 	private:
+		float fov    = 45.f;
+		float aspect = 1.f;
+
+		void makeCamera();
+
 		math::Vector3f position;
+		math::Vector3f direction;
+		math::Matrix4f camera;
 	};
 }

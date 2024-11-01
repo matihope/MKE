@@ -3,56 +3,47 @@
 #include "MKE/Input.hpp"
 
 namespace mk {
-	Clickable::Clickable() {
-		m_is_held         = false;
-		m_was_held_prev   = false;
-		m_is_pressable    = false;
-		m_is_pressed      = false;
-		m_collision_shape = nullptr;
-	}
-
 	Clickable::~Clickable() = default;
 
-	void Clickable::update(Game& game, float dt) {
-		if (!m_collision_shape) return;
+	void Clickable::update(Game& game, float) {
+		if (!collision_shape) return;
 		math::Vector2f mousePos = game.getMousePos();
-		m_is_held               = false;
-		m_is_pressed            = false;
+		is_help                 = false;
+		is_pressed              = false;
 
-		if (m_collision_shape->contains(mousePos)) {
+		if (collision_shape->contains(mousePos)) {
 			if (game.isMousePressed(input::MOUSE_LEFT)) {
-				if (m_is_pressable) {
-					m_is_held = true;
+				if (is_pressable) {
+					is_help = true;
 					onHold();
-					if (not m_was_held_prev and m_click_mode == ClickMode::PressOnClick)
-						makePress();
+					if (not was_help_prev and click_mode == ClickMode::PressOnClick) makePress();
 				}
 			} else {
-				m_is_pressable = true;
-				if (m_was_held_prev) {
-					if (m_click_mode == ClickMode::PressOnRelease) makePress();
+				is_pressable = true;
+				if (was_help_prev) {
+					if (click_mode == ClickMode::PressOnRelease) makePress();
 					onRelease();
 				} else {
 					onHover();
 				}
 			}
 		} else {
-			m_is_pressable = false;
+			is_pressable = false;
 			onStopHover();
 		}
-		m_was_held_prev = m_is_held;
+		was_help_prev = is_help;
 	}
 
 	void Clickable::setClickCollisionShape(CollisionComponent* collision_shape) {
-		m_collision_shape = collision_shape;
+		this->collision_shape = collision_shape;
 	}
 
-	void Clickable::setClickMode(Clickable::ClickMode new_mode) { m_click_mode = new_mode; }
+	void Clickable::setClickMode(Clickable::ClickMode click_mode) { this->click_mode = click_mode; }
 
-	bool Clickable::isPressed() const { return m_is_pressed; }
+	bool Clickable::isPressed() const { return is_pressed; }
 
 	void Clickable::makePress() {
-		m_is_pressed = true;
+		is_pressed = true;
 		onPressed();
 	}
 }  // namespace mk

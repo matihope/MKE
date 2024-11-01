@@ -21,7 +21,5 @@ add_example_assets(rect_primitive)
 add_example(cube_primitive USES MKE-Engine)
 add_example_assets(cube_primitive)
 
-add_example(text_rendering USES MKE-Engine )
+add_example(text_rendering USES MKE-Engine)
 add_example_assets(text_rendering)
-# target_link_libraries(text_rendering ${FREETYPE_LIBRARIES})
-# target_include_directories(text_rendering PRIVATE ${FREETYPE_INCLUDE_DIRS})

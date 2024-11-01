@@ -96,7 +96,7 @@ namespace mk {
 	void Game::pollEvents() {
 		mk::Event event{};
 		while (m_window.pollEvent(event)) {
-			if (!m_scene_stack.empty()) m_scene_stack.top()->handleEvent(*this, event);
+			if (!m_scene_stack.empty()) m_scene_stack.top()->event(*this, event);
 
 			switch (event.type) {
 			case mk::EventType::WindowClose:
@@ -114,6 +114,7 @@ namespace mk {
 				}
 				break;
 			case mk::EventType::WindowResized:
+				m_fps_label->setPosition(event.window_resized.new_size.type<float>().x - 1.f, 1.f);
 				// updateViewportSize();
 				break;
 			default:
@@ -213,7 +214,7 @@ namespace mk {
 		m_fps_label->setString("0");
 		m_fps_label->setTextSize(32);
 		m_fps_label->setAlignment(gui::HAlignment::RIGHT, gui::VAlignment::TOP);
-		m_fps_label->setPosition({ (float) getWindowSize().x, 0.f });
+		m_fps_label->setPosition({ (float) getWindowSize().x - 1.f, 1.f });
 
 		// lastly, set cursor
 		// m_current_cursor_type = sf::Cursor::Arrow;

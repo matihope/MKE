@@ -90,6 +90,8 @@ namespace mk {
 	DrawMode WorldEntityUI::getDrawMode() const { return DrawMode::ModeUI; }
 
 	void WorldEntityUI::beginDraw(RenderTarget& target, const Game& game) const {
+		glDisable(GL_DEPTH_TEST);
+
 		DrawContext context;
 
 		auto [width, height] = target.getSize().bind();
@@ -105,11 +107,17 @@ namespace mk {
 		glDisable(GL_DEPTH_TEST);
 
 		DrawContext context;
-		auto [width, height] = target.getSize().bind();
-		context.camera(0, 0) = 2.f / width;
-		context.camera(1, 1) = -2.f / height;
-		context.camera(0, 3) = -1;
-		context.camera(1, 3) = 1;
+		context.camera = target.getCurrentView2D().getTransform();
+
+		drawEntity(target, context, game, getDrawMode());
+	}
+
+	void WorldEntity3D::beginDraw(RenderTarget& target, const Game& game) const {
+		glEnable(GL_DEPTH_TEST);
+
+		DrawContext context;
+		context.camera = target.getCurrentView3D().getTransform();
+
 		drawEntity(target, context, game, getDrawMode());
 	}
 }  // namespace mk
