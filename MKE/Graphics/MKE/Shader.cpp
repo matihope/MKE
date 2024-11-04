@@ -30,19 +30,21 @@ void mk::Shader::deleteProgram() {
 mk::Shader::~Shader() { this->deleteProgram(); }
 
 void mk::Shader::setBool(const std::string& name, bool value) const {
-	glUniform1i(glGetUniformLocation(program_id, name.c_str()), (int) value);
+	glProgramUniform1i(program_id, glGetUniformLocation(program_id, name.c_str()), (int) value);
 }
 
 void mk::Shader::setI32(const std::string& name, i32 value) const {
-	glUniform1i(glGetUniformLocation(program_id, name.c_str()), value);
+	glProgramUniform1i(program_id, glGetUniformLocation(program_id, name.c_str()), value);
 }
 
 void mk::Shader::setFloat(const std::string& name, float value) const {
-	glUniform1f(glGetUniformLocation(program_id, name.c_str()), value);
+	glProgramUniform1f(program_id, glGetUniformLocation(program_id, name.c_str()), value);
 }
 
 void mk::Shader::setMatrix4f(const std::string& name, const math::Matrix4f& value) const {
-	glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_TRUE, value.data());
+	glProgramUniformMatrix4fv(
+		program_id, glGetUniformLocation(program_id, name.c_str()), 1, GL_TRUE, value.data()
+	);
 }
 
 void mk::Shader::use(const Shader* shader) {
@@ -98,5 +100,18 @@ void mk::Shader::load(const char* vertex_shader, const char* fragment_shader) {
 }
 
 void mk::Shader::setColor(const std::string& name, mk::Color color) const {
-	glUniform4f(glGetUniformLocation(program_id, name.c_str()), color.r, color.g, color.b, color.a);
+	glProgramUniform4f(
+		program_id,
+		glGetUniformLocation(program_id, name.c_str()),
+		color.r,
+		color.g,
+		color.b,
+		color.a
+	);
+}
+
+void mk::Shader::setVector3f(const std::string& name, const math::Vector3f& vec) const {
+	glProgramUniform3f(
+		program_id, glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z
+	);
 }

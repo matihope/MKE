@@ -75,19 +75,22 @@ void mk::Transformable::setRotation(float d_pitch, float d_yaw, float d_roll) {
 }
 
 mk::math::Matrix4f mk::Transformable::getTransform() const {
-	math::Matrix4f transform{ 1 };
-	transform(0, 0) = scale.x;
-	transform(1, 1) = scale.y;
-	transform(2, 2) = scale.z;
-	transform(0, 3) = position.x;
-	transform(1, 3) = position.y;
-	transform(2, 3) = position.z;
+	math::Matrix4f scale_matrix{ 1 };
+	scale_matrix(0, 0) = scale.x;
+	scale_matrix(1, 1) = scale.y;
+	scale_matrix(2, 2) = scale.z;
 
-	math::Matrix4f origin_transform{ 1 };
-	origin_transform(0, 3) = -origin.x;
-	origin_transform(1, 3) = -origin.y;
-	origin_transform(2, 3) = -origin.z;
-	return transform * getRotationTransform() * origin_transform;
+	math::Matrix4f origin_matrix{ 1 };
+	origin_matrix(0, 3) = -origin.x;
+	origin_matrix(1, 3) = -origin.y;
+	origin_matrix(2, 3) = -origin.z;
+
+	math::Matrix4f position_matrix{ 1 };
+	position_matrix(0, 3) = position.x;
+	position_matrix(1, 3) = position.y;
+	position_matrix(2, 3) = position.z;
+
+	return position_matrix * scale_matrix * getRotationTransform() * origin_matrix;
 }
 
 void mk::Transformable::rotate(float d_pitch) { rotation.x += d_pitch; }

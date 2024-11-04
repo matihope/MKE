@@ -3,7 +3,7 @@
         "width": 800,
         "height": 800,
         "title": "MKE Simple Game",
-        "vsync": false
+        "vsync": true
     },
     "viewport": {
         "width": 800,
