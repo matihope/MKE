@@ -31,6 +31,9 @@ namespace mk {
 
 		bool m_called_ready = false;
 
+		// if is_paused == true returns from updating and does not propagate
+		bool m_is_paused = false;
+
 	public:
 		WorldEntity();
 
@@ -39,6 +42,10 @@ namespace mk {
 		void queueFree();
 
 		const bool& isDying() const;
+
+		bool isPaused() const;
+
+		void setPaused(bool paused);
 
 		// We want to it be ordered to be able to iterate in an ordered way.
 		std::map<usize, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
@@ -75,7 +82,7 @@ namespace mk {
 
 		virtual void onPhysicsUpdate([[maybe_unused]] Game& game, [[maybe_unused]] float dt) {}
 
-		virtual void onEvent([[maybe_unused]] Game& game, [[maybe_unused]] const Event& dt) {}
+		virtual void onEvent([[maybe_unused]] Game& game, [[maybe_unused]] const Event& event) {}
 
 		virtual void onDraw(
 			[[maybe_unused]] RenderTarget& target,

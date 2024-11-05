@@ -28,6 +28,10 @@ namespace mk {
 
 	const bool& WorldEntity::isDying() const { return m_toKill; }
 
+	bool WorldEntity::isPaused() const { return m_is_paused; }
+
+	void WorldEntity::setPaused(bool paused) { m_is_paused = paused; }
+
 	void WorldEntity::addParent(WorldEntity* parent) { m_parent = parent; }
 
 	WorldEntity* WorldEntity::getParent() { return m_parent; }
@@ -43,12 +47,15 @@ namespace mk {
 
 	void WorldEntity::update(Game& game, float dt) {
 		cleanEntities();
+
+		if (m_is_paused) return;
 		onUpdate(game, dt);
 		for (const auto& layer: m_entity_pool)
 			for (auto& entity: layer.second) entity->update(game, dt);
 	}
 
 	void WorldEntity::physicsUpdate(Game& game, const float dt) {
+		if (m_is_paused) return;
 		onPhysicsUpdate(game, dt);
 		for (const auto& layer: m_entity_pool)
 			for (auto& entity: layer.second) entity->physicsUpdate(game, dt);

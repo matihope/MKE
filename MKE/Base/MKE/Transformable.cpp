@@ -90,7 +90,7 @@ mk::math::Matrix4f mk::Transformable::getTransform() const {
 	position_matrix(1, 3) = position.y;
 	position_matrix(2, 3) = position.z;
 
-	return position_matrix * scale_matrix * getRotationTransform() * origin_matrix;
+	return position_matrix * getRotationTransform() * scale_matrix * origin_matrix;
 }
 
 void mk::Transformable::rotate(float d_pitch) { rotation.x += d_pitch; }

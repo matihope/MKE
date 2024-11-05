@@ -28,6 +28,7 @@ namespace mk {
 
 	struct Vertex3D {
 		math::Vector3f position;    // 12 bytes
+		math::Vector3f normal;      // 12 bytes
 		Color          color;       // 16 bytes
 		math::Vector2f tex_coords;  // 8 bytes
 

@@ -13,7 +13,10 @@ void mk::Camera3D::update(Game& game, const float dt) {
 	game.getRenderWindow().setView3D(view);
 }
 
-void mk::Camera3D::setPosition(math::Vector3f position) { view.setPosition(position); }
+void mk::Camera3D::setPosition(math::Vector3f position) {
+	WorldEntity3D::setPosition(position);
+	view.setPosition(position);
+}
 
 void mk::Camera3D::setDirection(math::Vector3f direction) { view.setDirection(direction); }
 

@@ -50,7 +50,7 @@ void mk::Shader::setMatrix4f(const std::string& name, const math::Matrix4f& valu
 void mk::Shader::use(const Shader* shader) {
 	// do not rebind if bound ;O
 	if (shader) {
-		MK_ASSERT(shader->is_compiled, "Using uncompiled shader...");
+		if (!shader->is_compiled) std::cerr << "WARNING: Using uncompiled shader...\n";
 		glUseProgram(shader->program_id);
 	} else {
 		glUseProgram(0);

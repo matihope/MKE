@@ -75,7 +75,7 @@ void mk::Vertex3D::configureVertexAttribute() {
 
 	glVertexAttribPointer(
 		1,
-		sizeof(color) / sizeof(float),
+		sizeof(normal) / sizeof(float),
 		GL_FLOAT,
 		GL_FALSE,
 		sizeof(Vertex3D),
@@ -85,11 +85,21 @@ void mk::Vertex3D::configureVertexAttribute() {
 
 	glVertexAttribPointer(
 		2,
+		sizeof(color) / sizeof(float),
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex3D),
+		(void*) (sizeof(position) + sizeof(normal))
+	);
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(
+		3,
 		sizeof(tex_coords) / sizeof(float),
 		GL_FLOAT,
 		GL_FALSE,
 		sizeof(Vertex3D),
-		(void*) (sizeof(position) + sizeof(color))
+		(void*) (sizeof(position) + sizeof(normal) + sizeof(color))
 	);
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 }
