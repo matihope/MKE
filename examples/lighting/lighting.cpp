@@ -65,12 +65,12 @@ public:
 	}
 
 	void setupShaders() {
-		shader.setVector3f("material.ambient", { 1.0f, 0.5f, 0.31f });
-		shader.setVector3f("material.diffuse", { 1.0f, 0.5f, 0.31f });
+		shader.setVector3f("lightColor", { 1.f, 1.0f, 1.0f });
+
+		shader.setVector3f("material.ambient", { 0.0f, 0.5f, 0.31f });
+		shader.setVector3f("material.diffuse", { 0.0f, 0.5f, 0.31f });
 		shader.setVector3f("material.specular", { 0.5f, 0.5f, 0.5f });
 		shader.setFloat("material.shininess", 32.0f);
-		shader.setVector3f("objectColor", { 1.0f, 0.5f, 0.31f });
-		shader.setVector3f("lightColor", { 1.f, 1.0f, 1.0f });
 	}
 
 	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)

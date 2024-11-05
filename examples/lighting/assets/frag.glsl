@@ -5,12 +5,6 @@ in vec3 fragPos;
 
 out vec4 FragColor;
 
-uniform vec3 objectColor;
-uniform vec3 lightColor;
-
-uniform vec3 lightPos;
-uniform vec3 camPos;
-
 struct Material {
     vec3 ambient;
     vec3 diffuse;
@@ -18,8 +12,10 @@ struct Material {
     float shininess;
 };
 
+uniform vec3 lightColor;
+uniform vec3 lightPos;
+uniform vec3 camPos;
 uniform Material material;
-
 
 void main() {
     // Ambient light
@@ -39,7 +35,6 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = material.specular * spec * lightColor;
 
-
-    vec3 result = (ambient + diffuse + specular) * objectColor;
+    vec3 result = ambient + diffuse + specular;
     FragColor = vec4(result, 1.0);
 }
