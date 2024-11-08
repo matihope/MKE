@@ -12,7 +12,7 @@ class Cube: public mk::CubeShape {
 public:
 	void onReady(mk::Game&) override { setOrigin(mk::math::Vector3f{ 0.5f }); }
 
-	void onUpdate(mk::Game&, float dt) override { rotate(mk::math::Vector3f{ dt * 0.2f }); }
+	void onPhysicsUpdate(mk::Game&, float dt) override { rotate(mk::math::Vector3f{ dt * 0.2f }); }
 
 	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
 		const override {
@@ -27,7 +27,7 @@ class LightSource: public mk::CubeShape {
 public:
 	void onReady(mk::Game&) override { setOrigin(mk::math::Vector3f{ -4.5f, 0.5f, 0.5f }); }
 
-	void onUpdate(mk::Game&, float dt) override {
+	void onPhysicsUpdate(mk::Game&, float dt) override {
 		rotate({ 0.f, dt, 0.f });
 		shader->setVector3f("lightPos", getGlobalTransform() ^ mk::math::Vector3f(0.5f));
 	}
@@ -65,10 +65,10 @@ public:
 	}
 
 	void setupShaders() {
-		shader.setVector3f("lightColor", { 1.f, 1.0f, 1.0f });
+		shader.setVector3f("lightColor", { 1.f });
 
-		shader.setVector3f("material.ambient", { 0.0f, 0.5f, 0.31f });
-		shader.setVector3f("material.diffuse", { 0.0f, 0.5f, 0.31f });
+		shader.setVector3f("material.ambient", { 1.0f, 0.5f, 0.31f });
+		shader.setVector3f("material.diffuse", { 1.0f, 0.5f, 0.31f });
 		shader.setVector3f("material.specular", { 0.5f, 0.5f, 0.5f });
 		shader.setFloat("material.shininess", 32.0f);
 	}
