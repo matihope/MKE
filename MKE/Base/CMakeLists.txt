@@ -23,6 +23,10 @@ add_library(MKE-Base
     MKE/ResPath.cpp
     MKE/ResPath.hpp
 
+    # Events
+    MKE/Event.cpp
+    MKE/Event.hpp
+
     # Updatable
     MKE/Updatable.hpp
 

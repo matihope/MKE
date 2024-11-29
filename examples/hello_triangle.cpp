@@ -88,7 +88,7 @@ int main() {
 	while (run) {
 		mk::Event event;
 		while (window.pollEvent(event))
-			if (event.type == mk::EventType::WindowClose) run = false;
+			if (event.is<mk::Event::WindowClose>()) run = false;
 		window.clear(mk::Colors::DARK);
 
 		glUseProgram(shaderProgram);

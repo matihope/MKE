@@ -18,22 +18,14 @@ namespace {
 		glfw_to_mk_window.at(window).get().addEvent(event);
 	}
 
-	void windowCloseCallback(GLFWwindow* window) {
-		mk::Event event{};
-		event.window_close = mk::Events::WindowClose();
-		pushEvent(window, event);
-	}
+	void windowCloseCallback(GLFWwindow* window) { pushEvent(window, mk::Event::WindowClose{}); }
 
 	void windowFramebufferSizeCallback(GLFWwindow* window, int width, int height) {
-		mk::Event event{};
-		event.window_resized = mk::Events::WindowResized(mk::math::Vector2u(width, height));
-		pushEvent(window, event);
+		pushEvent(window, mk::Event::WindowResized(mk::math::Vector2u(width, height)));
 	}
 
 	void windowScaleFactorCallback(GLFWwindow* window, float xscale, float yscale) {
-		mk::Event event{};
-		event.window_scale_factor = mk::Events::WindowScaleFactorChanged({ xscale, yscale });
-		pushEvent(window, event);
+		pushEvent(window, mk::Event::WindowScaleFactorChanged({ xscale, yscale }));
 	}
 
 	void windowKeyCallback(
@@ -43,9 +35,9 @@ namespace {
 
 		// This is fine, because mk::input::KEY follows GLFW's key ordering.
 		if (action == GLFW_PRESS)
-			event.key_pressed = mk::Events::KeyPressed(mk::input::KEY(key));
+			event = mk::Event::KeyPressed(mk::input::KEY(key));
 		else if (action == GLFW_RELEASE)
-			event.key_released = mk::Events::KeyReleased(mk::input::KEY(key));
+			event = mk::Event::KeyReleased(mk::input::KEY(key));
 		else
 			return;
 
@@ -59,9 +51,9 @@ namespace {
 
 		// This is fine, because mk::input::BUTTON follows GLFW's key ordering.
 		if (action == GLFW_PRESS)
-			event.mouse_pressed = mk::Events::MouseButtonPressed(mk::input::MOUSE(button));
+			event = mk::Event::MouseButtonPressed(mk::input::MOUSE(button));
 		else if (action == GLFW_RELEASE)
-			event.mouse_released = mk::Events::MouseButtonReleased(mk::input::MOUSE(button));
+			event = mk::Event::MouseButtonReleased(mk::input::MOUSE(button));
 		else
 			return;
 
@@ -131,21 +123,19 @@ void mk::Window::display() {
 }
 
 void mk::Window::addEvent(Event event) {
-	if (event.type == EventType::WindowScaleFactorChanged)
-		window_scale_factor = event.window_scale_factor.scale_factors;
-
-	else if (event.type == EventType::WindowResized) {
-		event.window_resized.new_size
-			= (event.window_resized.new_size.type<float>() / window_scale_factor).type<u32>();
-		setSize(event.window_resized.new_size);
-	} else if (event.type == EventType::WindowClose) {
+	if (auto ev = event.get<Event::WindowScaleFactorChanged>(); ev)
+		window_scale_factor = ev->scale_factors;
+	else if (auto ev = event.get<Event::WindowResized>(); ev) {
+		ev->new_size = (ev->new_size.type<float>() / window_scale_factor).type<u32>();
+		setSize(ev->new_size);
+	} else if (event.is<Event::WindowClose>()) {
 		setExitRequested(true);
 	}
 
-	else if (event.type == EventType::KeyPressed) {
-		just_pressed_key[(usize) event.key_pressed.key] = true;
-	} else if (event.type == EventType::MouseButtonPressed) {
-		just_pressed_mouse[(usize) event.mouse_pressed.button] = true;
+	else if (auto ev = event.get<Event::KeyPressed>(); ev) {
+		just_pressed_key[(usize) ev->key] = true;
+	} else if (auto ev = event.get<Event::MouseButtonPressed>(); ev) {
+		just_pressed_mouse[(usize) ev->button] = true;
 	}
 
 	events.push(event);

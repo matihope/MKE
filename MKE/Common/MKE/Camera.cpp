@@ -23,8 +23,8 @@ void mk::Camera3D::setDirection(math::Vector3f direction) { view.setDirection(di
 void mk::Camera3D::lookAt(math::Vector3f at) { view.lookAt(at); }
 
 void mk::Camera3D::event(Game& game, const Event& event) {
-	if (event.type == EventType::WindowResized) {
-		auto [w, h] = event.window_resized.new_size.type<float>().bind();
+	if (auto ev = event.get<Event::WindowResized>(); ev) {
+		auto [w, h] = ev->new_size.type<float>().bind();
 		view.setAspect(w / h);
 	}
 	WorldEntity3D::event(game, event);

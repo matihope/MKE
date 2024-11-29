@@ -98,12 +98,10 @@ namespace mk {
 		while (m_window.pollEvent(event)) {
 			if (!m_scene_stack.empty()) m_scene_stack.top()->event(*this, event);
 
-			switch (event.type) {
-			case mk::EventType::WindowClose:
+			if (event.is<mk::Event::WindowClose>())
 				stop();
-				break;
-			case mk::EventType::KeyPressed:
-				switch (event.key_pressed.key) {
+			else if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
+				switch (ev->key) {
 				case mk::input::KEY::GRAVE:
 					popScene();
 					if (m_scene_stack.empty()) stop();
@@ -112,14 +110,9 @@ namespace mk {
 					// skip any other case
 					break;
 				}
-				break;
-			case mk::EventType::WindowResized:
-				m_fps_label->setPosition(event.window_resized.new_size.type<float>().x - 1.f, 1.f);
+			} else if (auto ev = event.get<mk::Event::WindowResized>(); ev) {
+				m_fps_label->setPosition(ev->new_size.type<float>().x - 1.f, 1.f);
 				// updateViewportSize();
-				break;
-			default:
-				// skip any other case
-				break;
 			}
 		}
 	}

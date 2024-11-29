@@ -2,87 +2,64 @@
 
 #include "MKE/Input.hpp"
 #include "Math/Vector.hpp"
+#include <variant>
 
 namespace mk {
-	enum class EventType {
-		InvalidEvent = 0,
-		WindowClose,
-		WindowResized,
-		WindowScaleFactorChanged,
-		KeyPressed,
-		KeyReleased,
-		MouseButtonPressed,
-		MouseButtonReleased,
-	};
-
-	namespace Events {
-		struct WindowClose {
-			WindowClose(): type(EventType::WindowClose) {}
-
-			EventType type;
-		};
+	class Event {
+	public:
+		struct WindowClose {};
 
 		struct WindowResized {
-			WindowResized(math::Vector2u new_size):
-				  type(EventType::WindowResized),
-				  new_size(new_size) {}
-
-			EventType      type;
 			math::Vector2u new_size;
 		};
 
 		struct WindowScaleFactorChanged {
-			WindowScaleFactorChanged(math::Vector2f new_scale):
-				  type(EventType::WindowScaleFactorChanged),
-				  scale_factors(new_scale) {}
-
-			EventType      type;
 			math::Vector2f scale_factors;
 		};
 
 		struct KeyPressed {
-			KeyPressed(input::KEY key): type(EventType::KeyPressed), key(key) {}
-
-			EventType  type;
 			input::KEY key;
 		};
 
 		struct KeyReleased {
-			KeyReleased(input::KEY key): type(EventType::KeyReleased), key(key) {}
-
-			EventType  type;
 			input::KEY key;
 		};
 
 		struct MouseButtonPressed {
-			MouseButtonPressed(input::MOUSE button):
-				  type(EventType::MouseButtonPressed),
-				  button(button) {}
-
-			EventType    type;
 			input::MOUSE button;
 		};
 
 		struct MouseButtonReleased {
-			MouseButtonReleased(input::MOUSE button):
-				  type(EventType::MouseButtonReleased),
-				  button(button) {}
-
-			EventType    type;
 			input::MOUSE button;
 		};
-	}
 
-	union Event {
-		Event() {}
+		template<class Ev>
+		Event(const Ev& e): data(e) {}
 
-		EventType                        type{};  // As everywhere
-		Events::WindowClose              window_close;
-		Events::WindowResized            window_resized;
-		Events::WindowScaleFactorChanged window_scale_factor;
-		Events::KeyPressed               key_pressed;
-		Events::KeyReleased              key_released;
-		Events::MouseButtonPressed       mouse_pressed;
-		Events::MouseButtonReleased      mouse_released;
+		Event() = default;
+
+		template<class Ev>
+		[[nodiscard]]
+		std::optional<Ev> get() const {
+			if (std::holds_alternative<Ev>(data)) return std::optional<Ev>(std::get<Ev>(data));
+			return {};
+		}
+
+		template<class Ev>
+		[[nodiscard]]
+		bool is() const {
+			return std::holds_alternative<Ev>(data);
+		}
+
+	private:
+		std::variant<
+			WindowClose,
+			WindowResized,
+			WindowScaleFactorChanged,
+			KeyPressed,
+			KeyReleased,
+			MouseButtonPressed,
+			MouseButtonReleased>
+			data{};
 	};
 }

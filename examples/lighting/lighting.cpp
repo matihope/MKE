@@ -81,18 +81,19 @@ public:
 	void onUpdate(mk::Game&, float) override { shader.setVector3f("camPos", cam->getPosition()); }
 
 	void onEvent(mk::Game&, const mk::Event& event) override {
-		if (event.type == mk::EventType::KeyPressed) {
-			if (event.key_pressed.key == mk::input::KEY::R)
+		if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
+			if (ev->key == mk::input::KEY::R)
 				if (!shader.tryLoad(mk::ResPath("vert.glsl"), mk::ResPath("frag.glsl")))
 					std::cerr << "Shader recompilation has failed...\n";
 				else
 					setupShaders();
-			else if (event.key_pressed.key == mk::input::KEY::SPACE)
+			else if (ev->key == mk::input::KEY::SPACE)
 				setPaused(!isPaused());
 		}
 	}
 
-	Cube*         cube  = nullptr;
+	Cube* cube = nullptr;
+
 	mk::Camera3D* cam   = nullptr;
 	LightSource*  light = nullptr;
 
