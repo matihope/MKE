@@ -13,20 +13,14 @@ namespace game {
 		}
 
 		void onPhysicsUpdate(mk::Game& game, float dt) override {
-			float hsp
-				= (i32)(game.isKeyPressed(mk::input::KEY::D)) - game.isKeyPressed(mk::input::KEY::A);
+			float hsp = (i32) (game.isKeyPressed(mk::input::KEY::D))
+			          - game.isKeyPressed(mk::input::KEY::A);
 
-			if(false) {
+			float coeff = dt / 0.1f;
+			speed.x    = ((1.f - coeff) * speed.x + hsp * coeff);
+			if (std::abs(speed.x - hsp) < 1e-3) speed.x = hsp;
 
-				float time = 0.1f;
-				speed.x = ((1.f - dt / time) * speed.x + hsp * dt / time);
-				if(abs(speed.x - hsp) < 1e-3) speed.x = hsp;
-			} else {
-				speed.x = speed.x + hsp * dt / time);
-				if(abs(speed.x - hsp) < 1e-3) speed.x = hsp;
-			}
-
-				std::cout << speed.x << '\n';
+			std::cout << speed.x << '\n';
 			move(speed);
 		}
 
