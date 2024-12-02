@@ -1,5 +1,4 @@
 #include "RenderWindow.hpp"
-#include "MKE/Event.hpp"
 
 void mk::RenderWindow::render(const Drawable& drawable, DrawContext context) {
 	glViewport(0, 0, window_size.x * window_scale_factor.x, window_size.y * window_scale_factor.y);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "MKE/DrawContext.hpp"
-#include "MKE/Math/Matrix.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/RenderTarget.hpp"
 #include "MKE/Window.hpp"

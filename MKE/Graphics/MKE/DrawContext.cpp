@@ -5,7 +5,7 @@ void mk::DrawContext::bind() {
 	if (!shader) return;
 
 	Shader::use(shader);
-	Texture::bind(texture);
+	Texture::bindAt(texture, 0);
 	shader->setMatrix4f("transform", transform);
 	shader->setMatrix4f("camera", camera);
 }

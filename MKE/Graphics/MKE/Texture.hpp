@@ -13,6 +13,7 @@ namespace mk {
 		~Texture();
 
 		static void bind(const Texture* texture);
+		static void bindAt(const Texture* texture, u32 at);
 
 		void loadFromMemory(u32 width, u32 height, const void* data, GLenum format = GL_RGBA);
 		void loadFromImage(const Image& image);

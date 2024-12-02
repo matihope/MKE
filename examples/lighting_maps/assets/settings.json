@@ -1,0 +1,21 @@
+{
+    "window": {
+        "width": 800,
+        "height": 800,
+        "title": "MKE Lighting example",
+        "vsync": true
+    },
+    "viewport": {
+        "width": 800,
+        "height": 800
+    },
+    "debug": {
+        "printFPS": true,
+        "drawCollisionShapes": false
+    },
+    "engine": {
+        "physicsUpdateCallFreq": 60,
+        "fontPath": "../../assets/fonts/Born2bSportyV2.ttf",
+        "fontSmooth": false
+    }
+}

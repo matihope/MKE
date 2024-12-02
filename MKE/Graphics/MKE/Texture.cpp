@@ -39,6 +39,11 @@ void mk::Texture::bind(const Texture* texture) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void mk::Texture::bindAt(const Texture* texture, u32 at) {
+	glActiveTexture(GL_TEXTURE0 + at);
+	bind(texture);
+}
+
 void mk::Texture::loadFromMemory(u32 width, u32 height, const void* data, GLenum format) {
 	size = { width, height };
 	glBindTexture(GL_TEXTURE_2D, texture_id);

@@ -59,7 +59,7 @@ namespace mk {
 
 		if (!m_scene_stack.empty()) {
 			m_physics_update_counter += m_delta_time;
-			if (m_physics_update_counter >= m_physics_update_call_freq) {
+			while (m_physics_update_counter >= m_physics_update_call_freq) {
 				m_scene_stack.top()->physicsUpdate(*this, m_physics_update_call_freq);
 				m_physics_update_counter -= m_physics_update_call_freq;
 			}

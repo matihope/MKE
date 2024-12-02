@@ -11,9 +11,10 @@ namespace mk {
 		void           setTextureSmooth(const ResPath& path, bool smooth);
 
 		Font* getFont(const ResPath& path);
+
 	private:
-		Texture*                             getMutTexture(const ResPath& path);
-		std::unordered_map<ResPath, Texture> textures;
-		std::unordered_map<ResPath, Font>    fonts;
+		Texture*                                              getMutTexture(const ResPath& path);
+		std::unordered_map<ResPath, std::unique_ptr<Texture>> textures;
+		std::unordered_map<ResPath, std::unique_ptr<Font>>    fonts;
 	};
 }  // namespace mk
