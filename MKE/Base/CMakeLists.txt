@@ -1,14 +1,12 @@
 add_library(MKE-Base
 
     # Math
-    MKE/Math/Base.cpp
     MKE/Math/Base.hpp
     MKE/Math/Geometry.cpp
     MKE/Math/Geometry.hpp
     MKE/Math/Matrix.hpp
     MKE/Math/MatrixUtils.hpp
     MKE/Math/Rect.hpp
-    MKE/Math/Vector.cpp
     MKE/Math/Vector.hpp
 
     # JsonBridge

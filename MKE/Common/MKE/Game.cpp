@@ -60,9 +60,13 @@ namespace mk {
 		if (!m_scene_stack.empty()) {
 			m_physics_update_counter += m_delta_time;
 			while (m_physics_update_counter >= m_physics_update_call_freq) {
+				process_mode = ProcessMode::PHYSICS;
+				input_map_physics.tick();
 				m_scene_stack.top()->physicsUpdate(*this, m_physics_update_call_freq);
 				m_physics_update_counter -= m_physics_update_call_freq;
 			}
+			process_mode = ProcessMode::NORMAL;
+			input_map_normal.tick();
 			m_scene_stack.top()->update(*this, m_delta_time);
 		}
 
@@ -96,6 +100,9 @@ namespace mk {
 	void Game::pollEvents() {
 		mk::Event event{};
 		while (m_window.pollEvent(event)) {
+			input_map_normal.handleEvent(event);
+			input_map_physics.handleEvent(event);
+
 			if (!m_scene_stack.empty()) m_scene_stack.top()->event(*this, event);
 
 			if (event.is<mk::Event::WindowClose>())
@@ -216,13 +223,27 @@ namespace mk {
 
 	mk::Font* Game::getDefaultFont() const { return m_default_font; }
 
-	bool Game::isKeyPressed(input::KEY key) const { return m_window.isKeyPressed(key); }
+	bool Game::isKeyPressed(input::KEY key) const { return getInput().isKeyPressed(key); }
 
-	bool Game::isKeyJustPressed(input::KEY key) const { return m_window.isKeyJustPressed(key); }
+	bool Game::isKeyJustPressed(input::KEY key) const { return getInput().isKeyJustPressed(key); }
 
-	bool Game::isMousePressed(input::MOUSE button) const { return m_window.isMousePressed(button); }
+	bool Game::isMousePressed(input::MOUSE button) const {
+		return getInput().isMousePressed(button);
+	}
 
 	bool Game::isMouseJustPressed(input::MOUSE button) const {
-		return m_window.isMouseJustPressed(button);
+		return getInput().isMouseJustPressed(button);
 	}
+
+	bool Game::isKeyJustReleased(input::KEY key) const { return getInput().isKeyJustReleased(key); }
+
+	bool Game::isMouseJustReleased(input::MOUSE button) const {
+		return getInput().isMouseJustReleased(button);
+	}
+
+	const GameInput& Game::getInput() const {
+		if (process_mode == ProcessMode::NORMAL) return input_map_normal;
+		return input_map_physics;
+	}
+
 }  // namespace mk

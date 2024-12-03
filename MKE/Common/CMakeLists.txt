@@ -13,6 +13,8 @@ add_library(MKE-Common
     MKE/Camera.hpp
     MKE/Game.cpp
     MKE/Game.hpp
+    MKE/GameInput.cpp
+    MKE/GameInput.hpp
     MKE/WorldEntity.cpp
     MKE/WorldEntity.hpp
 

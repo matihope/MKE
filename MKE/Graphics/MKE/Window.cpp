@@ -117,8 +117,6 @@ void mk::Window::setSize(u32 width, u32 height) { setSize({ width, height }); }
 
 void mk::Window::display() {
 	glfwSwapBuffers(window);
-	just_pressed_key.fill(false);
-	just_pressed_mouse.fill(false);
 	glfwPollEvents();
 }
 
@@ -130,12 +128,6 @@ void mk::Window::addEvent(Event event) {
 		setSize(ev->new_size);
 	} else if (event.is<Event::WindowClose>()) {
 		setExitRequested(true);
-	}
-
-	else if (auto ev = event.get<Event::KeyPressed>(); ev) {
-		just_pressed_key[(usize) ev->key] = true;
-	} else if (auto ev = event.get<Event::MouseButtonPressed>(); ev) {
-		just_pressed_mouse[(usize) ev->button] = true;
 	}
 
 	events.push(event);
@@ -170,20 +162,14 @@ bool mk::Window::isExitRequested() const { return exit_requested; }
 
 void mk::Window::setExitRequested(bool value) { exit_requested = value; }
 
+mk::Window::~Window() { glfwDestroyWindow(window); }
+
 bool mk::Window::isKeyPressed(input::KEY key) const {
 	return glfwGetKey(window, (i32) key) == GLFW_PRESS;
 }
 
-bool mk::Window::isKeyJustPressed(input::KEY key) const { return just_pressed_key[(usize) key]; }
-
-mk::Window::~Window() { glfwDestroyWindow(window); }
-
 bool mk::Window::isMousePressed(input::MOUSE key) const {
 	return glfwGetMouseButton(window, (i32) key) == GLFW_PRESS;
-}
-
-bool mk::Window::isMouseJustPressed(input::MOUSE key) const {
-	return just_pressed_mouse[(usize) key];
 }
 
 mk::math::Vector2i mk::Window::getMousePosition() const {

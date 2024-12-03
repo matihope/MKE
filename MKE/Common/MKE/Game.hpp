@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MKE/GameInput.hpp"
 #include "MKE/Input.hpp"
 #include "MKE/JsonBridge.hpp"
 #include "MKE/Math/Vector.hpp"
@@ -43,6 +44,13 @@ namespace mk {
 		void                                     recalculateAvgFps();
 		std::queue<std::unique_ptr<WorldEntity>> m_safe_scene_delete_queue;
 
+		GameInput input_map_normal;
+		GameInput input_map_physics;
+		enum class ProcessMode : bool { NORMAL, PHYSICS };
+		ProcessMode process_mode = ProcessMode::NORMAL;
+
+		const GameInput& getInput() const;
+
 	public:
 		explicit Game(const ResPath& settings);
 
@@ -80,18 +88,20 @@ namespace mk {
 		 */
 		void popScene();
 
-		math::Vector2f getMousePos();
+
+		bool           isKeyPressed(input::KEY key) const;
+		bool           isKeyJustPressed(input::KEY key) const;
+		bool           isKeyJustReleased(input::KEY key) const;
 		bool           isMousePressed(input::MOUSE button) const;
 		bool           isMouseJustPressed(input::MOUSE button) const;
+		bool           isMouseJustReleased(input::MOUSE button) const;
+		math::Vector2f getMousePos();
 
 		// const sf::View* getView();
 		// void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
 
 		mk::Font* getDefaultFont() const;
-
-		bool isKeyPressed(input::KEY key) const;
-		bool isKeyJustPressed(input::KEY key) const;
 
 		ResourceManager& resources() { return res_man; }
 	};

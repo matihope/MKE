@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MKE/Math/MatrixUtils.hpp"
 #include "MKE/Math/Vector.hpp"
 #include "MKE/NonCopyable.hpp"
 #include "MKE/DrawContext.hpp"

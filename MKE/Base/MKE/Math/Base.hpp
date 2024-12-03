@@ -14,18 +14,36 @@
 
 namespace mk::math {
 	template<typename T>
-	int sign(T val) {
+	constexpr int sign(T val) {
 		return (0 < val) - (val < 0);
 	}
 
 	template<typename T>
-	bool isZero(T value, T EPSILON = EPS_ZERO) {
+	constexpr bool isZero(T value, T EPSILON = EPS_ZERO) {
 		return std::abs(value) <= EPSILON;
 	}
 
-	// makes while(value > range) value -= range
-	// in an optimal way.
-	float makeInRange(float value, float range);
-	float radiansToDegrees(float radians);
-	float degreesToRadians(float degrees);
+	/**
+	 * @brief Does while(value > range) value -= range
+	 * in an optimal way.
+	 */
+	constexpr float makeInRange(float value, float range) {
+		float res = std::fmod(value, range);
+		if (res > 0) return res;
+		return res + value;
+	}
+
+	constexpr float radiansToDegrees(float radians) {
+		return makeInRange(radians, 2 * M_PIf) / M_PIf * 180.f;
+	}
+
+	constexpr float degreesToRadians(float degrees) {
+		return makeInRange(degrees, 360.f) / 180.f * M_PIf;
+	}
+
+	constexpr float lerp(float base, float target, float coeff) {
+		float res = base * (1.0 - coeff) + target * coeff;
+		if (std::abs(res - target) < EPS_ZERO) return target;
+		return res;
+	}
 }  // namespace mk::Math

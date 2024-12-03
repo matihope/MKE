@@ -4,6 +4,7 @@
 #include <ostream>
 #include <type_traits>
 #include "../Ints.hpp"
+#include "MKE/Math/Base.hpp"
 
 namespace mk::math {
 	namespace impl {
@@ -137,39 +138,45 @@ namespace mk::math {
 		T length() const { return std::sqrt(lengthSquared()); }
 
 		template<class K>
-		auto type() const {
+		constexpr auto type() const {
 			Vector<DATA, K, SIZE> result;
 			for (usize p = 0; p < SIZE; p++) result.vec_data[p] = K(this->vec_data[p]);
 			return result;
 		}
 
-		T lengthSquared() const {
+		constexpr T lengthSquared() const {
 			T sum{};
 			for (auto&& d: this->vec_data) sum += d * d;
 			return sum;
 		}
 
-		Vector normalizeOrZero() const {
+		constexpr Vector normalizeOrZero() const {
 			T len = length();
 			if (len < 1e-9) return *this;
 			return *this / len;
 		}
 
-		friend std::ostream& operator<<(std::ostream& stream, const Vector& vector) {
+		constexpr friend std::ostream& operator<<(std::ostream& stream, const Vector& vector) {
 			for (usize p = 0; p < SIZE; p++) {
 				stream << vector.vec_data[p];
 				if (p + 1 < SIZE) stream << ", ";
 			}
 			return stream;
 		}
+
+		constexpr Vector lerp(Vector target, float step) {
+			Vector res = operator*(1.f - step) + target * step;
+			if ((res - target).lengthSquared() < EPS_ZERO) return target;
+			return res;
+		}
 	};
 
 	template<class T>
 	using Vector2 = Vector<impl::Vec, T, 2>;
 
-	using Vector2f     = Vector2<float>;
-	using Vector2i     = Vector2<i32>;
-	using Vector2u     = Vector2<u32>;
+	using Vector2f = Vector2<float>;
+	using Vector2i = Vector2<i32>;
+	using Vector2u = Vector2<u32>;
 
 	template<class T>
 	using Vector3 = Vector<impl::Vec, T, 3>;
@@ -185,8 +192,16 @@ namespace mk::math {
 	using Vector4i = Vector4<i32>;
 	using Vector4u = Vector4<u32>;
 
-	Vector2f normalizeVector(Vector2f vector);
-	Vector2f rotateVector(Vector2f vector, float angleRads);
+	constexpr Vector2f normalizeVector(const Vector2f vector) {
+		if (vector.x == 0 || vector.y == 0) return vector;
+		float length = std::sqrt(vector.x * vector.x + vector.y * vector.y);
+		return { vector.x / length, vector.y / length };
+	}
+
+	constexpr Vector2f rotateVector(Vector2f vector, float angleRads) {
+		return { std::cos(angleRads) * vector.x - std::sin(angleRads) * vector.y,
+			     std::sin(angleRads) * vector.x + std::cos(angleRads) * vector.y };
+	}
 
 	constexpr Vector3f cross(const Vector3f& lhs, const Vector3f& rhs) {
 		return { lhs.y * rhs.z - lhs.z * rhs.y,
