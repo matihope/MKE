@@ -61,13 +61,15 @@ namespace mk {
 			m_physics_update_counter += m_delta_time;
 			while (m_physics_update_counter >= m_physics_update_call_freq) {
 				process_mode = ProcessMode::PHYSICS;
-				input_map_physics.tick();
 				m_scene_stack.top()->physicsUpdate(*this, m_physics_update_call_freq);
 				m_physics_update_counter -= m_physics_update_call_freq;
+
+				// Because pollEvent happens before update, then tick has to be after physicsUpdate
+				input_map_physics.tick();
 			}
 			process_mode = ProcessMode::NORMAL;
-			input_map_normal.tick();
 			m_scene_stack.top()->update(*this, m_delta_time);
+			input_map_normal.tick();
 		}
 
 		recalculateAvgFps();

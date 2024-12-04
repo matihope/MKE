@@ -1,4 +1,5 @@
 #include "GameInput.hpp"
+#include "MKE/Input.hpp"
 
 using namespace mk;
 
@@ -17,7 +18,7 @@ bool GameInput::isMouseJustPressed(input::MOUSE key) const {
 }
 
 void mk::GameInput::tick() {
-	prev_pressed_key   = pressed_key;
+	prev_pressed_key = pressed_key;
 	prev_pressed_mouse = pressed_mouse;
 }
 
