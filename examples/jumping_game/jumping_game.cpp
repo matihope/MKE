@@ -23,7 +23,7 @@ namespace game {
 		private:
 			PhysicsEngine& engine;
 			u64            id;
-			bool           queue_free = false;
+			bool           dying = false;
 
 			RectBody(PhysicsEngine& engine, u64 id, math::RectF rect):
 				  engine(engine),
@@ -37,7 +37,7 @@ namespace game {
 
 			math::Vector2f getSize() const { return my_rect.getSize(); }
 
-			void queueFree() { queue_free = true; }
+			void queueFree() { dying = true; }
 
 			bool tryRect(math::RectF rect);
 
@@ -84,7 +84,7 @@ namespace game {
 
 			void update() {
 				for (auto it = bodies.begin(); it != bodies.end(); it++)
-					if (it->queue_free) it = bodies.erase(it);
+					if (it->dying) it = bodies.erase(it);
 			}
 
 			RectBody& requestRectBody(math::RectF init_rect) {
@@ -130,10 +130,9 @@ namespace game {
 	public:
 		Player(physics::PhysicsEngine& engine, Level& level):
 			  level(level),
-			  my_body(engine.requestRectBody({ 0.f, 0.f, 10.f, 10.f })) {}
+			  my_body(engine.requestRectBody({ 50.f, 50.f, 10.f, 10.f })) {}
 
 		void onReady(mk::Game& game) override {
-			my_body.moveAndSlide({ 50.f, 50.f });
 			setPosition(my_body.getPosition());
 			sprite = addChild<RectShape>(game, Colors::GREEN, my_body.getSize());
 		}
@@ -236,19 +235,19 @@ namespace game {
 		bool falling = speed.y > 0.f;
 		speed.y += gravity;
 
-		bool jumped = false;
-		if (game.isKeyPressed(mk::input::KEY::SPACE) && my_body.isOnFloor({ 0.f, -1.f })) {
+		bool jumped       = false;
+		auto bodies_below = my_body.getCollidingBodies({ 0.f, 1.f });
+		if (game.isKeyPressed(mk::input::KEY::SPACE) && !bodies_below.empty()) {
 			speed.y = jump_force;
 			jumped  = true;
 		}
 
 		bool spd_grv = math::isZero(speed.y - gravity);
 
-		auto colliding_bodies = my_body.getCollidingBodies({ 0.f, 1.f });
-		speed                 = moveAndSlide(speed);
+		speed = moveAndSlide(speed);
 
 		if ((falling && jumped) || (!spd_grv && math::isZero(speed.y)))
-			level.touchedBodies(std::move(colliding_bodies));
+			level.touchedBodies(std::move(bodies_below));
 	}
 }
 
