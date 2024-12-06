@@ -53,7 +53,8 @@ void mk::RenderTexture2D::regenerateBuffers() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
 
-	texture.loadFromMemory(scaled_width, scaled_height, nullptr, GL_RGBA);
+	texture.loadFromMemory(scaled_width, scaled_height, nullptr, GL_RGBA);  // clear
+
 	glFramebufferTexture2D(
 		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getNativeHandle(), 0
 	);

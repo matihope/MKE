@@ -23,10 +23,13 @@ namespace mk {
 
 		void setSize(const mk::math::Vector2f& size);
 
+		void setTexture(const mk::Texture* texture);
+
 		mk::math::Vector2f getSize() const;
 
 	private:
-		mk::RectPrimitive rect;
+		mk::RectPrimitive  rect;
+		const mk::Texture* texture = nullptr;
 	};
 
 }  // namespace mk

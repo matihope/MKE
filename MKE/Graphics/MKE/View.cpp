@@ -70,3 +70,5 @@ void mk::View3D::setAspect(float aspect) {
 	this->aspect = aspect;
 	makeCamera();
 }
+
+mk::math::Vector2f mk::View2D::getSize() const { return view.getSize(); }

@@ -7,6 +7,8 @@ namespace mk {
 		Clock();
 		float restart();
 
+		float getElapsedTime();
+
 	private:
 		// Steady clock, because as cppreference says:
 		// "[This clock] is most suitable for measuring interval."

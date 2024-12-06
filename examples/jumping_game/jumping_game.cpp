@@ -103,6 +103,8 @@ namespace game {
 
 			std::vector<const RectBody*>
 				getCollidingBodies(RectBody& body, math::Vector2f direction) {
+				// Direction shall be a unit vector
+
 				std::vector<const RectBody*> bods;
 				math::RectF                  test = body.my_rect;
 				direction *= 1e-4;
@@ -124,17 +126,24 @@ namespace game {
 		}
 	}
 
+	Color getRandColor() {
+		return { Random::getReal(0., 1.), Random::getReal(0., 1.), Random::getReal(0., 1.) };
+	}
+
 	class Level;
 
 	class Player: public mk::WorldEntity2D {
 	public:
 		Player(physics::PhysicsEngine& engine, Level& level):
 			  level(level),
-			  my_body(engine.requestRectBody({ 50.f, 50.f, 10.f, 10.f })) {}
+			  my_body(engine.requestRectBody({ 50.f, 50.f, 15.f, 15.f })) {}
 
 		void onReady(mk::Game& game) override {
 			setPosition(my_body.getPosition());
-			sprite = addChild<RectShape>(game, Colors::GREEN, my_body.getSize());
+			color  = getRandColor();
+			sprite = addChild<RectShape>(game, color, my_body.getSize());
+			game.resources().setTextureSmooth("face.png", false);
+			sprite->setTexture(game.resources().getTexture("face.png"));
 		}
 
 		void onPhysicsUpdate(mk::Game& game, float dt) override;
@@ -145,6 +154,16 @@ namespace game {
 			return moved;
 		}
 
+		void updateColor() {
+			clock.restart();
+			color = getRandColor();
+			if (sprite) sprite->setColor(color);
+		}
+
+		void stepUpdateColor() {
+			if (clock.getElapsedTime() > sec_reset_color) updateColor();
+		}
+
 	private:
 		math::Vector2f speed;
 		float          gravity    = 0.4f;
@@ -153,9 +172,18 @@ namespace game {
 		RectShape*         sprite = nullptr;
 		Level&             level;
 		physics::RectBody& my_body;
+
+		Color color;
+		float sec_reset_color = 2.0f;
+		Clock clock;
 	};
 
 	class Block: public WorldEntity3D {
+		math::RectF pos;
+		Color       color;
+
+		RectShape* sprite = nullptr;
+
 	public:
 		Block(math::Vector2f position, usize size, Color color, physics::PhysicsEngine& engine):
 			  pos(position.x, position.y, size, size),
@@ -165,12 +193,14 @@ namespace game {
 		void onReady(mk::Game& game) override {
 			sprite = addChild<RectShape>(game, color, pos.getSize());
 			sprite->setPosition(pos.getPosition());
+			sprite->setTexture(game.resources().getTexture("face.png"));
 		}
 
-		math::RectF pos;
-		Color       color;
+		void setColor(Color new_color) {
+			color = new_color;
+			if (sprite) sprite->setColor(color);
+		}
 
-		RectShape*         sprite = nullptr;
 		physics::RectBody& body;
 	};
 
@@ -204,20 +234,13 @@ namespace game {
 				));
 		}
 
-		void touchedBodies(const std::vector<const physics::RectBody*>& bodies) {
+		void touchedBodies(
+			const std::vector<const physics::RectBody*>& bodies, Color new_color = getRandColor()
+		) {
 			for (Block* b: blocks) {
-				for (auto bod: bodies) {
-					if (&b->body == bod) {
-						auto color = getRandColor();
-						b->color   = color;
-						b->sprite->setColor(color);
-					}
-				}
+				for (auto bod: bodies)
+					if (&b->body == bod) b->setColor(new_color);
 			}
-		}
-
-		Color getRandColor() {
-			return { Random::getReal(0., 1.), Random::getReal(0., 1.), Random::getReal(0., 1.) };
 		}
 
 		Player*                player = nullptr;
@@ -226,13 +249,16 @@ namespace game {
 	};
 
 	void Player::onPhysicsUpdate(mk::Game& game, float dt) {
+		stepUpdateColor();
+
 		float hsp
 			= (i32) (game.isKeyPressed(mk::input::KEY::D)) - game.isKeyPressed(mk::input::KEY::A);
 		hsp *= 5.f;
 
 		speed.x = math::lerp(speed.x, hsp, dt * 10.f);
 
-		bool falling = speed.y > 0.f;
+		bool falling  = speed.y > 0.f;
+		bool going_up = speed.y < 0.f;
 		speed.y += gravity;
 
 		bool jumped       = false;
@@ -244,10 +270,22 @@ namespace game {
 
 		bool spd_grv = math::isZero(speed.y - gravity);
 
-		speed = moveAndSlide(speed);
+		float spd_before = speed.y;
+		speed            = moveAndSlide(speed);
 
-		if ((falling && jumped) || (!spd_grv && math::isZero(speed.y)))
-			level.touchedBodies(std::move(bodies_below));
+		if (!math::isZero(spd_before - speed.y, 1e-3f)) std::cout << spd_before << '\t' << speed.y << '\n';
+
+		bool spd_0 = math::isZero(speed.y);
+		if ((falling && jumped) || (!spd_grv && spd_0))
+			level.touchedBodies(std::move(bodies_below), color);
+
+		if (!spd_grv && spd_0 && spd_before - gravity > 0.1f) speed.y = -spd_before / 2.f;
+
+		if ((going_up && spd_0)) {
+			auto bodies_up = my_body.getCollidingBodies({ 0.f, -1.f });
+			level.touchedBodies(std::move(bodies_up), Colors::TRANSPARENT);
+			updateColor();
+		}
 	}
 }
 

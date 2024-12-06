@@ -34,6 +34,16 @@ namespace mk::math {
 		return projection;
 	}
 
+	constexpr Matrix4f camera2D(float left, float right, float top, float bottom) {
+		Matrix4f projection{ 1.f };
+		projection(0, 0) = 2.f / (right - left);
+		projection(1, 1) = 2.f / (top - bottom);
+		projection(3, 0) = -(right + left) / (right - left);
+		projection(3, 1) = -(top + bottom) / (top - bottom);
+
+		return projection;
+	}
+
 	constexpr Matrix4f orthogonal([[maybe_unused]] float width, [[maybe_unused]] float height) {
 		Matrix4f projection{ 1.f };
 

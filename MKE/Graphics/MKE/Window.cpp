@@ -126,6 +126,7 @@ void mk::Window::addEvent(Event event) {
 	else if (auto ev = event.get<Event::WindowResized>(); ev) {
 		ev->new_size = (ev->new_size.type<float>() / window_scale_factor).type<u32>();
 		setSize(ev->new_size);
+		event = *ev;
 	} else if (event.is<Event::WindowClose>()) {
 		setExitRequested(true);
 	}

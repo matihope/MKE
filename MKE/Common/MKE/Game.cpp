@@ -121,7 +121,7 @@ namespace mk {
 				}
 			} else if (auto ev = event.get<mk::Event::WindowResized>(); ev) {
 				m_fps_label->setPosition(ev->new_size.type<float>().x - 1.f, 1.f);
-				// updateViewportSize();
+				updateViewportSize();
 			}
 		}
 	}
@@ -140,15 +140,15 @@ namespace mk {
 
 	RenderWindow& Game::getRenderWindow() { return m_window; }
 
-	// void Game::updateViewportSize() {
-	// 	math::Vector2f viewportScale
-	// 		= scaleToFit(math::Vector2f(m_view.getSize()), getWindowSize());
-	// 	m_view.setViewport(sf::FloatRect(
-	// 		sf::Vector2f(0.5f - viewportScale.x / 2, 0.5f - viewportScale.y / 2),
-	// 		viewportScale.as<sf::Vector2f>()
-	// 	));
-	// 	m_window.setView(m_view);
-	// }
+	void Game::updateViewportSize() {
+		math::Vector2f viewportScale
+			= scaleToFit(math::Vector2f(m_view_2d.getSize()), getWindowSize());
+		// m_view2d.setViewport(sf::FloatRect(
+		// 	math::Vector2f(0.5f - viewportScale.x / 2, 0.5f - viewportScale.y / 2), viewportScale
+		// ));
+		m_view_2d.setSize(viewportScale);
+		m_window.setView2D(m_view_2d);
+	}
 
 	math::Vector2f Game::getMousePos() { return m_mouse_pos; }
 

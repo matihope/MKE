@@ -3,7 +3,6 @@
 #include "MKE/Math/Matrix.hpp"
 #include "MKE/Math/Rect.hpp"
 #include "MKE/Math/Vector.hpp"
-#include "MKE/Updatable.hpp"
 
 namespace mk {
 	class View {
@@ -23,6 +22,8 @@ namespace mk {
 		math::Matrix4f getTransform() const override;
 
 		void setSize(math::Vector2f size);
+
+		math::Vector2f getSize() const;
 
 		void setCenter(math::Vector2f center);
 

@@ -18,8 +18,11 @@ namespace mk {
 
 	void RectShape::onDraw(RenderTarget& target, DrawContext context, const Game&) const {
 		context.transform *= getTransform();
+		if (texture) context.texture = texture;
 		target.render(rect, context);
 	}
 
 	RectShape::RectShape(): RectShape(Colors::WHITE, { 0, 0 }) {}
+
+	void RectShape::setTexture(const mk::Texture* texture) { this->texture = texture; }
 }  // namespace mk

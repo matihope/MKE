@@ -30,9 +30,10 @@ namespace mk {
 
 		ResourceManager res_man;
 
-		mk::Clock                                m_clock;
+		Clock                                    m_clock;
 		JsonBridge                               m_game_settings;
-		mk::RenderWindow                         m_window;
+		View2D                                   m_view_2d;
+		RenderWindow                             m_window;
 		std::stack<std::unique_ptr<WorldEntity>> m_scene_stack;
 
 		Font*                       m_default_font;
@@ -40,7 +41,7 @@ namespace mk {
 		math::Vector2f              m_mouse_pos;
 		Image                       icon;
 
-		// void                                     updateViewportSize();
+		void                                     updateViewportSize();
 		void                                     recalculateAvgFps();
 		std::queue<std::unique_ptr<WorldEntity>> m_safe_scene_delete_queue;
 
@@ -97,7 +98,7 @@ namespace mk {
 		bool           isMouseJustReleased(input::MOUSE button) const;
 		math::Vector2f getMousePos();
 
-		// const sf::View* getView();
+		const mk::View2D* getView2D();
 		// void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
 
