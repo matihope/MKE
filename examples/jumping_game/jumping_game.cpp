@@ -39,36 +39,41 @@ namespace game {
 
 			void queueFree() { dying = true; }
 
-			bool tryRect(math::RectF rect);
+			bool canMoveTo(math::RectF rect) const;
 
-			math::Vector2f moveAndSlide(const math::Vector2f delta) {
-				math::RectF initial = my_rect;
+			/**
+			 * @brief Moves an object along delta. Returns how much was moved. It's quite stable,
+			 * although there's a looped float addition...
+			 */
+			math::Vector2f moveAndSlide(math::Vector2f delta) {
+				const math::RectF initial = my_rect;
 
-				math::RectF    helper    = my_rect;
-				math::Vector2f new_delta = delta;
-				helper.left += new_delta.x;
-				if (!tryRect(helper)) {
-					helper.left = my_rect.left;
-					while (!math::isZero(new_delta.x)) {
-						helper.left = my_rect.left + new_delta.x;
-						tryRect(helper);
-						new_delta.x /= 2;
+				math::RectF    helper       = my_rect;
+				math::Vector2f helper_delta = delta;
+				helper.left += delta.x;
+				if (!canMoveTo(helper)) {
+					while (!math::isZero(helper_delta.x)) {
+						helper.left = my_rect.left + helper_delta.x;
+						if (canMoveTo(helper)) my_rect = helper;
+						helper_delta.x /= 2;
 					}
+					auto diff = my_rect.getPosition().x - initial.getPosition().x;
+					delta.x   = std::min(std::abs(delta.x), std::abs(diff)) * math::sign(delta.x);
 				}
-				helper = my_rect;
-				helper.top += new_delta.y;
-				if (!tryRect(helper)) {
-					helper.top = my_rect.top;
-					while (!math::isZero(new_delta.y)) {
-						helper.top = my_rect.top + new_delta.y;
-						tryRect(helper);
-						new_delta.y /= 2;
+				helper.left = initial.left + delta.x;
+				helper.top += delta.y;
+				if (!canMoveTo(helper)) {
+					while (!math::isZero(helper_delta.y)) {
+						helper.top = my_rect.top + helper_delta.y;
+						if (canMoveTo(helper)) my_rect = helper;
+						helper_delta.y /= 2;
 					}
+					auto diff = my_rect.getPosition().y - initial.getPosition().y;
+					delta.y   = std::min(std::abs(delta.y), std::abs(diff)) * math::sign(delta.y);
 				}
-				auto diff = my_rect.getPosition() - initial.getPosition();
-				diff.x    = std::min(std::abs(delta.x), std::abs(diff.x)) * math::sign(delta.x);
-				diff.y    = std::min(std::abs(delta.y), std::abs(diff.y)) * math::sign(delta.y);
-				return diff;
+				my_rect.left = initial.left + delta.x;
+				my_rect.top  = initial.top + delta.y;
+				return delta;
 			}
 
 			bool isOnFloor(math::Vector2f up) { return !getCollidingBodies(-up).empty(); }
@@ -93,11 +98,16 @@ namespace game {
 			}
 
 			bool tryMoveTo(RectBody& body, math::RectF new_rect) {
+				if (!canMoveTo(body, new_rect)) return false;
+				body.my_rect = new_rect;
+				return true;
+			}
+
+			bool canMoveTo(const RectBody& body, math::RectF new_rect) {
 				for (auto& b: bodies) {
 					if (b.id == body.id) continue;
 					if (b.my_rect.overlaps(new_rect)) return false;
 				}
-				body.my_rect = new_rect;
 				return true;
 			}
 
@@ -119,7 +129,7 @@ namespace game {
 			}
 		};
 
-		bool RectBody::tryRect(math::RectF rect) { return engine.tryMoveTo(*this, rect); }
+		bool RectBody::canMoveTo(math::RectF rect) const { return engine.canMoveTo(*this, rect); }
 
 		std::vector<const RectBody*> RectBody::getCollidingBodies(math::Vector2f direction) {
 			return engine.getCollidingBodies(*this, direction);
@@ -268,22 +278,27 @@ namespace game {
 			jumped  = true;
 		}
 
-		bool spd_grv = math::isZero(speed.y - gravity);
-
+		bool  spd_grv    = math::isZero(speed.y - gravity);
 		float spd_before = speed.y;
-		speed            = moveAndSlide(speed);
 
-		if (!math::isZero(spd_before - speed.y, 1e-3f)) std::cout << spd_before << '\t' << speed.y << '\n';
+		speed = moveAndSlide(speed);
 
-		bool spd_0 = math::isZero(speed.y);
-		if ((falling && jumped) || (!spd_grv && spd_0))
+		if ((falling && jumped)
+		    || (falling && spd_before > speed.y && !spd_grv && spd_before > gravity)) {
+			// This list of bodies is from a moment before `moveAndSlide`,
+			// in particular it might be empty.
 			level.touchedBodies(std::move(bodies_below), color);
 
-		if (!spd_grv && spd_0 && spd_before - gravity > 0.1f) speed.y = -spd_before / 2.f;
+			if (bodies_below.empty()) {
+				auto&& new_bodies = my_body.getCollidingBodies({ 0.f, 10.f });
+				level.touchedBodies(new_bodies, color);
+			}
+			if (!jumped) speed.y = -spd_before / 2.f;  // bounce
+		}
 
-		if ((going_up && spd_0)) {
-			auto bodies_up = my_body.getCollidingBodies({ 0.f, -1.f });
-			level.touchedBodies(std::move(bodies_up), Colors::TRANSPARENT);
+		if (going_up && math::isZero(speed.y)) {
+			auto&& bodies_up = my_body.getCollidingBodies({ 0.f, -1.f });
+			level.touchedBodies(bodies_up, Colors::TRANSPARENT);
 			updateColor();
 		}
 	}

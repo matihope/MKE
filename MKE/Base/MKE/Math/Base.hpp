@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cmath>
+#include <type_traits>
 
 #define FLOAT_INFINITY std::numeric_limits<float>::infinity()
 #define INT_INFINITY   1'000'000'000
@@ -45,5 +46,19 @@ namespace mk::math {
 		float res = base * (1.0 - coeff) + target * coeff;
 		if (std::abs(res - target) < EPS_ZERO) return target;
 		return res;
+	}
+
+	template<class Function>
+	requires std::is_same_v<bool, std::invoke_result_t<Function, float>> constexpr float
+		binsearch(float left, float right, const Function& function, const float EPS = EPS_ZERO) {
+		float mid;
+		while (math::isZero(left - right, EPS)) {
+			mid = (left + right) / 2.f;
+			if (function)
+				left = mid;
+			else
+				right = mid;
+		}
+		return left;
 	}
 }  // namespace mk::Math
