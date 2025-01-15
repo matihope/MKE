@@ -23,9 +23,12 @@ namespace mk {
 
 		void generateMipmaps() const;
 
+		[[nodiscard]]
 		math::Vector2u getSize() const;
 
 		u32 getNativeHandle() const;
+
+		void setWrapMode(GLint mode = GL_CLAMP_TO_BORDER);
 
 	private:
 		math::Vector2u size{};

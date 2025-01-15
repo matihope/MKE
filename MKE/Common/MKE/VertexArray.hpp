@@ -18,7 +18,7 @@ namespace mk {
 	template<class Vert, BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
 	class VertexArray: public NonCopyable, public Drawable {
 	public:
-		VertexArray(bool enable_index_buffer): enable_index_buffer(enable_index_buffer) {
+		explicit VertexArray(bool enable_index_buffer = false): enable_index_buffer(enable_index_buffer) {
 			glGenVertexArrays(1, &vertex_array);
 			glBindVertexArray(vertex_array);
 
@@ -102,12 +102,6 @@ namespace mk {
 			}
 		}
 
-		void draw(RenderTarget&, DrawContext context) const override {
-			if (!vertex_buffer_size) return;
-			context.bind();
-			startDraw();
-		}
-
 	protected:
 		u32 vertex_array{};
 
@@ -128,6 +122,12 @@ namespace mk {
 				glDrawElements(GL_TRIANGLES, index_buffer_size, GL_UNSIGNED_INT, 0);
 			else
 				glDrawArrays(GL_TRIANGLES, 0, vertex_buffer_size);
+		}
+
+		void draw(RenderTarget&, DrawContext context) const override {
+			if (!vertex_buffer_size) return;
+			context.bind();
+			startDraw();
 		}
 	};
 

@@ -11,7 +11,7 @@ namespace mk {
 		RectPrimitive(math::Vector2f size);
 		RectPrimitive(float width, float height);
 
-		void draw(RenderTarget& target, DrawContext context) const override;
+		~RectPrimitive() = default;
 
 		void setSize(float width, float height);
 		void setSize(math::Vector2f size);
@@ -21,6 +21,8 @@ namespace mk {
 		void setColor(Color color);
 
 	private:
+		void draw(RenderTarget& target, DrawContext context) const override;
+
 		void updateVertices();
 
 		Color          color = Colors::WHITE;

@@ -8,16 +8,13 @@ class World final: public mk::WorldEntity3D {
 public:
 	void onReady(mk::Game& game) override {
 		cam = addChild<mk::Camera3D>(game);
-		cam->setPosition({ 64.f });
-		cam->lookAt({ 0.f, 8.f, 0.f });
+		cam->setPosition({ 24, 64.f, 64.f });
+		cam->lookAt({ 16.f, 32.f, 16.f });
 		chunks.push_back(addChild<Chunk>(game));
-
-		// auto sh = addChild<mk::CubeShape>(game);
-		// sh->setScale({32.f});
 	}
 
 	void onEvent(mk::Game& game, const mk::Event& event) override {
-		if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
+		if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 			if (ev->key == mk::input::KEY::T) {
 				wireframe ^= 1;
 				std::cout << "wireframe: " << wireframe << std::endl;

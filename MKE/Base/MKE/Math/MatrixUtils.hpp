@@ -5,20 +5,28 @@
 
 namespace mk::math {
 
-	constexpr Matrix4f perspective(float fovX, float aspect_ratio, float front, float back) {
+	constexpr Matrix4f perspective(float fovX, float aspect_ratio, float near, float far) {
 		Matrix4f projection{ 1.f };
 		float    DEG2RAD = 2.f * M_PI / 360.f;
+		//
+		// float tangent = std::tan(fovX / 2 * DEG2RAD);
+		// float right   = near * tangent;
+		// float top     = right / aspect_ratio;
+		//
+		// projection(0, 0) = near / right;
+		// projection(1, 1) = near / top;
+		// projection(2, 2) = (near + back) / (near - back);
+		// projection(3, 2) = -1.f;
+		// projection(2, 3) = 2 * back * near / (near - back);
+		// projection(3, 3) = 0.f;
 
-		float tangent = std::tan(fovX / 2 * DEG2RAD);
-		float right   = front * tangent;
-		float top     = right / aspect_ratio;
-
-		projection(0, 0) = front / right;
-		projection(1, 1) = front / top;
-		projection(2, 2) = (front + back) / (front - back);
-		projection(3, 2) = -1.f;
-		projection(2, 3) = 2 * back * front / (front - back);
-		projection(3, 3) = 0.f;
+		float scale = 1 / std::tan(fovX * 0.5 * DEG2RAD); 
+		projection(0, 0) = scale;  // scale the x coordinates of the projected point 
+		projection(1, 1) = scale;  // scale the y coordinates of the projected point 
+		projection(2, 2) = -far / (far - near);  // used to remap z to [0,1]
+		projection(2, 3) = -far * near / (far - near);  // used to remap z [0,1]
+		projection(3, 2) = -1;  // set w = -z 
+		projection(3, 3) = 0; 
 
 		return projection;
 	}

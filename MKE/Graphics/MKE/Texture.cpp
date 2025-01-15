@@ -32,6 +32,13 @@ void mk::Texture::generateMipmaps() const {
 
 u32 mk::Texture::getNativeHandle() const { return texture_id; }
 
+void mk::Texture::setWrapMode(GLint mode) {
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void mk::Texture::bind(const Texture* texture) {
 	if (texture)
 		glBindTexture(GL_TEXTURE_2D, texture->texture_id);
@@ -50,9 +57,8 @@ void mk::Texture::loadFromMemory(u32 width, u32 height, const void* data, GLenum
 
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+	setWrapMode(GL_CLAMP_TO_BORDER);
 	setSmooth(is_smooth);  // this also unbinds the texture.
 }

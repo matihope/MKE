@@ -9,6 +9,7 @@ namespace mk {
 	public:
 		const Texture* getTexture(const ResPath& path);
 		void           setTextureSmooth(const ResPath& path, bool smooth);
+		void           setTextureWrapMethod(const ResPath& path, GLint wrapMethod);
 
 		Font* getFont(const ResPath& path);
 

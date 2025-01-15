@@ -35,8 +35,8 @@ void mk::View3D::lookAt(math::Vector3f look_at) {
 void mk::View3D::makeCamera() {
 	// camera = math::perspective(45.f, 16.f / 9, 0.1f, 100.f);
 	// camera = math::lookAtDirection(position, direction, math::Vector3f(0.f, 1.f, 0.f));
-	camera = math::perspective(fov, aspect, 0.1f, 100.f);
-	camera *= math::lookAtDirection(position, direction, { 0.f, 1.f, 0.f });
+	camera = math::perspective(fov, aspect, 0.1f, 1000.f);
+	camera *= lookAtDirection(position, direction, { 0.f, 1.f, 0.f });
 	// camera = math::orthogonal(16, 9);
 }
 
