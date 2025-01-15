@@ -56,7 +56,7 @@ struct FontVertex {
 	}
 };
 
-class FontArray: public mk::VertexArray<FontVertex>, public mk::Drawable {
+class FontArray: public mk::VertexArray<FontVertex> {
 public:
 	using mk::VertexArray<FontVertex>::VertexArray;
 	~FontArray() = default;
@@ -65,20 +65,19 @@ public:
 	const mk::Texture* texture;
 	float              y_delta = 0.0;
 
-	void draw(mk::RenderTarget&, mk::DrawContext context) const override {
+	void draw(mk::RenderTarget& target, mk::DrawContext context) const override {
 		static mk::Shader  shader(vertex_shader, fragment_shader);
 		mk::math::Matrix4f transform{ 1 };
 		transform(1, 1) = -1;
 		transform(1, 3) = y_delta;
+		shader.setColor("textColor", color);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
 
 		context.shader  = &shader;
 		context.texture = texture;
 		context.transform *= transform;
-		context.bind();
-		shader.setColor("textColor", color);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
-		startDraw();
+		VertexArray::draw(target, context);
 	}
 };
 

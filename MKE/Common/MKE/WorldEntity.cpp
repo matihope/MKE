@@ -75,17 +75,16 @@ namespace mk {
 		RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
 	) const {
 		if (m_show) {
-			if (auto new_mode = getDrawMode();
+			if (const auto new_mode = getDrawMode();
 			    draw_mode != new_mode && new_mode == DrawMode::ModeUI) {
 				beginDraw(target, game);
 			} else {
-				DrawContext copied_context(context);
-				copied_context.transform *= getTransform();
 				onDraw(target, context, game);
 
+				context.transform *= getTransform();
 				for (const auto& layer: m_entity_pool)
 					for (auto& entity: layer.second)
-						entity->drawEntity(target, copied_context, game, draw_mode);
+						entity->drawEntity(target, context, game, draw_mode);
 			}
 		}
 	}

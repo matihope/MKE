@@ -8,7 +8,7 @@ namespace mk {
 
 	class Camera2D: public WorldEntity2D {
 	public:
-		virtual void update(Game& game, const float dt) override;
+		void update(Game& game, float dt) override;
 
 	private:
 		View2D view;
@@ -16,9 +16,9 @@ namespace mk {
 
 	class Camera3D: public WorldEntity3D {
 	public:
-		virtual void update(Game& game, const float dt) override;
+		void update(Game& game, float dt) override;
 
-		virtual void event(Game& game, const Event& event) override;
+		void event(Game& game, const Event& event) override;
 
 		void setPosition(math::Vector3f position);
 		void setDirection(math::Vector3f direction);
