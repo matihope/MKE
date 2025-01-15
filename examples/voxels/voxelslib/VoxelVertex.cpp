@@ -9,7 +9,7 @@ void VoxelVertex::configureVertexAttribute() {
 	glVertexAttribPointer(
 		0,
 		sizeof(position) / sizeof(float),
-		GL_FLOAT,
+		GL_INT,
 		GL_FALSE,
 		sizeof(VoxelVertex),
 		static_cast<void*>(nullptr)

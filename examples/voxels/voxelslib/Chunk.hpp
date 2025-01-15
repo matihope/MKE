@@ -1,9 +1,11 @@
 #pragma once
 
 #include "VoxelVertex.hpp"
+#include "MKE/Game.hpp"
 #include "MKE/Primitives/3d/CubePrimitive.hpp"
 #include "MKE/WorldEntity.hpp"
 #include "MKE/Random.hpp"
+#include "MKE/Shaders/SimpleShader.hpp"
 
 enum class VoxelType : u8 { EMPTY, DIRT };
 constexpr u8 VOXEL_TYPES = 2;
@@ -74,26 +76,23 @@ struct CubePos {
 	}
 };
 
-class VoxelFaceArray final: public mk::VertexArray<VoxelVertex>, public mk::Drawable {
-public:
-	using VertexArray::VertexArray;
-	~VoxelFaceArray() override = default;
-
-	void draw(mk::RenderTarget& target, mk::DrawContext context) const override {
-		if (!vertex_buffer_size) return;
-		context.bind();
-		startDraw();
-	}
-};
+using VoxelFaceArray = mk::VertexArray<mk::Vertex3D>;
 
 class Chunk final: public mk::WorldEntity3D {
 public:
-	void onReady(mk::Game& game) override { buildMeshes(game); }
+	mk::Shader shader;
+
+	void onReady(mk::Game& game) override {
+		buildMeshes(game);
+		// shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
+	}
 
 	void onDraw(
 		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
 	) const override {
 		context.transform *= getTransform();
+		// context.shader = &shader;
+		context.shader = mk::shaders::shaderNoTexture3D();
 		for (auto&& [_, arr]: faces) arr.draw(target, context);
 	}
 
@@ -124,15 +123,21 @@ private:
 				// This has to look at the vertices from every direction.
 				if (voxel_type == VoxelType::DIRT) {
 					// This is temporary
-					voxel_faces.setSize(36);
-					buildFace({ 0, 0, 0 }, FaceDir::SOUTH, CHUNK_SIZE, CHUNK_SIZE, 0, voxel_faces);
-					buildFace({ 0, 0, 32 }, FaceDir::WEST, CHUNK_SIZE, CHUNK_SIZE, 6, voxel_faces);
-					buildFace({ 32, 0, 0 }, FaceDir::EAST, CHUNK_SIZE, CHUNK_SIZE, 12, voxel_faces);
-					buildFace(
-						{ 32, 0, 32 }, FaceDir::NORTH, CHUNK_SIZE, CHUNK_SIZE, 18, voxel_faces
-					);
-					buildFace({ 0, 32, 0 }, FaceDir::UP, CHUNK_SIZE, CHUNK_SIZE, 24, voxel_faces);
-					buildFace({ 32, 0, 0 }, FaceDir::DOWN, CHUNK_SIZE, CHUNK_SIZE, 30, voxel_faces);
+					voxel_faces.setSize(6);
+					// buildFace({ 0, 0, 0 }, FaceDir::SOUTH, CHUNK_SIZE, CHUNK_SIZE, 0, voxel_faces);
+					// buildFace({ 0, 0, 32 }, FaceDir::WEST, CHUNK_SIZE, CHUNK_SIZE, 6, voxel_faces);
+					buildFace({ 32, 0, 0 }, FaceDir::EAST, CHUNK_SIZE, CHUNK_SIZE, 0, voxel_faces);
+					// buildFace(
+					// 	{ 32, 0, 32 }, FaceDir::NORTH, CHUNK_SIZE, CHUNK_SIZE, 18, voxel_faces
+					// );
+					// buildFace({ 0, 32, 0 }, FaceDir::UP, CHUNK_SIZE, CHUNK_SIZE, 24, voxel_faces);
+					// buildFace({ 0, 0, 32 }, FaceDir::DOWN, CHUNK_SIZE, CHUNK_SIZE, 30, voxel_faces);
+
+					for (int i = 0; i < 6; ++i) {
+						voxel_faces(i).color = { mk::Random::getReal(0., 1.),
+							                     mk::Random::getReal(0., 1.),
+							                     mk::Random::getReal(0., 1.) };
+					}
 				}
 				voxel_faces.save();
 			} else {
@@ -168,7 +173,7 @@ private:
 		}
 		case FaceDir::DOWN: {
 			grow_dir_up    = FaceDir::SOUTH;
-			grow_dir_right = FaceDir::WEST;
+			grow_dir_right = FaceDir::EAST;
 			break;
 		}
 		}
@@ -194,17 +199,17 @@ private:
 		mk::math::Vector3i top_left = bottom_left;
 		top_left += vec_grow_up;
 
-		voxels(start + 0).position = bottom_left;
-		voxels(start + 1).position = bottom_right;
-		voxels(start + 2).position = top_right;
-		voxels(start + 3).position = bottom_left;
-		voxels(start + 4).position = top_right;
-		voxels(start + 5).position = top_left;
+		voxels(start + 0).position = bottom_left.type<float>();
+		voxels(start + 1).position = bottom_right.type<float>();
+		voxels(start + 2).position = top_right.type<float>();
+		voxels(start + 3).position = bottom_left.type<float>();
+		voxels(start + 4).position = top_right.type<float>();
+		voxels(start + 5).position = top_left.type<float>();
 
-		std::cout << "top_right = " << top_right << std::endl;
-		std::cout << "bottom_right = " << bottom_right << std::endl;
-		std::cout << "top_left = " << top_left << std::endl;
-		std::cout << "bottom_left = " << bottom_left << std::endl;
+		std::cerr << "top_right = " << top_right << std::endl;
+		std::cerr << "bottom_right = " << bottom_right << std::endl;
+		std::cerr << "top_left = " << top_left << std::endl;
+		std::cerr << "bottom_left = " << bottom_left << std::endl;
 	}
 
 	std::array<std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>, VOXEL_TYPES> voxels{};
