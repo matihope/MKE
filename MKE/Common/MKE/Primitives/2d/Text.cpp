@@ -58,11 +58,11 @@ struct FontVertex {
 
 class FontArray: public mk::VertexArray<FontVertex> {
 public:
-	using mk::VertexArray<FontVertex>::VertexArray;
+	using VertexArray::VertexArray;
 	~FontArray() = default;
 
-	mk::Color          color;
-	const mk::Texture* texture;
+	mk::Color          color{};
+	const mk::Texture* texture = nullptr;
 	float              y_delta = 0.0;
 
 	void draw(mk::RenderTarget& target, mk::DrawContext context) const override {
@@ -71,7 +71,6 @@ public:
 		transform(1, 1) = -1;
 		transform(1, 3) = y_delta;
 		shader.setColor("textColor", color);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
 
 		context.shader  = &shader;
 		context.texture = texture;
@@ -155,9 +154,7 @@ void mk::Text2D::draw(RenderTarget& target, DrawContext context) const {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (!isEmpty()) {
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		// target.render2dContext(render_object, context);
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		context.texture = &render_texture.getTexture();
 		target.render(render_object, context);
 	}

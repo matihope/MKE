@@ -26,11 +26,15 @@ mk::math::Vector3f mk::Camera3D::getDirection() const { return view.getDirection
 
 mk::math::Vector3f mk::Camera3D::getPitchYawRoll() const { return view.getPithYawRoll(); }
 
-void mk::Camera3D::setFov(float fov) { view.setFov(fov); }
+void mk::Camera3D::setFov(float fov) { view.setFovH(fov); }
 
 void mk::Camera3D::setNear(float near) { view.setNear(near); }
 
 void mk::Camera3D::setFar(float far) { view.setFar(far); }
+
+float mk::Camera3D::getFovH() const { return view.getFovH(); }
+
+float mk::Camera3D::getFovV() const { return view.getFovV(); }
 
 void mk::Camera3D::setPitchYawRoll(math::Vector3f pitch_yaw_roll) {
 	view.setPithYawRoll(pitch_yaw_roll);

@@ -1,4 +1,3 @@
-#include "MKE/Camera.hpp"
 #include "Chunk.hpp"
 #include "Player.hpp"
 #include "MKE/Nodes/3d/CubeShape.hpp"
@@ -10,10 +9,11 @@ class World final: public mk::WorldEntity3D {
 public:
 	void onReady(mk::Game& game) override {
 		player            = addChild<Player>(game);
-		constexpr int CNT = 7;  // (CNT * 2 + 1) ** 2
+		// constexpr int CNT = 7;  // (CNT * 2 + 1) ** 2
+		constexpr int CNT = 1;  // (CNT * 2 + 1) ** 2
 		for (int x = -CNT; x <= CNT; x++) {
 			for (int y = -CNT; y <= CNT; y++) {
-				chunks.push_back(addChild<Chunk>(game));
+				chunks.push_back(addChild<Chunk>(game, player->getCamera()));
 				chunks.back()->setPosition(mk::math::Vector3f(x * CHUNK_SIZE, 0, y * CHUNK_SIZE));
 			}
 		}
@@ -41,9 +41,9 @@ public:
 		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
 	) const override {
 		if (wireframe)
-			glPolygonMode(GL_FRONT, GL_LINE);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
-			glPolygonMode(GL_BACK, GL_FILL);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
 	std::list<Chunk*> chunks{};

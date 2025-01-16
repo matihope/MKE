@@ -1,16 +1,16 @@
 #pragma once
 
 #include "VoxelTextureFaces.hpp"
+#include "chunk_utils.hpp"
 #include "MKE/Game.hpp"
-#include "MKE/Primitives/3d/CubePrimitive.hpp"
 #include "MKE/WorldEntity.hpp"
-#include "MKE/Random.hpp"
 #include "MKE/Shaders/SimpleShader.hpp"
 
-constexpr u8 CHUNK_SIZE = 32;
 
 class Chunk final: public mk::WorldEntity3D {
 public:
+	Chunk(mk::Camera3D* camera): camera(camera) {}
+
 	mk::Shader shader;
 
 	void onReady(mk::Game& game) override;
@@ -20,6 +20,7 @@ public:
 	) const override;
 
 private:
+	mk::Camera3D*      camera;
 	void               clearFacesOf(VoxelType type);
 	VoxelTextureFaces& getFacesOf(VoxelType type);
 
@@ -44,10 +45,6 @@ How could we get information about a block_kind inside fragment_shader.
 ====
 !!!
 Each texture has its own VertexArray, and we compose each chunk of faces of a single texture.
-
-====
-!!!
-Before drawing each chunk use uniform to set its position in the world and offset it in the shader.
 
 ====
 !!!

@@ -40,7 +40,7 @@ void mk::View3D::lookAt(math::Vector3f look_at) {
 void mk::View3D::makeCamera() {
 	// camera = math::perspective(45.f, 16.f / 9, 0.1f, 100.f);
 	// camera = math::lookAtDirection(position, direction, math::Vector3f(0.f, 1.f, 0.f));
-	camera = math::perspective(fov, aspect, near, far);
+	camera = math::perspective(fov_h, aspect, near, far);
 	camera *= lookAtDirection(position, getDirection(), { 0.f, 1.f, 0.f });
 	// camera = math::orthogonal(16, 9);
 }
@@ -68,10 +68,14 @@ mk::math::Vector3f mk::View3D::getDirection() const {
 	return { pitch_cos * yaw_cos, pitch_sin, pitch_cos * yaw_sin };
 }
 
-void mk::View3D::setFov(const float fov) {
-	this->fov = fov;
+void mk::View3D::setFovH(const float fov) {
+	this->fov_h = fov;
 	makeCamera();
 }
+
+float mk::View3D::getFovH() const { return fov_h; }
+
+float mk::View3D::getFovV() const { return fov_h / aspect; }
 
 void mk::View3D::setAspect(const float aspect) {
 	this->aspect = aspect;
@@ -91,7 +95,11 @@ void mk::View3D::setFar(const float far) {
 mk::math::Vector3f mk::View3D::getPithYawRoll() const { return pitch_yaw_roll; }
 
 void mk::View3D::setPithYawRoll(math::Vector3f pitch_yaw_roll) {
-	this->pitch_yaw_roll = pitch_yaw_roll;
+	auto [x, y, z]       = pitch_yaw_roll.bind();
+	x                    = std::fmodf(x, 2. * M_PI);
+	y                    = std::fmodf(y, 2. * M_PI);
+	z                    = std::fmodf(z, 2. * M_PI);
+	this->pitch_yaw_roll = { x, y, z };
 	makeCamera();
 }
 

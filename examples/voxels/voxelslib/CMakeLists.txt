@@ -6,6 +6,8 @@ add_library(voxelslib
         VoxelTextureFaces.cpp
         VoxelTextureFaces.hpp
         Player.cpp
-        Player.hpp)
+        Player.hpp
+        chunk_utils.hpp
+        chunk_utils.cpp)
 target_link_libraries(voxelslib MKE-Engine)
 target_include_directories(voxelslib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

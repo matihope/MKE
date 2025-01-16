@@ -33,6 +33,9 @@ namespace mk {
 		math::Vector3f getPitchYawRoll() const;
 
 		void setFov(float fov);
+		[[nodiscard]] float  getFovH() const;
+		float  getFovV() const;
+
 		void setNear(float near);
 		void setFar(float far);
 

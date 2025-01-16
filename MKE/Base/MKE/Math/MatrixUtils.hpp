@@ -5,11 +5,11 @@
 
 namespace mk::math {
 
-	constexpr Matrix4f perspective(float fovX, float aspect_ratio, float near, float far) {
+	constexpr Matrix4f perspective(float fov_h, float aspect_ratio, float near, float far) {
 		Matrix4f projection{ 1.f };
 		float    DEG2RAD = 2.f * M_PI / 360.f;
 
-		float tangent = std::tan(fovX / 2 * DEG2RAD);
+		float tangent = std::tan(fov_h / 2 * DEG2RAD);
 		float right   = near * tangent;
 		float top     = right / aspect_ratio;
 

@@ -32,80 +32,31 @@ namespace {
 		}
 	}
 
-	std::pair<FaceDir, FaceDir> getGrowDir(const FaceDir dir) {
-		auto grow_dir_right = FaceDir::EAST;
-		auto grow_dir_up    = FaceDir::UP;
-		switch (dir) {
-		case FaceDir::NORTH: {
-			grow_dir_right = FaceDir::WEST;
-			break;
-		}
-		case FaceDir::EAST: {
-			grow_dir_right = FaceDir::NORTH;
-			break;
-		}
-		case FaceDir::SOUTH: {
-			grow_dir_right = FaceDir::EAST;
-			break;
-		}
-		case FaceDir::WEST: {
-			grow_dir_right = FaceDir::SOUTH;
-			break;
-		}
-		case FaceDir::UP: {
-			grow_dir_up    = FaceDir::NORTH;
-			grow_dir_right = FaceDir::EAST;
-			break;
-		}
-		case FaceDir::DOWN: {
-			grow_dir_up    = FaceDir::SOUTH;
-			grow_dir_right = FaceDir::EAST;
-			break;
-		}
-		}
-		return { grow_dir_up, grow_dir_right };
-	}
+	bool canSeeFaceFrom(mk::math::Vector3f cam_rot_deg, float fov_h, float fov_v, FaceDir dir) {
+		float half_fov_h = fov_h / 2.f;
+		float half_fov_v = fov_v / 2.f;
 
-	mk::ResPath getTexturePath(const VoxelType type, const FaceDir dir) {
-		MK_ASSERT(type == VoxelType::DIRT, "For now expecting dirt");
-		std::string path = "dirt_";
+		auto [pitch, yaw, _] = cam_rot_deg.bind();
+		std::cerr << half_fov_h << " " << yaw << '\n';
+
 		switch (dir) {
 		case FaceDir::NORTH:
+			if (yaw <= half_fov_h) return false;
+			return yaw <= half_fov_h - 5.f;
 		case FaceDir::EAST:
+			break;
 		case FaceDir::SOUTH:
+			break;
 		case FaceDir::WEST:
-			path += "side";
 			break;
 		case FaceDir::UP:
-			path += "up";
-			break;
+			return pitch <= half_fov_v;
 		case FaceDir::DOWN:
-			path += "down";
-			break;
+			return pitch >= half_fov_v;
 		}
-		path += ".png";
-		return { path };
+
+		return false;
 	}
-
-	std::unordered_map<VoxelType, std::array<const mk::Texture*, 6>> textures;
-
-}
-
-void initTextures(mk::Game& game) {
-	static bool init = false;
-	if (!init) {
-		auto                              type = VoxelType::DIRT;
-		std::array<const mk::Texture*, 6> type_textures{};
-		for (int i = 0; i < FACE_DIRS; i++) {
-			const auto dir   = static_cast<FaceDir>(i);
-			auto       path  = getTexturePath(type, dir);
-			type_textures[i] = game.resources().getTexture(path);
-			game.resources().setTextureSmooth(path, false);
-			game.resources().setTextureWrapMethod(path, GL_REPEAT);
-		}
-		textures.emplace(type, type_textures);
-	}
-	init = true;
 }
 
 void VoxelTextureFaces::addFace(
@@ -147,8 +98,9 @@ void VoxelTextureFaces::save() {
 void VoxelTextureFaces::draw(mk::RenderTarget& target, mk::DrawContext context) const {
 	for (usize dir_id = 0; dir_id < FACE_DIRS; dir_id++) {
 		// Here we also can not call draw if player is facing away.
+		// But it's really tricky.
 		if (faces[dir_id].getSize()) {
-			context.texture = textures.at(type)[dir_id];
+			context.texture = getVoxelTexture(type, dir_id);
 			target.render(faces[dir_id], context);
 		}
 	}

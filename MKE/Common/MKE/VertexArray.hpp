@@ -18,8 +18,7 @@ namespace mk {
 	template<class Vert, BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
 	class VertexArray: public NonCopyable, public Drawable {
 	public:
-		VertexArray(bool enable_index_buffer = false):
-			  enable_index_buffer(enable_index_buffer) {
+		VertexArray(bool enable_index_buffer = false): enable_index_buffer(enable_index_buffer) {
 			glGenVertexArrays(1, &vertex_array);
 			glBindVertexArray(vertex_array);
 
@@ -147,14 +146,14 @@ namespace mk {
 	class VertexArray2D: public VertexArray<Vertex2D> {
 	public:
 		using VertexArray::VertexArray;
-		~VertexArray2D() = default;
+		~VertexArray2D() override = default;
 		void draw(RenderTarget& target, DrawContext context) const override;
 	};
 
 	class VertexArray3D: public VertexArray<Vertex3D> {
 	public:
 		using VertexArray::VertexArray;
-		~VertexArray3D() = default;
+		~VertexArray3D() override = default;
 		void draw(RenderTarget& target, DrawContext context) const override;
 	};
 }

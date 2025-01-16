@@ -10,6 +10,8 @@ namespace {
 
 void Chunk::onReady(mk::Game& game) {
 	voxels[static_cast<usize>(VoxelType::DIRT)][0] = true;
+	voxels[static_cast<usize>(VoxelType::DIRT)][1] = true;
+	voxels[static_cast<usize>(VoxelType::DIRT)][3] = true;
 	buildMeshes(game);
 	shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 }
@@ -26,18 +28,20 @@ void Chunk::clearFacesOf(const VoxelType type) {
 }
 
 VoxelTextureFaces& Chunk::getFacesOf(const VoxelType type) {
-	auto [obj, _] = faces.try_emplace(type, type);
+	auto [obj, _] = faces.try_emplace(type, type, camera);
 	return obj->second;
 }
 
 void Chunk::buildMeshes(mk::Game&) {
 	for (usize type_index = 0; type_index < VOXEL_TYPES; ++type_index) {
 		const auto voxel_type = static_cast<VoxelType>(type_index);
+		if (voxel_type == VoxelType::AIR) continue;
 		if (anyOf(voxels, voxel_type)) {
 			auto& voxel_faces = getFacesOf(voxel_type);
+			// voxel_faces.buildFaces();
 			// auto&& va = voxels[type_index];
 			// Greedy meshing here.
-			// This has to look at the vertices from every direction.
+			// // This has to look at the vertices from every direction.
 			if (voxel_type == VoxelType::DIRT) {
 				// This is temporary
 				voxel_faces.addFace({ 0, 0, 0 }, FaceDir::SOUTH, CHUNK_SIZE, CHUNK_SIZE);
@@ -47,6 +51,17 @@ void Chunk::buildMeshes(mk::Game&) {
 				voxel_faces.addFace({ 0, 32, 0 }, FaceDir::UP, CHUNK_SIZE, CHUNK_SIZE);
 				voxel_faces.addFace({ 0, 0, 32 }, FaceDir::DOWN, CHUNK_SIZE, CHUNK_SIZE);
 			}
+			// for (usize dir_idx = 0; dir_idx < FACE_DIRS; ++dir_idx)
+			// 	const auto face_dir = static_cast<FaceDir>(dir_idx);
+			// 	for (usize x = 0; x < CHUNK_SIZE; ++x) {
+			// 		for (usize y = 0; y < CHUNK_SIZE; ++y) {
+			// 			for (usize z = 0; z < CHUNK_SIZE; ++z) {
+			//
+			// 			}
+			// 		}
+			// 	}
+			//
+			// }
 			voxel_faces.save();
 		} else {
 			clearFacesOf(voxel_type);

@@ -48,7 +48,10 @@ namespace mk {
 		void           setDirection(math::Vector3f direction);
 		math::Vector3f getDirection() const;
 
-		void setFov(float fov);
+		void  setFovH(float fov);
+		float getFovH() const;
+		float getFovV() const;
+
 		void setAspect(float aspect);
 		void setNear(float near);
 		void setFar(float far);
@@ -59,7 +62,7 @@ namespace mk {
 
 
 	private:
-		float fov    = 45.f;
+		float fov_h  = 45.f;
 		float aspect = 1.f;
 		float near   = 0.1;
 		float far    = 1000.f;
