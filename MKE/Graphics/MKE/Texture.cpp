@@ -16,18 +16,27 @@ mk::math::Vector2u mk::Texture::getSize() const { return size; }
 void mk::Texture::setSmooth(bool smooth) {
 	is_smooth = smooth;
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-	if (smooth)
+	if (smooth) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	else
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	} else {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+	if (has_mipmaps) generateMipmaps();
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void mk::Texture::generateMipmaps() const {
+void mk::Texture::generateMipmaps() {
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	if (is_smooth)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	else
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	has_mipmaps = true;
 }
 
 u32 mk::Texture::getNativeHandle() const { return texture_id; }

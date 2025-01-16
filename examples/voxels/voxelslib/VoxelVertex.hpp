@@ -7,10 +7,9 @@
 #include "MKE/Math/Vector.hpp"
 
 struct VoxelVertex {
-	mk::math::Vector3i position{};    // 12 bytes
-	mk::Color          color{};       // 16 bytes
-	mk::math::Vector2f tex_coords{};  // 8 bytes
+	mk::math::Vector3i position{};                 // 12 bytes
+	mk::math::Vector2f tex_coords{};               // 8 bytes
+	mk::Color          color = mk::Colors::WHITE;  // 16 bytes
 
 	static void configureVertexAttribute();
 };
-

@@ -22,8 +22,23 @@ void mk::Camera3D::setDirection(math::Vector3f direction) { view.setDirection(di
 
 void mk::Camera3D::lookAt(math::Vector3f at) { view.lookAt(at); }
 
+mk::math::Vector3f mk::Camera3D::getDirection() const { return view.getDirection(); }
+
+mk::math::Vector3f mk::Camera3D::getPitchYawRoll() const { return view.getPithYawRoll(); }
+
+void mk::Camera3D::setFov(float fov) { view.setFov(fov); }
+
+void mk::Camera3D::setNear(float near) { view.setNear(near); }
+
+void mk::Camera3D::setFar(float far) { view.setFar(far); }
+
+void mk::Camera3D::setPitchYawRoll(math::Vector3f pitch_yaw_roll) {
+	view.setPithYawRoll(pitch_yaw_roll);
+}
+
 void mk::Camera3D::event(Game& game, const Event& event) {
-	if (auto ev = event.get<Event::WindowResized>(); ev) {
+	if (const auto ev = event.get<Event::WindowResized>(); ev) {
+		std::cerr << "Window resized" << std::endl;
 		auto [w, h] = ev->new_size.type<float>().bind();
 		view.setAspect(w / h);
 	}

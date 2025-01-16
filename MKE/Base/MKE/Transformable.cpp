@@ -27,6 +27,8 @@ void mk::Transformable::move(float delta_x, float delta_y) {
 	move(math::Vector3f(delta_x, delta_y, 0));
 }
 
+void mk::Transformable::rotate(const math::Vector3f delta) { rotation += delta; }
+
 void mk::Transformable::move(float delta_x, float delta_y, float delta_z) {
 	move({ delta_x, delta_y, delta_z });
 }
@@ -35,14 +37,10 @@ mk::math::Vector2f mk::Transformable::getPosition2D() const { return { position.
 
 mk::math::Vector3f mk::Transformable::getPosition() const { return position; }
 
-void mk::Transformable::setRotation(math::Vector3f rotation) {
-	setRotation(rotation.x, rotation.y, rotation.z);
-}
+void mk::Transformable::setRotation(math::Vector3f rotation) { this->rotation = rotation; }
 
 void mk::Transformable::rotate(float d_pitch, float d_yaw, float d_roll) {
-	rotation.x += d_pitch;
-	rotation.y += d_yaw;
-	rotation.z += d_roll;
+	rotate({ d_pitch, d_yaw, d_roll });
 }
 
 mk::math::Matrix4f mk::Transformable::getRotationTransform() const {
@@ -71,7 +69,7 @@ void mk::Transformable::setScale(float xscale, float yscale, float zscale) {
 }
 
 void mk::Transformable::setRotation(float d_pitch, float d_yaw, float d_roll) {
-	this->rotation = { d_pitch, d_yaw, d_roll };
+	setRotation({ d_pitch, d_yaw, d_roll });
 }
 
 mk::math::Matrix4f mk::Transformable::getTransform() const {

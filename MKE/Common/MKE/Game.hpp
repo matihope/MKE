@@ -38,7 +38,6 @@ namespace mk {
 
 		Font*                       m_default_font;
 		std::unique_ptr<gui::Label> m_fps_label;
-		math::Vector2f              m_mouse_pos;
 		Image                       icon;
 
 		void                                     updateViewportSize();
@@ -96,13 +95,14 @@ namespace mk {
 		bool           isMousePressed(input::MOUSE button) const;
 		bool           isMouseJustPressed(input::MOUSE button) const;
 		bool           isMouseJustReleased(input::MOUSE button) const;
-		math::Vector2f getMousePos();
+		math::Vector2f getMousePos() const;
+		math::Vector2f getMouseDelta() const;
 
-		const mk::View2D* getView2D();
+		// const mk::View2D* getView2D();
 		// void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
 
-		mk::Font* getDefaultFont() const;
+		Font* getDefaultFont() const;
 
 		ResourceManager& resources() { return res_man; }
 	};

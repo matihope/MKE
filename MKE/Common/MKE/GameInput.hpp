@@ -13,20 +13,22 @@ namespace mk {
 		bool isMouseJustPressed(input::MOUSE key) const;
 		bool isMouseJustReleased(input::MOUSE key) const;
 
+		math::Vector2f getMousePosition() const;
+		math::Vector2f getMouseDelta() const;
+
 		void tick();
 
 	private:
 		// A map of {key, just_pressed}
-		std::array<bool, ((usize) input::KEY::_LAST - (usize) input::KEY::_FIRST) + 1>
-			pressed_key{};
+		std::array<bool, (usize) input::KEY::_LAST + 1> pressed_key{};
 
-		std::array<bool, ((usize) input::MOUSE::BUTTON_8 - (usize) input::MOUSE::BUTTON_1) + 1>
-			pressed_mouse{};
+		std::array<bool, (usize) input::MOUSE::BUTTON_8 + 1> pressed_mouse{};
 
-		std::array<bool, ((usize) input::KEY::_LAST - (usize) input::KEY::_FIRST) + 1>
-			prev_pressed_key{};
+		std::array<bool, (usize) input::KEY::_LAST + 1> prev_pressed_key{};
 
-		std::array<bool, ((usize) input::MOUSE::BUTTON_8 - (usize) input::MOUSE::BUTTON_1) + 1>
-			prev_pressed_mouse{};
+		std::array<bool, (usize) input::MOUSE::BUTTON_8 + 1> prev_pressed_mouse{};
+
+		math::Vector2f mouse_position{ -1.f };
+		math::Vector2f mouse_delta{};
 	};
 }

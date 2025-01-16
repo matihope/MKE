@@ -20,9 +20,22 @@ namespace mk {
 
 		void event(Game& game, const Event& event) override;
 
-		void setPosition(math::Vector3f position);
-		void setDirection(math::Vector3f direction);
+		void setPosition(math::Vector3f position) override;
+		// no need for getPosition() since WorldEntity3D::getPosition() == view.getPosition()
+
+		void           setDirection(math::Vector3f direction);
+		math::Vector3f getDirection() const;
+
 		void lookAt(math::Vector3f at);
+
+
+		void           setPitchYawRoll(math::Vector3f pitch_yaw_roll);
+		math::Vector3f getPitchYawRoll() const;
+
+		void setFov(float fov);
+		void setNear(float near);
+		void setFar(float far);
+
 
 	private:
 		View3D view;

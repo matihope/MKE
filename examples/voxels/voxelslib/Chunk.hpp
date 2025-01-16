@@ -1,22 +1,13 @@
 #pragma once
 
-#include "VoxelVertex.hpp"
+#include "VoxelTextureFaces.hpp"
 #include "MKE/Game.hpp"
 #include "MKE/Primitives/3d/CubePrimitive.hpp"
 #include "MKE/WorldEntity.hpp"
 #include "MKE/Random.hpp"
 #include "MKE/Shaders/SimpleShader.hpp"
 
-enum class VoxelType : u8 { EMPTY, DIRT };
-constexpr u8 VOXEL_TYPES = 2;
-
-enum class FaceDir : u8 { NORTH, EAST, SOUTH, WEST, UP, DOWN };
-constexpr u8 FACE_DIRS = 6;
-
 constexpr u8 CHUNK_SIZE = 32;
-
-
-using VoxelFaceArray = mk::VertexArray<VoxelVertex>;
 
 class Chunk final: public mk::WorldEntity3D {
 public:
@@ -29,13 +20,13 @@ public:
 	) const override;
 
 private:
-	void            clearFacesOf(VoxelType type);
-	std::array<VoxelFaceArray, 6>& getFacesOf(VoxelType type);
+	void               clearFacesOf(VoxelType type);
+	VoxelTextureFaces& getFacesOf(VoxelType type);
 
 	void buildMeshes(mk::Game&);
 
 	std::array<std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>, VOXEL_TYPES> voxels{};
-	std::map<VoxelType, std::array<VoxelFaceArray, 6>>                              faces{};
+	std::map<VoxelType, VoxelTextureFaces>                                          faces{};
 };
 
 /*

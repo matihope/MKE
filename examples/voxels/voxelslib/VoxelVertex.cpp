@@ -15,10 +15,9 @@ void VoxelVertex::configureVertexAttribute() {
 		static_cast<void*>(nullptr)
 	);
 	glEnableVertexAttribArray(0);
-
 	glVertexAttribPointer(
 		1,
-		sizeof(color) / sizeof(float),
+		sizeof(tex_coords) / sizeof(float),
 		GL_FLOAT,
 		GL_FALSE,
 		sizeof(VoxelVertex),
@@ -28,11 +27,11 @@ void VoxelVertex::configureVertexAttribute() {
 
 	glVertexAttribPointer(
 		2,
-		sizeof(tex_coords) / sizeof(float),
+		sizeof(color) / sizeof(float),
 		GL_FLOAT,
 		GL_FALSE,
 		sizeof(VoxelVertex),
-		(void*) (sizeof(position) + sizeof(color))
+		(void*) (sizeof(position) + sizeof(tex_coords))
 	);
 	glEnableVertexAttribArray(2);
 }

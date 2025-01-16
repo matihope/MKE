@@ -18,7 +18,8 @@ namespace mk {
 	template<class Vert, BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
 	class VertexArray: public NonCopyable, public Drawable {
 	public:
-		explicit VertexArray(bool enable_index_buffer = false): enable_index_buffer(enable_index_buffer) {
+		VertexArray(bool enable_index_buffer = false):
+			  enable_index_buffer(enable_index_buffer) {
 			glGenVertexArrays(1, &vertex_array);
 			glBindVertexArray(vertex_array);
 
@@ -45,9 +46,21 @@ namespace mk {
 
 		VertexArray(usize size) { setSize(size); }
 
-		void setSize(usize size) {
+		void setSize(const usize size) {
 			vertex_buffer_size = size;
 			vertices.reset(new Vert[size]);
+		}
+
+		void addVertices(const usize count) {
+			auto old = std::move(vertices);
+			vertices.reset(new Vert[vertex_buffer_size + count]);
+			std::memcpy(vertices.get(), old.get(), sizeof(Vert) * vertex_buffer_size);
+			vertex_buffer_size += count;
+		}
+
+		[[nodiscard]]
+		usize getSize() const {
+			return vertex_buffer_size;
 		}
 
 		void setIndexBuffer(const u32* buffer, usize length) {

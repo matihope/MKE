@@ -50,7 +50,6 @@ namespace mk {
 
 	void Game::update() {
 		m_delta_time = m_clock.restart();
-		m_mouse_pos  = m_window.getMousePosition().type<float>();
 		// m_mouse_pos  = math::Vector2f(
 		//     getRenderWindow().mapPixelToCoords(sf::Mouse::getPosition(getRenderWindow()))
 		// );
@@ -150,8 +149,6 @@ namespace mk {
 		m_window.setView2D(m_view_2d);
 	}
 
-	math::Vector2f Game::getMousePos() { return m_mouse_pos; }
-
 	// const sf::View* Game::getView() { return &m_view; }
 
 	// void Game::setCameraCenterAt(const sf::Vector2f& pos) {
@@ -247,5 +244,9 @@ namespace mk {
 		if (process_mode == ProcessMode::NORMAL) return input_map_normal;
 		return input_map_physics;
 	}
+
+	math::Vector2f Game::getMousePos() const { return getInput().getMousePosition(); }
+
+	math::Vector2f Game::getMouseDelta() const { return getInput().getMouseDelta(); }
 
 }  // namespace mk

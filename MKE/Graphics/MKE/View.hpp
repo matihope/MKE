@@ -50,16 +50,24 @@ namespace mk {
 
 		void setFov(float fov);
 		void setAspect(float aspect);
+		void setNear(float near);
+		void setFar(float far);
+
+		[[nodiscard]]
+		math::Vector3f getPithYawRoll() const;
+		void           setPithYawRoll(math::Vector3f pitch_yaw_roll);
 
 
 	private:
 		float fov    = 45.f;
 		float aspect = 1.f;
+		float near   = 0.1;
+		float far    = 1000.f;
 
 		void makeCamera();
 
 		math::Vector3f position;
-		math::Vector3f direction;
+		math::Vector3f pitch_yaw_roll;
 		math::Matrix4f camera;
 	};
 }

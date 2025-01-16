@@ -164,9 +164,9 @@ namespace mk::math {
 			return stream;
 		}
 
-		constexpr Vector lerp(Vector target, float step) {
+		constexpr Vector lerp(Vector target, float step, float ZERO = EPS_ZERO) {
 			Vector res = operator*(1.f - step) + target * step;
-			if ((res - target).lengthSquared() < EPS_ZERO) return target;
+			if ((res - target).lengthSquared() < ZERO) return target;
 			return res;
 		}
 	};
@@ -208,4 +208,8 @@ namespace mk::math {
 			     lhs.z * rhs.x - lhs.x * rhs.z,
 			     lhs.x * rhs.y - lhs.y * rhs.x };
 	}
+
+	constexpr auto Vector3fZERO = Vector3f(0.f);
+	constexpr auto Vector3fUP = Vector3f(0.f, 1.f, 0.f);
+	constexpr auto Vector3fDOWN = Vector3f(0.f, -1.f, 0.f);
 }  // namespace mk::Math
