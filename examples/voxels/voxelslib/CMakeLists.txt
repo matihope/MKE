@@ -8,6 +8,9 @@ add_library(voxelslib
         Player.cpp
         Player.hpp
         chunk_utils.hpp
-        chunk_utils.cpp)
+        chunk_utils.cpp
+        ray_cast_voxel.hpp
+        World.cpp
+        World.hpp)
 target_link_libraries(voxelslib MKE-Engine)
 target_include_directories(voxelslib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -8,7 +8,11 @@
 
 class Chunk final: public mk::WorldEntity3D {
 public:
-	Chunk(mk::Camera3D* camera): camera(camera) {}
+	Chunk(mk::Camera3D* camera, mk::math::Vector3i position):
+		  int_position(position),
+		  camera(camera) {
+		setPosition(position.type<float>() * CHUNK_SIZE);
+	}
 
 	mk::Shader shader;
 
@@ -18,9 +22,11 @@ public:
 		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
 	) const override;
 
-	void setBlock(usize x, usize y, usize z, VoxelType type, bool rebuild = true);
+	void      setBlock(usize x, usize y, usize z, VoxelType type, bool rebuild = true);
+	VoxelType getBlockType(usize x, usize y, usize z) const;
 
 private:
+	mk::math::Vector3i int_position;
 	mk::Camera3D*      camera;
 	void               clearFacesOf(VoxelType type);
 	VoxelTextureFaces& getFacesOf(VoxelType type);

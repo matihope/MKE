@@ -103,4 +103,6 @@ void mk::View3D::setPithYawRoll(math::Vector3f pitch_yaw_roll) {
 	makeCamera();
 }
 
+float mk::View3D::getAspect() const { return aspect; }
+
 mk::math::Vector2f mk::View2D::getSize() const { return view.getSize(); }

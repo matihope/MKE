@@ -52,9 +52,10 @@ namespace mk {
 		float getFovH() const;
 		float getFovV() const;
 
-		void setAspect(float aspect);
-		void setNear(float near);
-		void setFar(float far);
+		void  setAspect(float aspect);
+		float getAspect() const;
+		void  setNear(float near);
+		void  setFar(float far);
 
 		[[nodiscard]]
 		math::Vector3f getPithYawRoll() const;

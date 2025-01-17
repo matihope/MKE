@@ -10,7 +10,7 @@ constexpr u8 VOXEL_TYPES = 4;
 enum class FaceDir : u8 { NORTH, EAST, SOUTH, WEST, UP, DOWN };
 constexpr u8 FACE_DIRS = 6;
 
-constexpr u8 CHUNK_SIZE = 32;
+constexpr i32 CHUNK_SIZE = 32;
 
 constexpr mk::math::Vector3i getDirVec(const FaceDir dir) {
 	switch (dir) {

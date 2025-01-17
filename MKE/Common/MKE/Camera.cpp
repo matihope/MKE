@@ -32,6 +32,8 @@ void mk::Camera3D::setNear(float near) { view.setNear(near); }
 
 void mk::Camera3D::setFar(float far) { view.setFar(far); }
 
+void mk::Camera3D::setAspect(float aspect) { view.setAspect(aspect); }
+
 float mk::Camera3D::getFovH() const { return view.getFovH(); }
 
 float mk::Camera3D::getFovV() const { return view.getFovV(); }
@@ -42,7 +44,6 @@ void mk::Camera3D::setPitchYawRoll(math::Vector3f pitch_yaw_roll) {
 
 void mk::Camera3D::event(Game& game, const Event& event) {
 	if (const auto ev = event.get<Event::WindowResized>(); ev) {
-		std::cerr << "Window resized" << std::endl;
 		auto [w, h] = ev->new_size.type<float>().vec_data;
 		view.setAspect(w / h);
 	}

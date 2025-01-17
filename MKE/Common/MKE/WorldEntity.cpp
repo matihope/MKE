@@ -72,25 +72,25 @@ namespace mk {
 	}
 
 	void WorldEntity::drawEntity(
-		RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
+		RenderTarget&  target,
+		DrawContext    context,
+		const Game&    game,
+		const DrawMode draw_mode,
+		const bool     began
 	) const {
-		if (m_show) {
-			// if (const auto new_mode = getDrawMode();
-			//     draw_mode != new_mode && new_mode == DrawMode::ModeUI) {
-			// 	beginDraw(target, game);
-			// } else {
-			// 	onDraw(target, context, game);
-			//
-			// 	context.transform *= getTransform();
-			// 	for (const auto& layer: m_entity_pool)
-			// 		for (auto& entity: layer.second)
-			// 			entity->drawEntity(target, context, game, draw_mode);
-			// }
-			if (getDrawMode() == draw_mode) onDraw(target, context, game);
+		// Okay, so this method is totally messy... Probably drawing order should get a refactor.
 
-			context.transform *= getTransform();
-			for (const auto& val: m_entity_pool | std::views::values)
-				for (auto& entity: val) entity->drawEntity(target, context, game, draw_mode);
+		if (m_show) {
+			if (!began && getDrawMode() == draw_mode) {
+				beginDraw(target, game);
+			} else {
+				if (getDrawMode() == draw_mode) onDraw(target, context, game);
+
+				context.transform *= getTransform();
+				for (const auto& layer: m_entity_pool | std::views::values)
+					for (auto& entity: layer) entity->drawEntity(target, context, game, draw_mode);
+			}
+			//
 		}
 	}
 
@@ -111,7 +111,7 @@ namespace mk {
 		context.camera(0, 3) = -1;
 		context.camera(1, 3) = 1;
 
-		drawEntity(target, context, game, getDrawMode());
+		drawEntity(target, context, game, getDrawMode(), true);
 	}
 
 	void WorldEntity2D::beginDraw(RenderTarget& target, const Game& game) const {
@@ -120,8 +120,8 @@ namespace mk {
 		DrawContext context;
 		context.camera = target.getCurrentView2D().getTransform();
 
-		drawEntity(target, context, game, getDrawMode());
-		drawEntity(target, context, game, DrawMode::ModeUI);
+		drawEntity(target, context, game, getDrawMode(), true);
+		drawEntity(target, context, game, DrawMode::ModeUI, false);
 	}
 
 	void WorldEntity3D::beginDraw(RenderTarget& target, const Game& game) const {
@@ -130,7 +130,7 @@ namespace mk {
 		DrawContext context;
 		context.camera = target.getCurrentView3D().getTransform();
 
-		drawEntity(target, context, game, getDrawMode());
-		drawEntity(target, context, game, DrawMode::ModeUI);
+		drawEntity(target, context, game, getDrawMode(), true);
+		drawEntity(target, context, game, DrawMode::ModeUI, false);
 	}
 }  // namespace mk

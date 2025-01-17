@@ -18,6 +18,7 @@ public:
 
 	~VoxelTextureFaces() override = default;
 
+	void clearFaces();
 	void addFace(mk::math::Vector3i bottom_left, FaceDir dir, usize size_x, usize size_y);
 	void save();
 

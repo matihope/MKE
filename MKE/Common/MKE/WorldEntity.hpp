@@ -105,7 +105,11 @@ namespace mk {
 		virtual void beginDraw(RenderTarget& target, const Game& game) const = 0;
 
 		virtual void drawEntity(
-			RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
+			RenderTarget& target,
+			DrawContext   context,
+			const Game&   game,
+			DrawMode      draw_mode,
+			bool          began = false
 		) const;
 	};
 

@@ -35,10 +35,13 @@ namespace {
 	}
 }
 
+void VoxelTextureFaces::clearFaces() {
+	for (auto& f: faces) f.setSize(0);
+}
+
 void VoxelTextureFaces::addFace(
 	mk::math::Vector3i bottom_left, FaceDir dir, usize size_x, usize size_y
 ) {
-	// if (dir == FaceDir::UP || dir == FaceDir::EAST)
 	bottom_left += getBottomLeftFor(dir);  // Offset the face position
 
 	const auto [vec_grow_up, vec_grow_right] = getGrowDirVec(dir);

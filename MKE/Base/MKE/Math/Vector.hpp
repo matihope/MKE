@@ -119,6 +119,11 @@ namespace mk::math {
 			return *this;
 		}
 
+		constexpr Vector operator%=(const auto& rhs) {
+			for (usize p = 0; p < SIZE; p++) this->vec_data[p] %= rhs;
+			return *this;
+		}
+
 		constexpr Vector operator+(const auto& rhs) const { return Vector(*this) += rhs; }
 
 		constexpr Vector operator-(const auto& rhs) const { return Vector(*this) -= rhs; }
@@ -128,6 +133,8 @@ namespace mk::math {
 		constexpr Vector operator*(const auto& rhs) const { return Vector(*this) *= rhs; }
 
 		constexpr Vector operator/(const auto& rhs) const { return Vector(*this) /= rhs; }
+
+		constexpr Vector operator%(const auto& rhs) const { return Vector(*this) %= rhs; }
 
 		T length() const { return std::sqrt(lengthSquared()); }
 
