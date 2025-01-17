@@ -28,8 +28,6 @@ namespace mk::math {
 			constexpr Vec(T value): x(value), y(value) {}
 
 			constexpr Vec(T x, T y): x(x), y(y) {}
-
-			constexpr std::tuple<T, T> bind() const { return { x, y }; }
 		};
 
 		template<class T>
@@ -49,8 +47,6 @@ namespace mk::math {
 			constexpr Vec(T value): x(value), y(value), z(value) {}
 
 			constexpr Vec(T x, T y, T z): x(x), y(y), z(z) {}
-
-			constexpr std::tuple<T, T, T> bind() const { return { x, y, z }; }
 		};
 
 		template<class T>
@@ -71,8 +67,6 @@ namespace mk::math {
 			constexpr Vec(T value): x(value), y(value), z(value), w(value) {}
 
 			constexpr Vec(T x, T y, T z, T w): x(x), y(y), z(z), w(w) {}
-
-			constexpr std::tuple<T, T, T, T> bind() const { return { x, y, z, w }; }
 		};
 	}
 
@@ -210,6 +204,6 @@ namespace mk::math {
 	}
 
 	constexpr auto Vector3fZERO = Vector3f(0.f);
-	constexpr auto Vector3fUP = Vector3f(0.f, 1.f, 0.f);
+	constexpr auto Vector3fUP   = Vector3f(0.f, 1.f, 0.f);
 	constexpr auto Vector3fDOWN = Vector3f(0.f, -1.f, 0.f);
 }  // namespace mk::Math

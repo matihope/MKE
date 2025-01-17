@@ -5,12 +5,21 @@
 #include <GLFW/glfw3.h>
 #include <MKE/Game.hpp>
 
+/*
+ * TODO:
+ * - Breaking blocks
+ * - Placing blocks
+ * - Collisions
+ * - Equipment/Survival
+ * - better terrain generation
+ */
+
 class World final: public mk::WorldEntity3D {
 public:
 	void onReady(mk::Game& game) override {
 		player            = addChild<Player>(game);
-		// constexpr int CNT = 7;  // (CNT * 2 + 1) ** 2
-		constexpr int CNT = 1;  // (CNT * 2 + 1) ** 2
+		constexpr int CNT = 3;  // (CNT * 2 + 1) ** 2
+		// constexpr int CNT = 0;  // (CNT * 2 + 1) ** 2
 		for (int x = -CNT; x <= CNT; x++) {
 			for (int y = -CNT; y <= CNT; y++) {
 				chunks.push_back(addChild<Chunk>(game, player->getCamera()));

@@ -8,35 +8,11 @@
 #include "MKE/Math/Vector.hpp"
 
 namespace {
-	mk::math::Vector3i getDirVec(const FaceDir dir) {
-		switch (dir) {
-		case FaceDir::NORTH: {
-			return { 0, 0, 1 };
-		}
-		case FaceDir::EAST: {
-			return { 1, 0, 0 };
-		}
-		case FaceDir::SOUTH: {
-			return { 0, 0, -1 };
-		}
-		case FaceDir::WEST: {
-			return { -1, 0, 0 };
-		}
-		case FaceDir::UP: {
-			return { 0, 1, 0 };
-		}
-		// case FaceDir::DOWN:
-		default: {
-			return { 0, -1, 0 };
-		}
-		}
-	}
-
 	bool canSeeFaceFrom(mk::math::Vector3f cam_rot_deg, float fov_h, float fov_v, FaceDir dir) {
 		float half_fov_h = fov_h / 2.f;
 		float half_fov_v = fov_v / 2.f;
 
-		auto [pitch, yaw, _] = cam_rot_deg.bind();
+		auto [pitch, yaw, _] = cam_rot_deg.vec_data;
 		std::cerr << half_fov_h << " " << yaw << '\n';
 
 		switch (dir) {
@@ -62,9 +38,11 @@ namespace {
 void VoxelTextureFaces::addFace(
 	mk::math::Vector3i bottom_left, FaceDir dir, usize size_x, usize size_y
 ) {
-	auto [grow_dir_up, grow_dir_right] = getGrowDir(dir);
-	const auto vec_grow_up             = getDirVec(grow_dir_up);
-	const auto vec_grow_right          = getDirVec(grow_dir_right);
+	// if (dir == FaceDir::UP || dir == FaceDir::EAST)
+	bottom_left += getBottomLeftFor(dir);  // Offset the face position
+
+	const auto [vec_grow_up, vec_grow_right] = getGrowDirVec(dir);
+
 
 	mk::math::Vector3i top_right = bottom_left;
 	top_right += vec_grow_up * size_y;

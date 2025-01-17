@@ -43,7 +43,7 @@ void mk::Camera3D::setPitchYawRoll(math::Vector3f pitch_yaw_roll) {
 void mk::Camera3D::event(Game& game, const Event& event) {
 	if (const auto ev = event.get<Event::WindowResized>(); ev) {
 		std::cerr << "Window resized" << std::endl;
-		auto [w, h] = ev->new_size.type<float>().bind();
+		auto [w, h] = ev->new_size.type<float>().vec_data;
 		view.setAspect(w / h);
 	}
 	WorldEntity3D::event(game, event);

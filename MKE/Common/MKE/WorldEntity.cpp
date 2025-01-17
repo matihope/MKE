@@ -75,17 +75,22 @@ namespace mk {
 		RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
 	) const {
 		if (m_show) {
-			if (const auto new_mode = getDrawMode();
-			    draw_mode != new_mode && new_mode == DrawMode::ModeUI) {
-				beginDraw(target, game);
-			} else {
-				onDraw(target, context, game);
+			// if (const auto new_mode = getDrawMode();
+			//     draw_mode != new_mode && new_mode == DrawMode::ModeUI) {
+			// 	beginDraw(target, game);
+			// } else {
+			// 	onDraw(target, context, game);
+			//
+			// 	context.transform *= getTransform();
+			// 	for (const auto& layer: m_entity_pool)
+			// 		for (auto& entity: layer.second)
+			// 			entity->drawEntity(target, context, game, draw_mode);
+			// }
+			if (getDrawMode() == draw_mode) onDraw(target, context, game);
 
-				context.transform *= getTransform();
-				for (const auto& layer: m_entity_pool)
-					for (auto& entity: layer.second)
-						entity->drawEntity(target, context, game, draw_mode);
-			}
+			context.transform *= getTransform();
+			for (const auto& val: m_entity_pool | std::views::values)
+				for (auto& entity: val) entity->drawEntity(target, context, game, draw_mode);
 		}
 	}
 
@@ -100,7 +105,7 @@ namespace mk {
 
 		DrawContext context;
 
-		auto [width, height] = target.getSize().bind();
+		auto [width, height] = target.getSize().vec_data;
 		context.camera(0, 0) = 2.f / width;
 		context.camera(1, 1) = -2.f / height;
 		context.camera(0, 3) = -1;
@@ -116,6 +121,7 @@ namespace mk {
 		context.camera = target.getCurrentView2D().getTransform();
 
 		drawEntity(target, context, game, getDrawMode());
+		drawEntity(target, context, game, DrawMode::ModeUI);
 	}
 
 	void WorldEntity3D::beginDraw(RenderTarget& target, const Game& game) const {
@@ -125,5 +131,6 @@ namespace mk {
 		context.camera = target.getCurrentView3D().getTransform();
 
 		drawEntity(target, context, game, getDrawMode());
+		drawEntity(target, context, game, DrawMode::ModeUI);
 	}
 }  // namespace mk

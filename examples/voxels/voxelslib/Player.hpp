@@ -2,6 +2,7 @@
 #include "MKE/Camera.hpp"
 #include "MKE/Game.hpp"
 #include "MKE/WorldEntity.hpp"
+#include "MKE/Nodes/GUI/TextureRect.hpp"
 
 class Player final: public mk::WorldEntity3D {
 public:
@@ -10,9 +11,7 @@ public:
 	void onUpdate(mk::Game& game, float dt) override;
 
 	[[nodiscard]]
-	mk::Camera3D* getCamera() const {
-		return camera;
-	}
+	mk::Camera3D* getCamera() const;
 
 private:
 	const float PLAYER_LERP_SPEED = 4.f;
@@ -22,4 +21,6 @@ private:
 
 	mk::math::Vector3f move_vec;
 	mk::Camera3D*      camera = nullptr;
+
+	mk::gui::TextureRect* crosshair = nullptr;
 };

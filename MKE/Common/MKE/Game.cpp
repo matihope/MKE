@@ -41,7 +41,9 @@ namespace mk {
 	void Game::draw() {
 		m_window.clear(Color(21, 21, 21));
 
-		if (!m_scene_stack.empty()) m_scene_stack.top()->beginDraw(m_window, *this);
+		if (!m_scene_stack.empty()) {
+			m_scene_stack.top()->beginDraw(m_window, *this);
+		}
 
 		if (m_enable_print_fps) m_fps_label->beginDraw(m_window, *this);
 
@@ -110,7 +112,7 @@ namespace mk {
 				stop();
 			else if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 				switch (ev->key) {
-				case mk::input::KEY::GRAVE:
+				case input::KEY::GRAVE:
 					popScene();
 					if (m_scene_stack.empty()) stop();
 					break;

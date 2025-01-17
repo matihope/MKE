@@ -19,9 +19,9 @@ namespace mk::gui {
 
 	public:
 		Label();
-		explicit Label(mk::Font* font);
+		explicit Label(Font* font);
 
-		Label(mk::Font* font, const std::string& text);
+		Label(Font* font, const std::string& text);
 
 		void               setFont(Font* font);
 		void               setString(const std::string& text);

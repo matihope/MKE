@@ -6,7 +6,6 @@
 #include "MKE/WorldEntity.hpp"
 #include "MKE/Shaders/SimpleShader.hpp"
 
-
 class Chunk final: public mk::WorldEntity3D {
 public:
 	Chunk(mk::Camera3D* camera): camera(camera) {}
@@ -19,14 +18,17 @@ public:
 		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
 	) const override;
 
+	void setBlock(usize x, usize y, usize z, VoxelType type, bool rebuild = true);
+
 private:
 	mk::Camera3D*      camera;
 	void               clearFacesOf(VoxelType type);
 	VoxelTextureFaces& getFacesOf(VoxelType type);
 
-	void buildMeshes(mk::Game&);
+	void buildMeshes();
 
 	std::array<std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>, VOXEL_TYPES> voxels{};
+	std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>                     filled_blocks{};
 	std::map<VoxelType, VoxelTextureFaces>                                          faces{};
 };
 

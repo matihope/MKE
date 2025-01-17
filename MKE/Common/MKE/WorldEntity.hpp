@@ -48,13 +48,13 @@ namespace mk {
 		void setPaused(bool paused);
 
 		// We want to it be ordered to be able to iterate in an ordered way.
-		std::map<usize, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
+		std::map<i64, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
 
 		void addParent(WorldEntity* parent);
 
 		WorldEntity* getParent();
 
-		template<class T, unsigned int drawOrder = 0>
+		template<class T, i64 drawOrder = 0>
 		requires std::is_base_of_v<WorldEntity, T>
 		T* addChild(Game& game, std::unique_ptr<T> child) {
 			child->addParent(this);
@@ -64,7 +64,7 @@ namespace mk {
 			return my_child;
 		}
 
-		template<class T, unsigned int drawOrder = 0, class... Args>
+		template<class T, i64 drawOrder = 0, class... Args>
 		requires std::is_base_of_v<WorldEntity, T> T* addChild(Game& game, Args&&... args) {
 			auto new_child = std::make_unique<T>(std::forward<Args>(args)...);
 			return addChild<T, drawOrder>(game, std::move(new_child));
