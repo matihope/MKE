@@ -2,12 +2,13 @@
 
 void World::onReady(mk::Game& game) {
 	player = addChild<Player, 10>(game, *this);
-	// constexpr int CNT = 3;  // (CNT * 2 + 1) ** 2
-	constexpr int CNT = 0;  // (CNT * 2 + 1) ** 2
+	constexpr int CNT = 7;  // (CNT * 2 + 1) ** 2 * 2
 	for (int x = -CNT; x <= CNT; x++) {
-		for (int y = -CNT; y <= CNT; y++) {
-			chunks[x][y][0]
-				= addChild<Chunk>(game, player->getCamera(), mk::math::Vector3i(x, 0, y));
+		for (int y = 0; y <= 2; y++) {
+			for (int z = -CNT; z <= CNT; z++) {
+				chunks[x][y][z]
+					= addChild<Chunk>(game, player->getCamera(), mk::math::Vector3i(x, y, z));
+			}
 		}
 	}
 	game.getRenderWindow().setMouseCursorMode(mk::Window::MouseMode::GRABBED);

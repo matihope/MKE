@@ -27,22 +27,19 @@ namespace {
 }
 
 void Chunk::onReady(mk::Game& game) {
-	// for (usize x = 0; x < CHUNK_SIZE; ++x) {
-	// 	for (usize y = 0; y < CHUNK_SIZE; ++y) {
-	// 		for (usize z = 0; z < CHUNK_SIZE; ++z)
-	// 			if (y == CHUNK_SIZE - 1)
-	// 				setBlock(x, y, z, VoxelType::GRASS, false);
-	// 			else if (y >= CHUNK_SIZE - 4)
-	// 				setBlock(x, y, z, VoxelType::DIRT, false);
-	// 			else
-	// 				setBlock(x, y, z, VoxelType::STONE, false);
-	// 	}
-	// }
-	setBlock(0, 0, 0,VoxelType::DIRT);
-	setBlock(0, 0, 1,VoxelType::DIRT);
-	setBlock(1, 0, 0,VoxelType::DIRT);
-	setBlock(2, 0, 0,VoxelType::DIRT);
-	setBlock(2, 0, 1,VoxelType::DIRT);
+	if (int_position.y == 0) {
+		for (usize x = 0; x < CHUNK_SIZE; ++x) {
+			for (usize y = 0; y < CHUNK_SIZE; ++y) {
+				for (usize z = 0; z < CHUNK_SIZE; ++z)
+					if (y == CHUNK_SIZE - 1)
+						setBlock(x, y, z, VoxelType::GRASS, false);
+					else if (y >= CHUNK_SIZE - 4)
+						setBlock(x, y, z, VoxelType::DIRT, false);
+					else
+						setBlock(x, y, z, VoxelType::STONE, false);
+			}
+		}
+	}
 	buildMeshes();
 	shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 }
@@ -161,6 +158,7 @@ void buildFaceArray(
 							checked[exp_idx]   = false;
 							exp_curr_rollback += grow_up;
 						}
+						break;
 					}
 					exp_right += grow_right;
 				} while (isValid(exp_right));
@@ -178,13 +176,10 @@ void Chunk::buildMeshes() {
 			auto& voxel_faces = getFacesOf(voxel_type);
 			// Greedy meshing here.
 			voxel_faces.clearFaces();
-			buildFaceArray(
-				voxels[type_index], filled_blocks, FaceDir::UP, voxel_faces
-			);
-			// for (usize dir_id = 0; dir_id < FACE_DIRS; dir_id++)
-			// 	buildFaceArray(
-			// 		voxels[type_index], filled_blocks, static_cast<FaceDir>(dir_id), voxel_faces
-			// 	);
+			for (usize dir_id = 0; dir_id < FACE_DIRS; dir_id++)
+				buildFaceArray(
+					voxels[type_index], filled_blocks, static_cast<FaceDir>(dir_id), voxel_faces
+				);
 			voxel_faces.save();
 		} else {
 			clearFacesOf(voxel_type);
