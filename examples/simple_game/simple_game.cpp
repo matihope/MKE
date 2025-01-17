@@ -58,7 +58,7 @@ public:
 
 	void onUpdate(mk::Game& game, float) override {
 		if (button->isPressed()) {
-			auto [w, h] = game.getWindowSize().bind();
+			auto [w, h] = game.getWindowSize().vec_data;
 			player->setPosition({ mk::Random::getReal<float>(0, w),
 			                      mk::Random::getReal<float>(0, h) });
 		}

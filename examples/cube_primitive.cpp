@@ -9,7 +9,7 @@
 int main() {
 	mk::RenderWindow window(800, 600, "Cube");
 
-	auto [width, height] = window.getSize().bind();
+	auto [width, height] = window.getSize().vec_data;
 	const mk::math::Matrix4f camera_projection
 		= mk::math::perspective(45.f, float(width) / height, 0.1f, 100.f);
 
