@@ -22,7 +22,12 @@ private:
 	const float PLAYER_LERP_SPEED = 4.f;
 	const float PLAYER_BOOST      = 5.f;
 	const float PLAYER_SPEED      = 10.f;
-	const float MOUSE_SENSITIVITY = 0.005f;
+	const float MOUSE_SENSITIVITY = 0.001f;
+	const float PLAYER_HEIGHT = 1.8;
+	const float PLAYER_WIDTH = 0.4;
+	const float PLAYER_EYE_OFFSET = 0.2; // (below player's top)
+
+	mk::math::Vector3f moveAndSlide(mk::math::Vector3f speed, float dt);
 
 	mk::math::Vector3f move_vec;
 	mk::Camera3D*      camera = nullptr;

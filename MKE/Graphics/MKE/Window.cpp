@@ -200,6 +200,16 @@ void mk::Window::setMouseCursorMode(const MouseMode mode) {
 
 mk::Window::MouseMode mk::Window::getMouseCursorMode() const { return mouse_mode; }
 
+void mk::Window::setRawMouseMotion(const bool enable) const {
+	if (glfwRawMouseMotionSupported())
+		if (enable)
+			glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		else
+			glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+	else
+		std::cerr << " -- Error: Raw mouse motion not supported!" << '\n';
+}
+
 mk::Window::~Window() { glfwDestroyWindow(window); }
 
 bool mk::Window::isKeyPressed(input::KEY key) const {

@@ -38,15 +38,19 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 		camera->setPitchYawRoll({ pitch, yaw, roll });
 
 		// Select a block
-		auto voxels = castVoxelRay(
-			getPosition().type<double>(), camera->getDirection().type<double>(), 10.f
-		);
+		auto eye_position = camera->getPosition();
+		auto voxels       = castVoxelRay(
+            eye_position.type<double>(), camera->getDirection().type<double>(), 10.f
+        );
 		std::optional<mk::math::Vector3i> prev;
+		world.chunk_shader.setBool("highlight.on", false);
+		world.chunk_shader.setVector3f("player_position", eye_position);
 		for (auto voxel: voxels) {
 			if (auto [chunk, chv] = world.getChunkAndPos(voxel); chunk) {
 				if (chunk->getBlockType(chv.x, chv.y, chv.z) != VoxelType::AIR) {
 					// Here mark a block
-					// cube_outline.setPosition(voxel.type<float>());
+					world.chunk_shader.setBool("highlight.on", true);
+					world.chunk_shader.setVector3f("highlight.position", voxel.type<float>());
 					if (game.isMouseJustPressed(mk::input::MOUSE_LEFT)) {
 						chunk->setBlock(chv.x, chv.y, chv.z, VoxelType::AIR, true);
 					} else if (game.isMouseJustPressed(mk::input::MOUSE_RIGHT)) {
@@ -54,7 +58,11 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 							if (auto [chunk_prev, chv_prev] = world.getChunkAndPos(*prev);
 							    chunk_prev) {
 								chunk_prev->setBlock(
-									chv_prev.x, chv_prev.y, chv_prev.z, static_cast<VoxelType>(player_ui->getPlayerSlot() + 1), true
+									chv_prev.x,
+									chv_prev.y,
+									chv_prev.z,
+									static_cast<VoxelType>(player_ui->getPlayerSlot() + 1),
+									true
 								);
 							}
 						}
@@ -80,10 +88,14 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 		forward      = forward.normalizeOrZero();
 		auto right   = -cross(mk::math::Vector3fUP, forward).normalizeOrZero();
 
-		auto move_dir = forward * player_input.z + right * player_input.x;
-		move_vec      = move_vec.lerp(move_dir, dt * PLAYER_LERP_SPEED, 1e-4f);
-		move((move_vec + mk::math::Vector3fUP * player_input.y) * dt);
-		camera->setPosition(getPosition());
+		const auto move_dir = forward * player_input.z + right * player_input.x;
+		move_vec            = move_vec.lerp(move_dir, dt * PLAYER_LERP_SPEED, 1e-4f);
+		move_vec            = moveAndSlide(move_vec + mk::math::Vector3fUP * player_input.y, dt);
+		move_vec.y          = 0;
+
+		camera->setPosition(
+			getPosition() + mk::math::Vector3f(0.f, PLAYER_HEIGHT - PLAYER_EYE_OFFSET, 0.f)
+		);
 	}
 }
 
@@ -93,3 +105,88 @@ void Player::onEvent(mk::Game& game, const mk::Event& event) {
 }
 
 mk::Camera3D* Player::getCamera() const { return camera; }
+
+constexpr mk::math::Vector3f getVolumeOverlap(
+	const mk::math::Vector3f pos1,
+	const mk::math::Vector3f size1,
+	const mk::math::Vector3f pos2,
+	const mk::math::Vector3f size2
+) {
+	mk::math::Vector3f result;
+	for (usize i = 0; i < 3; i++) {
+		if (pos1.vec_data[i] <= pos2.vec_data[i]
+		    && pos2.vec_data[i] <= pos1.vec_data[i] + size1.vec_data[i]) {
+			result.vec_data[i] = pos1.vec_data[i] + size1.vec_data[i] - pos2.vec_data[i];
+			result.vec_data[i] -= std::max(
+				0.f, pos1.vec_data[i] + size1.vec_data[i] - pos2.vec_data[i] - size2.vec_data[i]
+			);
+		} else if (pos1.vec_data[i] <= pos2.vec_data[i] + size2.vec_data[i]
+		           && pos2.vec_data[i] + size2.vec_data[i]
+		                  <= pos1.vec_data[i] + size1.vec_data[i]) {
+			result.vec_data[i] = pos2.vec_data[i] + size2.vec_data[i] - pos1.vec_data[i];
+			result.vec_data[i] -= std::max(
+				0.f, pos2.vec_data[i] + size2.vec_data[i] - pos1.vec_data[i] - size1.vec_data[i]
+			);
+		}
+	}
+	return result;
+}
+
+mk::math::Vector3f Player::moveAndSlide(mk::math::Vector3f speed, const float dt) {
+	speed *= dt;
+	if (!mk::math::isZero(speed.lengthSquared())) {
+		const auto pos = getGlobalPosition();
+
+		const auto upper_sphere
+			= pos + mk::math::Vector3f(0, PLAYER_HEIGHT - PLAYER_WIDTH / 2.f, 0);
+		const auto lower_sphere = pos + mk::math::Vector3f(0, PLAYER_WIDTH / 2.f, 0);
+
+		for (auto sph: { upper_sphere, lower_sphere }) {
+			// upper sphere
+			for (i32 dx = -1; dx < 2; dx++) {
+				for (i32 dy = -1; dy < 2; dy++) {
+					for (i32 dz = -1; dz < 2; dz++) {
+						for (usize coord = 0; coord < 3; coord++) {
+							auto sph_now = sph
+							             + mk::math::Vector3f(
+											   coord == 0 ? speed.vec_data[0] : 0.f,
+											   coord == 1 ? speed.vec_data[1] : 0.f,
+											   coord == 2 ? speed.vec_data[2] : 0.f
+										 );
+							auto sph_voxel = mk::math::Vector3i(
+								std::floorf(sph_now.x),
+								std::floorf(sph_now.y),
+								std::floorf(sph_now.z)
+							);
+
+							auto tested_voxel = sph_voxel + mk::math::Vector3i(dx, dy, dz);
+							auto [chunk, vox] = world.getChunkAndPos(tested_voxel);
+							if (chunk
+							    && chunk->getBlockType(vox.x, vox.y, vox.z) != VoxelType::AIR) {
+								auto overlap = getVolumeOverlap(
+									tested_voxel.type<float>(),
+									{ 1.f },
+									sph_now - mk::math::Vector3f(PLAYER_WIDTH / 2.f),
+									{ PLAYER_WIDTH }
+								);
+								if (overlap.x && overlap.y && overlap.z) {
+									// speed.vec_data[coord]
+									// 	-= std::max(
+									// 		   0.f,
+									// 		   abs(speed.vec_data[coord]
+									//                - overlap.vec_data[coord]
+									//                      * mk::math::sign(speed.vec_data[coord]))
+									// 	   )
+									//      * mk::math::sign(speed.vec_data[coord]);
+									speed.vec_data[coord] = 0;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	move(speed);
+	return speed / dt;
+}

@@ -170,6 +170,12 @@ namespace mk::math {
 			if ((res - target).lengthSquared() < ZERO) return target;
 			return res;
 		}
+
+		constexpr Vector abs() const {
+			return { std::abs(this->vec_data[0]),
+				     std::abs(this->vec_data[1]),
+				     std::abs(this->vec_data[2]) };
+		}
 	};
 
 	template<class T>

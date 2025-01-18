@@ -4,8 +4,8 @@
 
 namespace {
 	bool anyOf(auto voxels, VoxelType type) {
-		for (auto& val: voxels[static_cast<usize>(type)])
-			if (val) return true;
+		for (auto& val: voxels)
+			if (val == type) return true;
 		return false;
 	}
 
@@ -55,19 +55,15 @@ void Chunk::setBlock(
 ) {
 	MK_ASSERT(x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE);
 	const auto idx  = getIdx(x, y, z);
-	auto       prev = filled_blocks[idx];
+	auto       prev = voxels[idx];
 	if (prev == type) return;
 
-	voxels[static_cast<usize>(prev)][idx] = false;
-	voxels[static_cast<usize>(type)][idx] = true;
-	filled_blocks[idx]                    = type;
+	voxels[idx] = type;
 
 	if (rebuild) buildMeshes();
 }
 
-VoxelType Chunk::getBlockType(usize x, usize y, usize z) const {
-	return filled_blocks[getIdx(x, y, z)];
-}
+VoxelType Chunk::getBlockType(usize x, usize y, usize z) const { return voxels[getIdx(x, y, z)]; }
 
 void Chunk::clearFacesOf(const VoxelType type) {
 	if (const auto it = faces.find(type); it != faces.end()) faces.erase(it);
@@ -79,19 +75,19 @@ VoxelTextureFaces& Chunk::getFacesOf(const VoxelType type) {
 }
 
 constexpr bool isFaceVisible(
-	const std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>&      filled,
+	VoxelType                                                          type,
 	const std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
 	const mk::math::Vector3i                                           pos,
 	const FaceDir                                                      face
 ) {
-	if (!filled[getIdx(pos)]) return false;
+	if (voxels[getIdx(pos)] != type) return false;
 	if (const auto new_pos = pos + getDirVec(face); isValid(new_pos))
 		return voxels[getIdx(new_pos)] == VoxelType::AIR;
 	return true;
 }
 
 void buildFaceArray(
-	const std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>&      my_type_fill,
+	VoxelType                                                          type,
 	const std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
 	const FaceDir                                                      dir,
 	VoxelTextureFaces&                                                 face_array
@@ -100,12 +96,9 @@ void buildFaceArray(
 	std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> checked{};
 
 	for (i32 x = 0; x < CHUNK_SIZE; x++) {
-		for (i32 y = 0; y < CHUNK_SIZE; y++) {
-			for (i32 z = 0; z < CHUNK_SIZE; z++) {
-				faces_to_draw[getIdx(x, y, z)]
-					= isFaceVisible(my_type_fill, voxels, { x, y, z }, dir);
-			}
-		}
+		for (i32 y = 0; y < CHUNK_SIZE; y++)
+			for (i32 z = 0; z < CHUNK_SIZE; z++)
+				faces_to_draw[getIdx(x, y, z)] = isFaceVisible(type, voxels, { x, y, z }, dir);
 	}
 
 	const auto bottom_left           = getBottomLeftFor(dir);
@@ -176,9 +169,7 @@ void Chunk::buildMeshes() {
 			// Greedy meshing here.
 			voxel_faces.clearFaces();
 			for (usize dir_id = 0; dir_id < FACE_DIRS; dir_id++)
-				buildFaceArray(
-					voxels[type_index], filled_blocks, static_cast<FaceDir>(dir_id), voxel_faces
-				);
+				buildFaceArray(voxel_type, voxels, static_cast<FaceDir>(dir_id), voxel_faces);
 			voxel_faces.save();
 		} else {
 			clearFacesOf(voxel_type);

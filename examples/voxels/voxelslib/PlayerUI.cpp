@@ -85,12 +85,16 @@ void PlayerUI::onEvent(mk::Game& game, const mk::Event& event) {
 
 void PlayerUI::setPlayerMode(const PlayerMode mode, mk::Game& game) {
 	switch (mode) {
-	case PlayerMode::FREE_MOUSE:
+	case PlayerMode::FREE_MOUSE: {
 		game.getRenderWindow().setMouseCursorMode(mk::Window::MouseMode::NORMAL);
+		game.getRenderWindow().setRawMouseMotion(false);
 		break;
-	case PlayerMode::PLAYING:
+	}
+	case PlayerMode::PLAYING: {
 		game.getRenderWindow().setMouseCursorMode(mk::Window::MouseMode::GRABBED);
+		game.getRenderWindow().setRawMouseMotion(true);
 		break;
+	}
 	}
 	this->player_mode = mode;
 }

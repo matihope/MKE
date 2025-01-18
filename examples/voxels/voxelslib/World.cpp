@@ -2,8 +2,8 @@
 
 void World::onReady(mk::Game& game) {
 	player            = addChild<Player, 10>(game, *this);
-	constexpr int CNT = 7;  // (CNT * 2 + 1) ** 2 * 2
-	// constexpr int CNT = 0;  // (CNT * 2 + 1) ** 2 * 2
+	// constexpr int CNT = 7;  // (CNT * 2 + 1) ** 2 * 2
+	constexpr int CNT = 2;  // (CNT * 2 + 1) ** 2 * 2
 	for (int x = -CNT; x <= CNT; x++) {
 		for (int y = 0; y <= 1; y++) {
 			for (int z = -CNT; z <= CNT; z++) {
@@ -19,6 +19,8 @@ void World::onReady(mk::Game& game) {
 void World::onEvent(mk::Game& game, const mk::Event& event) {
 	if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 		if (ev->key == mk::input::KEY::T) wireframe ^= 1;
+		if (ev->key == mk::input::KEY::R)
+			chunk_shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 	}
 }
 

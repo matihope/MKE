@@ -11,7 +11,7 @@ public:
 		  int_position(position),
 		  camera(camera) {
 		setPosition(position.type<float>() * CHUNK_SIZE);
-		filled_blocks.fill(VoxelType::AIR);
+		voxels.fill(VoxelType::AIR);
 	}
 
 
@@ -32,8 +32,7 @@ private:
 
 	void buildMeshes();
 
-	std::array<std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>, VOXEL_TYPES> voxels{};
-	std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>                     filled_blocks{};
+	std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>                     voxels{};
 	std::map<VoxelType, VoxelTextureFaces>                                          faces{};
 };
 

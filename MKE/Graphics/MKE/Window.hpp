@@ -58,6 +58,7 @@ namespace mk {
 		[[nodiscard]]
 		MouseMode getMouseCursorMode() const;
 
+		void setRawMouseMotion(bool enable) const;
 
 	protected:
 		bool              exit_requested = false;
