@@ -15,6 +15,9 @@ namespace mk {
 		void         setOrigin(float x, float y, float z);
 		void         setOrigin(float x, float y);
 
+		[[nodiscard]]
+		math::Vector3f getOrigin() const;
+
 		virtual void setPosition(math::Vector3f position);  // MAIN
 		void         setPosition(math::Vector2f position);
 		void         setPosition(float x, float y, float z);

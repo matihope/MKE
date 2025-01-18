@@ -41,6 +41,10 @@ namespace mk {
 			math::Vector2f delta;
 		};
 
+		struct MouseScrolled {
+			math::Vector2f delta;
+		};
+
 		template<class Ev>
 		Event(const Ev& e): data(e) {}
 
@@ -69,7 +73,8 @@ namespace mk {
 			MouseButtonPressed,
 			MouseButtonReleased,
 			MouseMoved,
-			MouseMotionDelta>
+			MouseMotionDelta,
+			MouseScrolled>
 			data{};
 	};
 }

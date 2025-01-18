@@ -11,7 +11,9 @@ add_library(voxelslib
         chunk_utils.cpp
         ray_cast_voxel.hpp
         World.cpp
-        World.hpp)
+        World.hpp
+        PlayerUI.cpp
+        PlayerUI.hpp
+)
 target_link_libraries(voxelslib MKE-Engine)
-target_compile_definitions(voxelslib PUBLIC "CUSTOM_ASSETS_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/../assets\"")
 target_include_directories(voxelslib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

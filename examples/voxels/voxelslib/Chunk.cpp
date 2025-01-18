@@ -1,5 +1,6 @@
 #include "Chunk.hpp"
 #include "MKE/Primitives/3d/CubePrimitive.hpp"
+#include "MKE/Shaders/SimpleShader.hpp"
 
 namespace {
 	bool anyOf(auto voxels, VoxelType type) {
@@ -42,13 +43,10 @@ void Chunk::onReady(mk::Game& game) {
 		}
 	}
 	buildMeshes();
-	shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 }
 
 void Chunk::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game&) const {
 	context.transform *= getTransform();
-	context.shader = &shader;
-	// Here we should not draw chunks that player cannot see.
 	for (const auto& arr: faces | std::views::values) target.render(arr, context);
 }
 

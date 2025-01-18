@@ -66,6 +66,13 @@ namespace {
 		);
 	}
 
+	void windowScrollCallback(GLFWwindow* window, const double xoffset, const double yoffset) {
+		pushEvent(
+			window,
+			mk::Event::MouseScrolled({ static_cast<float>(xoffset), static_cast<float>(yoffset) })
+		);
+	}
+
 	[[maybe_unused]]
 	mk::math::Vector2u getGlViewportSize() {
 		i32 data[4];
@@ -95,6 +102,7 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	glfwSetKeyCallback(window, windowKeyCallback);
 	glfwSetMouseButtonCallback(window, windowMouseButtonCallback);
 	glfwSetCursorPosCallback(window, windowCursorPosCallback);
+	glfwSetScrollCallback(window, windowScrollCallback);
 
 	glfwGetWindowContentScale(window, &window_scale_factor.x, &window_scale_factor.y);
 	MK_ASSERT_TRUE(window_scale_factor.x > 0, "Invalid window native x_scale");

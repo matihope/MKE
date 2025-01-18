@@ -19,19 +19,12 @@ void Player::onReady(mk::Game& game) {
 	camera->setAspect(win_w / win_h);
 	camera->setFov(75.f);
 
-	// Load crosshair
-	auto crosshair_texture = game.resources().getTexture("crosshair.png");
-	game.resources().setTextureSmooth("crosshair.png", false);
-	crosshair = addChild<mk::gui::TextureRect, 1>(game, crosshair_texture);
-	crosshair->setPosition(getPosition().x, getPosition().y, 1.f);
-	crosshair->setOrigin(crosshair_texture->getSize().type<float>() / 2.f);
-	crosshair->setScale({ 2.f });
-	crosshair->setPosition(game.getRenderWindow().getSize().type<float>() / 2.f);
+	player_ui = addChild<PlayerUI, 10'000>(game, *this);
 }
 
 void Player::onUpdate(mk::Game& game, const float dt) {
-	// Rotate camera
 	if (game.getRenderWindow().getMouseCursorMode() == mk::Window::MouseMode::GRABBED) {
+		// Rotate camera
 		auto [mouse_dx, mouse_dy] = game.getMouseDelta().vec_data;
 		auto [pitch, yaw, roll]   = camera->getPitchYawRoll().vec_data;
 		yaw += mouse_dx * MOUSE_SENSITIVITY;
@@ -43,6 +36,34 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 		else if (pitch > SAFE_FRAC_PI_2)
 			pitch = SAFE_FRAC_PI_2;
 		camera->setPitchYawRoll({ pitch, yaw, roll });
+
+		// Select a block
+		auto voxels = castVoxelRay(
+			getPosition().type<double>(), camera->getDirection().type<double>(), 10.f
+		);
+		std::optional<mk::math::Vector3i> prev;
+		for (auto voxel: voxels) {
+			if (auto [chunk, chv] = world.getChunkAndPos(voxel); chunk) {
+				if (chunk->getBlockType(chv.x, chv.y, chv.z) != VoxelType::AIR) {
+					// Here mark a block
+					// cube_outline.setPosition(voxel.type<float>());
+					if (game.isMouseJustPressed(mk::input::MOUSE_LEFT)) {
+						chunk->setBlock(chv.x, chv.y, chv.z, VoxelType::AIR, true);
+					} else if (game.isMouseJustPressed(mk::input::MOUSE_RIGHT)) {
+						if (prev) {
+							if (auto [chunk_prev, chv_prev] = world.getChunkAndPos(*prev);
+							    chunk_prev) {
+								chunk_prev->setBlock(
+									chv_prev.x, chv_prev.y, chv_prev.z, static_cast<VoxelType>(player_ui->getPlayerSlot() + 1), true
+								);
+							}
+						}
+					}
+					break;
+				}
+			}
+			prev = voxel;
+		}
 
 		// Move the player
 		using namespace mk::input;
@@ -66,47 +87,9 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 	}
 }
 
-constexpr std::pair<mk::math::Vector3i, mk::math::Vector3i>
-	getChunkAndPos(const mk::math::Vector3i world_pos) {
-	auto [x, y, z] = (world_pos % CHUNK_SIZE).vec_data;
-	if (x < 0) x += CHUNK_SIZE;
-	if (y < 0) y += CHUNK_SIZE;
-	if (z < 0) z += CHUNK_SIZE;
-	auto ch_x = mk::math::customDiv(world_pos.x, CHUNK_SIZE);
-	auto ch_y = mk::math::customDiv(world_pos.y, CHUNK_SIZE);
-	auto ch_z = mk::math::customDiv(world_pos.z, CHUNK_SIZE);
-	return { { ch_x, ch_y, ch_z }, { x, y, z } };
-}
-
 void Player::onEvent(mk::Game& game, const mk::Event& event) {
 	WorldEntity3D::onEvent(game, event);
-	if (auto ev = event.get<mk::Event::WindowResized>(); ev)
-		crosshair->setPosition(ev->new_size.type<float>() / 2.f);
-	if (auto ev = event.get<mk::Event::MouseButtonPressed>(); ev) {
-		auto voxels = voxels::castVoxelRay(
-			getPosition().type<double>(), camera->getDirection().type<double>(), 10.f
-		);
-		std::optional<mk::math::Vector3i> prev;
-		for (auto voxel: voxels) {
-			auto [ch, vox] = getChunkAndPos(voxel);
-			if (const auto chunk = world.chunks[ch.x][ch.y][ch.z]; chunk) {
-				if (chunk->getBlockType(vox.x, vox.y, vox.z) != VoxelType::AIR) {
-					if (ev->button == mk::input::MOUSE_LEFT) {
-						chunk->setBlock(vox.x, vox.y, vox.z, VoxelType::AIR, true);
-					} else if (ev->button == mk::input::MOUSE_RIGHT) {
-						if (prev) {
-							auto [ch_prev, vox_prev] = getChunkAndPos(*prev);
-							if (const auto chunk_prev = world.chunks[ch_prev.x][ch_prev.y][ch_prev.z]; chunk_prev) {
-								chunk_prev->setBlock(vox_prev.x, vox_prev.y, vox_prev.z, VoxelType::STONE, true);
-							}
-						}
-					}
-					break;
-				}
-			}
-			prev = voxel;
-		}
-	}
+	if (auto ev = event.get<mk::Event::MouseButtonPressed>(); ev) {}
 }
 
 mk::Camera3D* Player::getCamera() const { return camera; }

@@ -15,7 +15,10 @@ namespace mk {
 		STATIC_DRAW  = GL_STATIC_DRAW,
 	};
 
-	template<class Vert, BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
+	template<
+		class Vert,
+		GLenum       PRIMITIVE   = GL_TRIANGLES,
+		BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
 	class VertexArray: public NonCopyable, public Drawable {
 	public:
 		VertexArray(bool enable_index_buffer = false): enable_index_buffer(enable_index_buffer) {
@@ -131,9 +134,9 @@ namespace mk {
 		void startDraw() const {
 			glBindVertexArray(vertex_array);
 			if (enable_index_buffer)
-				glDrawElements(GL_TRIANGLES, index_buffer_size, GL_UNSIGNED_INT, 0);
+				glDrawElements(PRIMITIVE, index_buffer_size, GL_UNSIGNED_INT, 0);
 			else
-				glDrawArrays(GL_TRIANGLES, 0, vertex_buffer_size);
+				glDrawArrays(PRIMITIVE, 0, vertex_buffer_size);
 		}
 
 		void draw(RenderTarget&, DrawContext context) const override {

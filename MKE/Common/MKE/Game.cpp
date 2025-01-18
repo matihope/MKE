@@ -39,11 +39,9 @@ namespace mk {
 	}
 
 	void Game::draw() {
-		m_window.clear(Color(21, 21, 21));
+		m_window.clear(clear_color);
 
-		if (!m_scene_stack.empty()) {
-			m_scene_stack.top()->beginDraw(m_window, *this);
-		}
+		if (!m_scene_stack.empty()) m_scene_stack.top()->beginDraw(m_window, *this);
 
 		if (m_enable_print_fps) m_fps_label->beginDraw(m_window, *this);
 
@@ -223,6 +221,10 @@ namespace mk {
 	}
 
 	mk::Font* Game::getDefaultFont() const { return m_default_font; }
+
+	void Game::setClearColor(const Color c) { clear_color = c; }
+
+	Color Game::getClearColor() const { return clear_color; }
 
 	bool Game::isKeyPressed(input::KEY key) const { return getInput().isKeyPressed(key); }
 

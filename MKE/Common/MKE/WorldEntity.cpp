@@ -84,12 +84,12 @@ namespace mk {
 			if (!began && getDrawMode() == draw_mode) {
 				beginDraw(target, game);
 			} else {
-				if (getDrawMode() == draw_mode)
-					onDraw(target, context, game);
+				if (getDrawMode() == draw_mode) onDraw(target, context, game);
 
 				context.transform *= getTransform();
 				for (const auto& layer: m_entity_pool | std::views::values)
-					for (auto& entity: layer) entity->drawEntity(target, context, game, draw_mode);
+					for (auto& entity: layer)
+						entity->drawEntity(target, context, game, draw_mode, began);
 			}
 		}
 	}
@@ -134,7 +134,5 @@ namespace mk {
 		drawEntity(target, context, game, DrawMode::ModeUI, false);
 	}
 
-	void WorldEntity::setVisible(bool visible) {
-		m_show = visible;
-	}
+	void WorldEntity::setVisible(bool visible) { m_show = visible; }
 }  // namespace mk

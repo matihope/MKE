@@ -7,6 +7,8 @@ void mk::Transformable::setOrigin(math::Vector3f origin) { this->origin = origin
 
 void mk::Transformable::setOrigin(float x, float y) { setOrigin({ x, y, origin.z }); }
 
+mk::math::Vector3f mk::Transformable::getOrigin() const { return origin; }
+
 void mk::Transformable::setOrigin(float x, float y, float z) { setOrigin({ x, y, z }); }
 
 void mk::Transformable::setPosition(math::Vector2f position) {

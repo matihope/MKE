@@ -26,6 +26,7 @@ namespace mk {
 		bool   m_enable_print_fps         = false;
 		float  m_physics_update_call_freq = 1. / 60.;
 		float  m_physics_update_counter   = 0.f;
+		Color  clear_color                = Color(21, 21, 21);
 		// sf::Cursor::Type m_current_cursor_type;
 
 		ResourceManager res_man;
@@ -105,6 +106,9 @@ namespace mk {
 		Font* getDefaultFont() const;
 
 		ResourceManager& resources() { return res_man; }
+
+		void  setClearColor(Color c);
+		Color getClearColor() const;
 	};
 
 }  // namespace mk

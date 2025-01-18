@@ -111,7 +111,7 @@ namespace mk {
 			DrawContext   context,
 			const Game&   game,
 			DrawMode      draw_mode,
-			bool          began = false
+			bool          began
 		) const;
 	};
 

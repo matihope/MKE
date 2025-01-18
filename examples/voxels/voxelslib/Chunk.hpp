@@ -14,7 +14,6 @@ public:
 		filled_blocks.fill(VoxelType::AIR);
 	}
 
-	mk::Shader shader;
 
 	void onReady(mk::Game& game) override;
 

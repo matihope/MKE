@@ -178,11 +178,13 @@ namespace mk::math {
 	using Vector2f = Vector2<float>;
 	using Vector2i = Vector2<i32>;
 	using Vector2u = Vector2<u32>;
+	using Vector2d = Vector2<double>;
 
 	template<class T>
 	using Vector3 = Vector<impl::Vec, T, 3>;
 
 	using Vector3f = Vector3<float>;
+	using Vector3d = Vector3<double>;
 	using Vector3i = Vector3<i32>;
 	using Vector3u = Vector3<u32>;
 
@@ -192,6 +194,7 @@ namespace mk::math {
 	using Vector4f = Vector4<float>;
 	using Vector4i = Vector4<i32>;
 	using Vector4u = Vector4<u32>;
+	using Vector4d = Vector4<double>;
 
 	constexpr Vector2f normalizeVector(const Vector2f vector) {
 		if (vector.x == 0 || vector.y == 0) return vector;

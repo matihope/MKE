@@ -1,8 +1,9 @@
 #pragma once
+#include "PlayerUI.hpp"
 #include "MKE/Camera.hpp"
 #include "MKE/Game.hpp"
 #include "MKE/WorldEntity.hpp"
-#include "MKE/Nodes/GUI/TextureRect.hpp"
+#include "MKE/Primitives/3d/CubePrimitive.hpp"
 
 class World;
 
@@ -26,7 +27,6 @@ private:
 	mk::math::Vector3f move_vec;
 	mk::Camera3D*      camera = nullptr;
 
-	mk::gui::TextureRect* crosshair = nullptr;
-
+	PlayerUI* player_ui;
 	World& world;
 };
