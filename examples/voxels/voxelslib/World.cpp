@@ -2,7 +2,8 @@
 
 void World::onReady(mk::Game& game) {
 	player = addChild<Player, 10>(game, *this);
-	constexpr int CNT = 7;  // (CNT * 2 + 1) ** 2 * 2
+	constexpr int CNT = 3;  // (CNT * 2 + 1) ** 2 * 2
+	// constexpr int CNT = 0;  // (CNT * 2 + 1) ** 2 * 2
 	for (int x = -CNT; x <= CNT; x++) {
 		for (int y = 0; y <= 2; y++) {
 			for (int z = -CNT; z <= CNT; z++) {

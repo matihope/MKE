@@ -97,7 +97,7 @@ void Player::onEvent(mk::Game& game, const mk::Event& event) {
 						if (prev) {
 							auto [ch_prev, vox_prev] = getChunkAndPos(*prev);
 							if (const auto chunk_prev = world.chunks[ch_prev.x][ch_prev.y][ch_prev.z]; chunk_prev) {
-								chunk->setBlock(vox_prev.x, vox_prev.y, vox_prev.z, VoxelType::STONE, true);
+								chunk_prev->setBlock(vox_prev.x, vox_prev.y, vox_prev.z, VoxelType::STONE, true);
 							}
 						}
 					}

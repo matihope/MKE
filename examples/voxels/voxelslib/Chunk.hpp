@@ -11,6 +11,7 @@ public:
 		  int_position(position),
 		  camera(camera) {
 		setPosition(position.type<float>() * CHUNK_SIZE);
+		filled_blocks.fill(VoxelType::AIR);
 	}
 
 	mk::Shader shader;
