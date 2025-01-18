@@ -5,7 +5,6 @@
 
 /*
  * TODO:
- * - Collisions
  * - Player UI (better inventor)
  * - Equipment/Survival
  * - Fog of war

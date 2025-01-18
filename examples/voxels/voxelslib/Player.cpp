@@ -142,7 +142,6 @@ mk::math::Vector3f Player::moveAndSlide(mk::math::Vector3f speed, const float dt
 		const auto lower_sphere = pos + mk::math::Vector3f(0, PLAYER_WIDTH / 2.f, 0);
 
 		for (auto sph: { upper_sphere, lower_sphere }) {
-			// upper sphere
 			for (i32 dx = -1; dx < 2; dx++) {
 				for (i32 dy = -1; dy < 2; dy++) {
 					for (i32 dz = -1; dz < 2; dz++) {
@@ -170,15 +169,14 @@ mk::math::Vector3f Player::moveAndSlide(mk::math::Vector3f speed, const float dt
 									{ PLAYER_WIDTH }
 								);
 								if (overlap.x && overlap.y && overlap.z) {
-									// speed.vec_data[coord]
-									// 	-= std::max(
-									// 		   0.f,
-									// 		   abs(speed.vec_data[coord]
-									//                - overlap.vec_data[coord]
-									//                      * mk::math::sign(speed.vec_data[coord]))
-									// 	   )
-									//      * mk::math::sign(speed.vec_data[coord]);
-									speed.vec_data[coord] = 0;
+									speed.vec_data[coord]
+										= std::max(
+											  0.f,
+											  speed.vec_data[coord]
+												  - overlap.vec_data[coord]
+														* mk::math::sign(speed.vec_data[coord])
+										  )
+									    * mk::math::sign(speed.vec_data[coord]);
 								}
 							}
 						}
