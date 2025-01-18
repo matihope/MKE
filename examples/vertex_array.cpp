@@ -1,7 +1,9 @@
 #include <MKE/Window.hpp>
 #include "MKE/Math/Vector.hpp"
 #include "MKE/RenderWindow.hpp"
+#include "MKE/Transformable.hpp"
 #include "MKE/VertexArray.hpp"
+#include "MKE/View.hpp"
 
 int main() {
 	mk::RenderWindow window(800, 600, "VertexArray");
@@ -31,7 +33,7 @@ int main() {
 
 	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
-		window.render(vertex_array, window.getCurrentView2D().getTransform());
+		window.render(vertex_array, mk::DummyTransformable().getTransform());
 		window.display();
 	}
 }

@@ -56,7 +56,7 @@ mk::math::Vector3f mk::View3D::getPosition() const { return position; }
 
 void mk::View3D::setDirection(const math::Vector3f direction) {
 	auto [x, y, z]       = direction.vec_data;
-	this->pitch_yaw_roll = { std::asin(y), atan2(z, x), 0.f };
+	this->pitch_yaw_roll = { std::asin(y), atan2f(z, x), 0.f };
 	makeCamera();
 }
 

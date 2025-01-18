@@ -36,6 +36,7 @@ public:
 
 	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
 		const override {
+		// context.transform *= getTransform(); // We extend RectShape for some reason...
 		context.texture = texture;
 		mk::RectShape::onDraw(target, context, game);
 	}

@@ -4,7 +4,6 @@
 #include "chunk_utils.hpp"
 #include "MKE/Game.hpp"
 #include "MKE/WorldEntity.hpp"
-#include "MKE/Shaders/SimpleShader.hpp"
 
 class Chunk final: public mk::WorldEntity3D {
 public:

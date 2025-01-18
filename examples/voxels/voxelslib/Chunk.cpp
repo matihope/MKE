@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include "MKE/Primitives/3d/CubePrimitive.hpp"
 
 namespace {
 	bool anyOf(auto voxels, VoxelType type) {

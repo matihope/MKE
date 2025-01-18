@@ -47,6 +47,8 @@ namespace mk {
 
 		void setPaused(bool paused);
 
+		void setVisible(bool visible);
+
 		// We want to it be ordered to be able to iterate in an ordered way.
 		std::map<i64, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
 

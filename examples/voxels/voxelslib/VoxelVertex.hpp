@@ -1,7 +1,3 @@
-//
-// Created by Mateusz Kolpa on 15/01/2025.
-//
-
 #pragma once
 #include "MKE/Color.hpp"
 #include "MKE/Math/Vector.hpp"

@@ -1,14 +1,10 @@
-//
-// Created by Mateusz Kolpa on 15/01/2025.
-//
-
 #include "VoxelVertex.hpp"
-#include "MKE/VertexArray.hpp"
+#include "glad/glad.h"
 
 void VoxelVertex::configureVertexAttribute() {
 	glVertexAttribPointer(
 		0,
-		sizeof(position) / sizeof(float),
+		sizeof(position) / sizeof(i32),
 		GL_INT,
 		GL_FALSE,
 		sizeof(VoxelVertex),

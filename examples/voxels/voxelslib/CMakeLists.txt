@@ -13,4 +13,5 @@ add_library(voxelslib
         World.cpp
         World.hpp)
 target_link_libraries(voxelslib MKE-Engine)
+target_compile_definitions(voxelslib PUBLIC "CUSTOM_ASSETS_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/../assets\"")
 target_include_directories(voxelslib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
