@@ -40,6 +40,9 @@ void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 	context.shader       = &chunk_shader;
 	constexpr float DIST = CHUNK_SIZE * (FOG_DISTANCE + 3);
 
+	// Drawing chunks...
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 	for (auto& chunk: chunk_list) {
 		const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_OPAQUE);
 		if (auto pos = chunk.getPosition();
@@ -70,6 +73,9 @@ std::pair<Chunk*, mk::math::Vector3i>
 }
 
 usize World::getChunkIndex(const mk::math::Vector3i coords) const {
+	if (coords.x < -WORLD_SIZE || coords.x > WORLD_SIZE) return std::numeric_limits<usize>::max();
+	if (coords.y < 0 || coords.y > 1) return std::numeric_limits<usize>::max();
+	if (coords.z < -WORLD_SIZE || coords.z > WORLD_SIZE) return std::numeric_limits<usize>::max();
 	const i32  WIDTH  = WORLD_SIZE * 2 + 1;
 	const auto ch_pos = coords + WORLD_SIZE;
 	return static_cast<usize>(

@@ -6,10 +6,13 @@
 
 /*
  * TODO:
+ * - Make player not build into themselves
  * - Player UI (better inventory)
+ * - better terrain generation (like from a 3d function)
+ *
+ * - Fix translucency?
  * - Equipment/Survival
  * - Infinite world
- * - better terrain generation (like from a 3d function)
  * - Add menu
  * - Add trees
  * - menu to adjust FOV, RENDER DISTANCE, ETC.

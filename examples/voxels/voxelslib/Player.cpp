@@ -80,10 +80,10 @@ void Player::onPhysicsUpdate(mk::Game& game, const float dt) {
 		// Move the player
 		switch (player_mode) {
 		case PlayerMode::SURVIVAL:
-			resolveUpdateWalking(game, dt);
+			resolveUpdateSurvival(game, dt);
 			break;
 		case PlayerMode::CREATIVE:
-			resolveUpdateFlying(game, dt);
+			resolveUpdateCreative(game, dt);
 			break;
 		}
 
@@ -105,8 +105,8 @@ void Player::onEvent(mk::Game& game, const mk::Event& event) {
 
 mk::Camera3D* Player::getCamera() const { return camera; }
 
-template<class K> requires  std::is_arithmetic_v<K>
-constexpr mk::math::Vector3<K> getVolumeOverlap(
+template<class K>
+requires std::is_arithmetic_v<K> constexpr mk::math::Vector3<K> getVolumeOverlap(
 	const mk::math::Vector3<K> pos1,
 	const mk::math::Vector3<K> size1,
 	const mk::math::Vector3<K> pos2,
@@ -133,7 +133,7 @@ constexpr mk::math::Vector3<K> getVolumeOverlap(
 	return { K(0) };
 }
 
-void Player::resolveUpdateWalking(mk::Game& game, float dt) {
+void Player::resolveUpdateSurvival(const mk::Game& game, const float dt) {
 	using namespace mk::input;
 
 	mk::math::Vector3f player_input{ 0.f };
@@ -157,7 +157,7 @@ void Player::resolveUpdateWalking(mk::Game& game, float dt) {
 	move_vec = moveAndSlide(move_vec, dt);
 }
 
-void Player::resolveUpdateFlying(mk::Game& game, float dt) {
+void Player::resolveUpdateCreative(const mk::Game& game, const float dt) {
 	using namespace mk::input;
 
 	mk::math::Vector3f player_input;
@@ -223,7 +223,8 @@ mk::math::Vector3f Player::moveAndSlide(const mk::math::Vector3f speed, const fl
 									// 		  0.,
 									// 		  dspeed.vec_data[coord]
 									// 			  - overlap.vec_data[coord]
-									// 					* (mk::math::sign(dspeed.vec_data[coord]) + 0.01)
+									// 					* (mk::math::sign(dspeed.vec_data[coord]) +
+									// 0.01)
 									// 	  )
 									//     * mk::math::sign(dspeed.vec_data[coord]);
 									dspeed.vec_data[coord] = 0.;

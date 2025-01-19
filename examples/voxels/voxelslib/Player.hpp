@@ -36,8 +36,8 @@ private:
 	const float PLAYER_WIDTH              = 0.5;
 	const float PLAYER_EYE_OFFSET         = 0.15;  // (below player's top)
 
-	void resolveUpdateWalking(mk::Game& game, float dt);
-	void resolveUpdateFlying(mk::Game& game, float dt);
+	void resolveUpdateSurvival(const mk::Game& game, float dt);
+	void resolveUpdateCreative(const mk::Game& game, float dt);
 
 	mk::math::Vector3f moveAndSlide(mk::math::Vector3f dspeed, float ddt);
 
