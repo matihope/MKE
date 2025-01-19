@@ -24,6 +24,6 @@ private:
 	mk::gui::Label*        world_size_lbl  = nullptr;
 	mk::gui::Button*       world_size_up   = nullptr;
 	mk::gui::Button*       world_size_down = nullptr;
-	int                    world_size      = 0;
+	int                    world_size      = 10;
 	static constexpr float BUTTON_PADDING  = 10;
 };
