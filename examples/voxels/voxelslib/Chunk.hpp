@@ -24,6 +24,8 @@ public:
 	void      setBlock(usize x, usize y, usize z, VoxelType type, bool rebuild = true);
 	VoxelType getBlockType(usize x, usize y, usize z) const;
 
+	mk::math::Vector3i getIntPosition() const;
+
 private:
 	mk::math::Vector3i int_position;
 	mk::Camera3D*      camera;

@@ -65,6 +65,8 @@ void Chunk::setBlock(
 
 VoxelType Chunk::getBlockType(usize x, usize y, usize z) const { return voxels[getIdx(x, y, z)]; }
 
+mk::math::Vector3i Chunk::getIntPosition() const { return int_position; }
+
 void Chunk::clearFacesOf(const VoxelType type) {
 	if (const auto it = faces.find(type); it != faces.end()) faces.erase(it);
 }

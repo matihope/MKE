@@ -48,10 +48,10 @@ private:
 	mk::gui::TextureRect* selected_slot = nullptr;
 };
 
-PlayerUI::PlayerUI(Player& player): player(player), player_mode(PlayerMode::FREE_MOUSE) {}
+PlayerUI::PlayerUI(Player& player): player(player), cursor_mode(CursorMode::FREE_MOUSE) {}
 
 void PlayerUI::onReady(mk::Game& game) {
-	setPlayerMode(PlayerMode::PLAYING, game);
+	setCursorMode(CursorMode::PLAYING, game);
 
 	auto [win_w, win_h] = game.getWindowSize().type<float>().vec_data;
 
@@ -70,33 +70,36 @@ void PlayerUI::onReady(mk::Game& game) {
 }
 
 void PlayerUI::onEvent(mk::Game& game, const mk::Event& event) {
-	if (auto ev = event.get<mk::Event::WindowResized>(); ev)
-		crosshair->setPosition(ev->new_size.type<float>() / 2.f);
+	if (auto ev = event.get<mk::Event::WindowResized>(); ev) {
+		auto [ww, wh] = ev->new_size.type<float>().vec_data;
+		crosshair->setPosition(ww / 2.0f, wh / 2.f);
+		player_slot_bar->setPosition(ww / 2.f, wh);
+	}
 	if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
-		if (ev->key == mk::input::KEY::ESCAPE) setPlayerMode(PlayerMode::FREE_MOUSE, game);
+		if (ev->key == mk::input::KEY::ESCAPE) setCursorMode(CursorMode::FREE_MOUSE, game);
 	}
 	if (const auto ev = event.get<mk::Event::MouseButtonPressed>(); ev) {
-		if (ev->button == mk::input::MOUSE_LEFT && player_mode == PlayerMode::FREE_MOUSE)
-			setPlayerMode(PlayerMode::PLAYING, game);
+		if (ev->button == mk::input::MOUSE_LEFT && cursor_mode == CursorMode::FREE_MOUSE)
+			setCursorMode(CursorMode::PLAYING, game);
 	}
 	if (const auto ev = event.get<mk::Event::MouseScrolled>(); ev)
 		player_slot_bar->changeSlot(mk::math::sign(ev->delta.y));
 }
 
-void PlayerUI::setPlayerMode(const PlayerMode mode, mk::Game& game) {
+void PlayerUI::setCursorMode(const CursorMode mode, mk::Game& game) {
 	switch (mode) {
-	case PlayerMode::FREE_MOUSE: {
+	case CursorMode::FREE_MOUSE: {
 		game.getRenderWindow().setMouseCursorMode(mk::Window::MouseMode::NORMAL);
 		game.getRenderWindow().setRawMouseMotion(false);
 		break;
 	}
-	case PlayerMode::PLAYING: {
+	case CursorMode::PLAYING: {
 		game.getRenderWindow().setMouseCursorMode(mk::Window::MouseMode::GRABBED);
 		game.getRenderWindow().setRawMouseMotion(true);
 		break;
 	}
 	}
-	this->player_mode = mode;
+	this->cursor_mode = mode;
 }
 
 usize PlayerUI::getPlayerSlot() const { return player_slot_bar->getCurrentSlot(); }
