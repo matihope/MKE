@@ -33,6 +33,18 @@ namespace mk {
 			input::MOUSE button;
 		};
 
+		struct MouseMoved {
+			math::Vector2f new_position;
+		};
+
+		struct MouseMotionDelta {
+			math::Vector2f delta;
+		};
+
+		struct MouseScrolled {
+			math::Vector2f delta;
+		};
+
 		template<class Ev>
 		Event(const Ev& e): data(e) {}
 
@@ -59,7 +71,10 @@ namespace mk {
 			KeyPressed,
 			KeyReleased,
 			MouseButtonPressed,
-			MouseButtonReleased>
+			MouseButtonReleased,
+			MouseMoved,
+			MouseMotionDelta,
+			MouseScrolled>
 			data{};
 	};
 }

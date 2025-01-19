@@ -6,14 +6,16 @@
 #include "MKE/Window.hpp"
 
 namespace mk {
-	class RenderWindow: public Window, public RenderTarget {
+	class RenderWindow final: public Window, public RenderTarget {
 	public:
 		using Window::Window;
-		~RenderWindow() = default;
+		~RenderWindow() override = default;
 
 		void render(const Drawable& drawable, DrawContext context) override;
 
+		[[nodiscard]]
 		math::Vector2u getSize() const override;
+		[[nodiscard]]
 		math::Vector2f getScalingFactor() const override;
 	};
 }

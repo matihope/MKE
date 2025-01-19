@@ -14,8 +14,9 @@ public:
 
 	void onPhysicsUpdate(mk::Game&, float dt) override { rotate(mk::math::Vector3f{ dt * 0.2f }); }
 
-	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
-		const override {
+	void onDraw(
+		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
+	) const override {
 		context.shader = shader;
 		mk::CubeShape::onDraw(target, context, game);
 	}
@@ -32,8 +33,9 @@ public:
 		shader->setVector3f("lightPos", getGlobalTransform() ^ mk::math::Vector3f(0.5f));
 	}
 
-	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
-		const override {
+	void onDraw(
+		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
+	) const override {
 		context.shader = light_shader;
 		mk::CubeShape::onDraw(target, context, game);
 	}
@@ -73,9 +75,10 @@ public:
 		shader.setFloat("material.shininess", 32.0f);
 	}
 
-	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
-		const override {
-		mk::WorldEntity3D::onDraw(target, context, game);
+	void onDraw(
+		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
+	) const override {
+		WorldEntity3D::onDraw(target, context, game);
 	}
 
 	void onUpdate(mk::Game&, float) override { shader.setVector3f("camPos", cam->getPosition()); }

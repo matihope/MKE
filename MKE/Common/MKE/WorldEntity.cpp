@@ -8,11 +8,13 @@ namespace mk {
 		return newest_id++;
 	}
 
-	void WorldEntity::cleanEntities() {
-		for (auto& layer: m_entity_pool) {
-			for (auto it = layer.second.begin(); it != layer.second.end(); it++) {
-				WorldEntity* entity = it->get();
-				if (entity->isDying()) it = layer.second.erase(it);
+	void WorldEntity::cleanEntities(Game& game) {
+		for (auto& layer: m_entity_pool | std::views::values) {
+			for (auto it = layer.begin(); it != layer.end(); ++it) {
+				if (WorldEntity* entity = it->get(); entity->isDying()) {
+					entity->free(game);
+					it = layer.erase(it);
+				}
 			}
 		}
 	}
@@ -34,7 +36,7 @@ namespace mk {
 
 	void WorldEntity::addParent(WorldEntity* parent) { m_parent = parent; }
 
-	WorldEntity* WorldEntity::getParent() { return m_parent; }
+	WorldEntity* WorldEntity::getParent() const { return m_parent; }
 
 	void WorldEntity::ready(Game& game) {
 		if (!m_called_ready) {
@@ -45,20 +47,26 @@ namespace mk {
 		}
 	}
 
+	void WorldEntity::free(Game& game) {
+		onFree(game);
+		for (const auto& layer: m_entity_pool | std::views::values)
+			for (auto& entity: layer) entity->free(game);
+	}
+
 	void WorldEntity::update(Game& game, float dt) {
-		cleanEntities();
+		cleanEntities(game);
 
 		if (m_is_paused) return;
 		onUpdate(game, dt);
-		for (const auto& layer: m_entity_pool)
-			for (auto& entity: layer.second) entity->update(game, dt);
+		for (const auto& layer: m_entity_pool | std::views::values)
+			for (auto& entity: layer) entity->update(game, dt);
 	}
 
 	void WorldEntity::physicsUpdate(Game& game, const float dt) {
 		if (m_is_paused) return;
 		onPhysicsUpdate(game, dt);
-		for (const auto& layer: m_entity_pool)
-			for (auto& entity: layer.second) entity->physicsUpdate(game, dt);
+		for (const auto& layer: m_entity_pool | std::views::values)
+			for (auto& entity: layer) entity->physicsUpdate(game, dt);
 	}
 
 	math::Vector3f WorldEntity::getGlobalPosition() const {
@@ -72,20 +80,24 @@ namespace mk {
 	}
 
 	void WorldEntity::drawEntity(
-		RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
+		RenderTarget&  target,
+		DrawContext    context,
+		const Game&    game,
+		const DrawMode draw_mode,
+		const bool     began
 	) const {
+		// Okay, so this method is totally messy... Probably drawing order should get a refactor.
+
 		if (m_show) {
-			if (auto new_mode = getDrawMode();
-			    draw_mode != new_mode && new_mode == DrawMode::ModeUI) {
+			if (!began && getDrawMode() == draw_mode) {
 				beginDraw(target, game);
 			} else {
-				DrawContext copied_context(context);
-				copied_context.transform *= getTransform();
-				onDraw(target, context, game);
+				if (getDrawMode() == draw_mode) onDraw(target, context, game);
 
-				for (const auto& layer: m_entity_pool)
-					for (auto& entity: layer.second)
-						entity->drawEntity(target, copied_context, game, draw_mode);
+				context.transform *= getTransform();
+				for (const auto& layer: m_entity_pool | std::views::values)
+					for (auto& entity: layer)
+						entity->drawEntity(target, context, game, draw_mode, began);
 			}
 		}
 	}
@@ -101,13 +113,13 @@ namespace mk {
 
 		DrawContext context;
 
-		auto [width, height] = target.getSize().bind();
+		auto [width, height] = target.getSize().vec_data;
 		context.camera(0, 0) = 2.f / width;
 		context.camera(1, 1) = -2.f / height;
 		context.camera(0, 3) = -1;
 		context.camera(1, 3) = 1;
 
-		drawEntity(target, context, game, getDrawMode());
+		drawEntity(target, context, game, getDrawMode(), true);
 	}
 
 	void WorldEntity2D::beginDraw(RenderTarget& target, const Game& game) const {
@@ -116,7 +128,8 @@ namespace mk {
 		DrawContext context;
 		context.camera = target.getCurrentView2D().getTransform();
 
-		drawEntity(target, context, game, getDrawMode());
+		drawEntity(target, context, game, getDrawMode(), true);
+		drawEntity(target, context, game, DrawMode::ModeUI, false);
 	}
 
 	void WorldEntity3D::beginDraw(RenderTarget& target, const Game& game) const {
@@ -125,6 +138,13 @@ namespace mk {
 		DrawContext context;
 		context.camera = target.getCurrentView3D().getTransform();
 
-		drawEntity(target, context, game, getDrawMode());
+		drawEntity(target, context, game, getDrawMode(), true);
+		drawEntity(target, context, game, DrawMode::ModeUI, false);
 	}
+
+	void WorldEntity::setVisible(const bool visible) { m_show = visible; }
+
+	void WorldEntity::show() { setVisible(true); }
+
+	void WorldEntity::hide() { setVisible(false); }
 }  // namespace mk

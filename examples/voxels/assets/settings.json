@@ -1,0 +1,21 @@
+{
+    "window": {
+        "width": 1280,
+        "height": 960,
+        "title": "mk448280 - Matcraft",
+        "vsync": false
+    },
+    "viewport": {
+        "width": 1280,
+        "height": 960
+    },
+    "debug": {
+        "printFPS": true,
+        "drawCollisionShapes": false
+    },
+    "engine": {
+        "physicsUpdateCallFreq": 60,
+        "fontPath": "../../assets/fonts/Born2bSportyV2.ttf",
+        "fontSmooth": false
+    }
+}

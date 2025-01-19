@@ -9,11 +9,12 @@ namespace mk {
 	class CubePrimitive: public Transformable, public Drawable {
 	public:
 		CubePrimitive(Color color = Colors::WHITE);
-		void draw(RenderTarget& target, DrawContext context) const override;
 
 		void setColor(Color color);
 
 	private:
+		void draw(RenderTarget& target, DrawContext context) const override;
+
 		void           updateVertices();
 		VertexArray3D  vertex_array{ false };
 		Color          color;

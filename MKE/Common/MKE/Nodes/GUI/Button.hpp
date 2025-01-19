@@ -46,6 +46,8 @@ namespace mk::gui {
 
 		void setAlignment(HAlignment newHAlignment, VAlignment newVAlignment);
 
+		void setPositionBase(math::Vector3f position) override;
+
 		void setFont(Font* font);
 		void setText(const std::string& newText);
 		void setTextSize(unsigned int newSize);

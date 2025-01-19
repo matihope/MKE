@@ -49,7 +49,7 @@ mk::RenderTexture2D::RenderTexture2D() {
 }
 
 void mk::RenderTexture2D::regenerateBuffers() {
-	auto [scaled_width, scaled_height] = (size.type<float>() * scaling_factor).bind();
+	auto [scaled_width, scaled_height] = (size.type<float>() * scaling_factor).vec_data;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
 

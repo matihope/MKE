@@ -57,7 +57,13 @@ namespace mk::input {
 		Y = 'Y',
 		Z = 'Z',
 
-		GRAVE = '`',
+		GRAVE     = '`',
+		ESCAPE    = 256,
+		ENTER     = 257,
+		TAB       = 258,
+		BACKSPACE = 259,
+		INSERT    = 260,
+		DELETE    = 261,
 
 		// Arrow keys
 		ARROW_RIGHT = 262,

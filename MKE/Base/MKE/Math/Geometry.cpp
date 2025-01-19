@@ -87,32 +87,39 @@ namespace mk::math {
 	std::vector<Vector2i> drawLine(Vector2i start, Vector2i end) {
 		if (start == end) return { start };
 
-		math::Vector2i currentPosition = start;
-		math::Vector2f dirVec          = normalizeVector((end - start).type<float>());
-		math::Vector2f step            = { dirVec.y / dirVec.x, dirVec.x / dirVec.y };
-		math::Vector2f stepLength
-			= { std::sqrt(step.x * step.x + 1), std::sqrt(step.y * step.y + 1) };
-		math::Vector2f rayProgress = { 0, 0 };
+		Vector2i currentPosition = start;
+		Vector2f dirVec          = normalizeVector((end - start).type<float>());
+		Vector2f step            = { dirVec.y / dirVec.x, dirVec.x / dirVec.y };
+		Vector2f stepLength  = { std::sqrt(step.x * step.x + 1), std::sqrt(step.y * step.y + 1) };
+		Vector2f rayProgress = { 0, 0 };
 
 		float distance    = 0;
 		float maxDistance = (end - start).length();
 
-		std::vector<math::Vector2i> points;
+		std::vector<Vector2i> points;
 
 		while (distance < maxDistance) {
 			points.push_back(currentPosition);
 			if (rayProgress.x < rayProgress.y) {
-				currentPosition.x += math::sign(dirVec.x);
+				currentPosition.x += sign(dirVec.x);
 				distance = rayProgress.x;
 				rayProgress.x += stepLength.x;
 			} else {
-				currentPosition.y += math::sign(dirVec.y);
+				currentPosition.y += sign(dirVec.y);
 				distance = rayProgress.y;
 				rayProgress.y += stepLength.y;
 			}
 		}
 
 		return points;
+	}
+
+	std::vector<Vector3i> gridTraverse(Vector3f start, Vector3f direction, float max_length) {
+		std::vector<Vector3i> points;
+		// $ray = start + t * direction$ for $t >= 0$
+		// stepXYZ - sign of direction
+		// tMaxXYZ - min val fo $t$ the ray crosses boundary.
+		// tDeltaXYZ - how far along the ray we must move on the axis to change width of the pixel.
 	}
 
 }  // namespace mk::Math

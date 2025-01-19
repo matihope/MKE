@@ -56,29 +56,27 @@ struct FontVertex {
 	}
 };
 
-class FontArray: public mk::VertexArray<FontVertex>, public mk::Drawable {
+class FontArray: public mk::VertexArray<FontVertex> {
 public:
-	using mk::VertexArray<FontVertex>::VertexArray;
+	using VertexArray::VertexArray;
 	~FontArray() = default;
 
-	mk::Color          color;
-	const mk::Texture* texture;
+	mk::Color          color{};
+	const mk::Texture* texture = nullptr;
 	float              y_delta = 0.0;
 
-	void draw(mk::RenderTarget&, mk::DrawContext context) const override {
+	void draw(mk::RenderTarget& target, mk::DrawContext context) const override {
 		static mk::Shader  shader(vertex_shader, fragment_shader);
 		mk::math::Matrix4f transform{ 1 };
 		transform(1, 1) = -1;
 		transform(1, 3) = y_delta;
+		shader.setColor("textColor", color);
 
 		context.shader  = &shader;
 		context.texture = texture;
 		context.transform *= transform;
-		context.bind();
-		shader.setColor("textColor", color);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
-		startDraw();
+		VertexArray::draw(target, context);
 	}
 };
 
@@ -103,8 +101,9 @@ void mk::Text2D::render() {
 		const auto& ch = chars->at(c);
 
 		math::RectF char_bounds{};
-		char_bounds.left   = x + ch.bearing.x;
-		char_bounds.top    = -float(ch.size.y - ch.bearing.y);
+		char_bounds.left = x + ch.bearing.x;
+		char_bounds.top
+			= -static_cast<float>(static_cast<i32>(ch.size.y) - static_cast<i32>(ch.bearing.y));
 		char_bounds.width  = ch.size.x;
 		char_bounds.height = ch.size.y;
 
@@ -156,9 +155,7 @@ void mk::Text2D::draw(RenderTarget& target, DrawContext context) const {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (!isEmpty()) {
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		// target.render2dContext(render_object, context);
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		context.texture = &render_texture.getTexture();
 		target.render(render_object, context);
 	}
@@ -211,8 +208,8 @@ mk::math::RectF mk::Text2D::getLocalBounds() const {
 
 mk::math::RectF mk::Text2D::getGlobalBounds() const {
 	auto transform    = getTransform();
-	auto top_left     = getPosition2D();
-	auto bottom_right = top_left + getLocalBounds().getSize();
+	auto top_left     = math::Vector2f{ 0.f, 0.f };
+	auto bottom_right = getLocalBounds().getSize();
 
 	auto new_top_left     = transform ^ top_left;
 	auto new_bottom_right = transform ^ bottom_right;

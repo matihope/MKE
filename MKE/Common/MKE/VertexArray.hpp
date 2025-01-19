@@ -15,10 +15,13 @@ namespace mk {
 		STATIC_DRAW  = GL_STATIC_DRAW,
 	};
 
-	template<class Vert, BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
-	class VertexArray: public NonCopyable {
+	template<
+		class Vert,
+		GLenum       PRIMITIVE   = GL_TRIANGLES,
+		BUFFER_USAGE BufferUsage = BUFFER_USAGE::DYNAMIC_DRAW>
+	class VertexArray: public NonCopyable, public Drawable {
 	public:
-		VertexArray(bool enable_index_buffer): enable_index_buffer(enable_index_buffer) {
+		VertexArray(bool enable_index_buffer = false): enable_index_buffer(enable_index_buffer) {
 			glGenVertexArrays(1, &vertex_array);
 			glBindVertexArray(vertex_array);
 
@@ -45,9 +48,21 @@ namespace mk {
 
 		VertexArray(usize size) { setSize(size); }
 
-		void setSize(usize size) {
+		void setSize(const usize size) {
 			vertex_buffer_size = size;
 			vertices.reset(new Vert[size]);
+		}
+
+		void addVertices(const usize count) {
+			auto old = std::move(vertices);
+			vertices.reset(new Vert[vertex_buffer_size + count]);
+			std::memcpy(vertices.get(), old.get(), sizeof(Vert) * vertex_buffer_size);
+			vertex_buffer_size += count;
+		}
+
+		[[nodiscard]]
+		usize getSize() const {
+			return vertex_buffer_size;
 		}
 
 		void setIndexBuffer(const u32* buffer, usize length) {
@@ -119,23 +134,29 @@ namespace mk {
 		void startDraw() const {
 			glBindVertexArray(vertex_array);
 			if (enable_index_buffer)
-				glDrawElements(GL_TRIANGLES, index_buffer_size, GL_UNSIGNED_INT, 0);
+				glDrawElements(PRIMITIVE, index_buffer_size, GL_UNSIGNED_INT, 0);
 			else
-				glDrawArrays(GL_TRIANGLES, 0, vertex_buffer_size);
+				glDrawArrays(PRIMITIVE, 0, vertex_buffer_size);
+		}
+
+		void draw(RenderTarget&, DrawContext context) const override {
+			if (!vertex_buffer_size) return;
+			context.bind();
+			startDraw();
 		}
 	};
 
-	class VertexArray2D: public VertexArray<Vertex2D>, public Drawable {
+	class VertexArray2D: public VertexArray<Vertex2D> {
 	public:
 		using VertexArray::VertexArray;
-		~VertexArray2D() = default;
+		~VertexArray2D() override = default;
 		void draw(RenderTarget& target, DrawContext context) const override;
 	};
 
-	class VertexArray3D: public VertexArray<Vertex3D>, public Drawable {
+	class VertexArray3D: public VertexArray<Vertex3D> {
 	public:
 		using VertexArray::VertexArray;
-		~VertexArray3D() = default;
+		~VertexArray3D() override = default;
 		void draw(RenderTarget& target, DrawContext context) const override;
 	};
 }

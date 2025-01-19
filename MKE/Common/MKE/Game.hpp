@@ -26,6 +26,7 @@ namespace mk {
 		bool   m_enable_print_fps         = false;
 		float  m_physics_update_call_freq = 1. / 60.;
 		float  m_physics_update_counter   = 0.f;
+		Color  clear_color                = Color(21, 21, 21);
 		// sf::Cursor::Type m_current_cursor_type;
 
 		ResourceManager res_man;
@@ -38,7 +39,6 @@ namespace mk {
 
 		Font*                       m_default_font;
 		std::unique_ptr<gui::Label> m_fps_label;
-		math::Vector2f              m_mouse_pos;
 		Image                       icon;
 
 		void                                     updateViewportSize();
@@ -96,15 +96,19 @@ namespace mk {
 		bool           isMousePressed(input::MOUSE button) const;
 		bool           isMouseJustPressed(input::MOUSE button) const;
 		bool           isMouseJustReleased(input::MOUSE button) const;
-		math::Vector2f getMousePos();
+		math::Vector2f getMousePos() const;
+		math::Vector2f getMouseDelta() const;
 
-		const mk::View2D* getView2D();
+		// const mk::View2D* getView2D();
 		// void setCamera2DCenterAt(const math::Vector2f& pos);
 		// void            setCursor(sf::Cursor::Type type);
 
-		mk::Font* getDefaultFont() const;
+		Font* getDefaultFont() const;
 
 		ResourceManager& resources() { return res_man; }
+
+		void  setClearColor(Color c);
+		Color getClearColor() const;
 	};
 
 }  // namespace mk

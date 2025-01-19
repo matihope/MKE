@@ -30,7 +30,7 @@ namespace mk::math {
 	 */
 	constexpr float makeInRange(float value, float range) {
 		float res = std::fmod(value, range);
-		if (res > 0) return res;
+		if (res >= 0) return res;
 		return res + value;
 	}
 
@@ -50,15 +50,21 @@ namespace mk::math {
 
 	template<class Function>
 	requires std::is_same_v<bool, std::invoke_result_t<Function, float>> constexpr float
-		binsearch(float left, float right, const Function& function, const float EPS = EPS_ZERO) {
-		float mid;
-		while (math::isZero(left - right, EPS)) {
-			mid = (left + right) / 2.f;
-			if (function)
+		binsearch(float left, float right, const Function& function, const float EPS = 1e-5) {
+		if (left > right) std::swap(left, right);
+		while (!isZero(left - right, EPS))
+			if (float mid = (left + right) / 2.f; function(mid))
 				left = mid;
 			else
 				right = mid;
-		}
+
 		return left;
 	}
+
+	// integer division that floors to -inf, not 0
+	constexpr i32 customDiv(const i32 x, const i32 div) {
+		if (x < 0) return (x + 1) / div - 1;
+		return x / div;
+	}
+
 }  // namespace mk::Math

@@ -35,29 +35,42 @@ namespace {
 
 		// This is fine, because mk::input::KEY follows GLFW's key ordering.
 		if (action == GLFW_PRESS)
-			event = mk::Event::KeyPressed(mk::input::KEY(key));
+			event = mk::Event::KeyPressed(static_cast<mk::input::KEY>(key));
 		else if (action == GLFW_RELEASE)
-			event = mk::Event::KeyReleased(mk::input::KEY(key));
+			event = mk::Event::KeyReleased(static_cast<mk::input::KEY>(key));
 		else
 			return;
 
 		pushEvent(window, event);
 	}
 
-	void windowMouseCallback(
+	void windowMouseButtonCallback(
 		GLFWwindow* window, int button, int action, int /* mods */
 	) {
 		mk::Event event;
 
 		// This is fine, because mk::input::BUTTON follows GLFW's key ordering.
 		if (action == GLFW_PRESS)
-			event = mk::Event::MouseButtonPressed(mk::input::MOUSE(button));
+			event = mk::Event::MouseButtonPressed(static_cast<mk::input::MOUSE>(button));
 		else if (action == GLFW_RELEASE)
-			event = mk::Event::MouseButtonReleased(mk::input::MOUSE(button));
+			event = mk::Event::MouseButtonReleased(static_cast<mk::input::MOUSE>(button));
 		else
 			return;
 
 		pushEvent(window, event);
+	}
+
+	void windowCursorPosCallback(GLFWwindow* window, double x_pos, double y_pos) {
+		pushEvent(
+			window, mk::Event::MouseMoved({ static_cast<float>(x_pos), static_cast<float>(y_pos) })
+		);
+	}
+
+	void windowScrollCallback(GLFWwindow* window, const double xoffset, const double yoffset) {
+		pushEvent(
+			window,
+			mk::Event::MouseScrolled({ static_cast<float>(xoffset), static_cast<float>(yoffset) })
+		);
 	}
 
 	[[maybe_unused]]
@@ -87,7 +100,9 @@ void mk::Window::create(u32 width, u32 height, std::string_view title) {
 	glfwSetFramebufferSizeCallback(window, windowFramebufferSizeCallback);
 	glfwSetWindowContentScaleCallback(window, windowScaleFactorCallback);
 	glfwSetKeyCallback(window, windowKeyCallback);
-	glfwSetMouseButtonCallback(window, windowMouseCallback);
+	glfwSetMouseButtonCallback(window, windowMouseButtonCallback);
+	glfwSetCursorPosCallback(window, windowCursorPosCallback);
+	glfwSetScrollCallback(window, windowScrollCallback);
 
 	glfwGetWindowContentScale(window, &window_scale_factor.x, &window_scale_factor.y);
 	MK_ASSERT_TRUE(window_scale_factor.x > 0, "Invalid window native x_scale");
@@ -129,6 +144,11 @@ void mk::Window::addEvent(Event event) {
 		event = *ev;
 	} else if (event.is<Event::WindowClose>()) {
 		setExitRequested(true);
+	} else if (auto ev = event.get<Event::MouseMoved>(); ev) {
+		ev->new_position /= window_scale_factor;
+		if (mouse_position != math::Vector2f{ -1.f })
+			events.emplace(mk::Event::MouseMotionDelta(ev->new_position - mouse_position));
+		mouse_position = ev->new_position;
 	}
 
 	events.push(event);
@@ -163,6 +183,33 @@ bool mk::Window::isExitRequested() const { return exit_requested; }
 
 void mk::Window::setExitRequested(bool value) { exit_requested = value; }
 
+void mk::Window::setMouseCursorMode(const MouseMode mode) {
+	mouse_mode = mode;
+	switch (mode) {
+	case MouseMode::HIDDEN:
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		break;
+	case MouseMode::GRABBED:
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		break;
+	// case MouseMode::NORMAL:
+	default:
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+}
+
+mk::Window::MouseMode mk::Window::getMouseCursorMode() const { return mouse_mode; }
+
+void mk::Window::setRawMouseMotion(const bool enable) const {
+	if (glfwRawMouseMotionSupported())
+		if (enable)
+			glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		else
+			glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+	else
+		std::cerr << " -- Error: Raw mouse motion not supported!" << '\n';
+}
+
 mk::Window::~Window() { glfwDestroyWindow(window); }
 
 bool mk::Window::isKeyPressed(input::KEY key) const {
@@ -179,3 +226,5 @@ mk::math::Vector2i mk::Window::getMousePosition() const {
 	glfwGetCursorPos(window, &xpos, &ypos);
 	return math::Vector2i(xpos, ypos);
 }
+
+GLFWwindow* mk::Window::getNativeHandle() const { return window; }

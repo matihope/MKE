@@ -23,20 +23,25 @@ void mk::View2D::setCenter(math::Vector2f center) {
 
 mk::View3D::View3D(math::Vector3f position): position(position) {}
 
-mk::math::Matrix4f mk::View3D::getTransform() const { return camera; }
-
 mk::View3D::View3D(): mk::View3D(math::Vector3f(0.f)) {}
 
+mk::View3D::View3D(math::Vector3f position, math::Vector3f direction) {
+	setPosition(position);
+	lookAt(position + direction);
+}
+
+mk::math::Matrix4f mk::View3D::getTransform() const { return camera; }
+
 void mk::View3D::lookAt(math::Vector3f look_at) {
-	direction = (look_at - position).normalizeOrZero();
+	setDirection((look_at - position).normalizeOrZero());
 	makeCamera();
 }
 
 void mk::View3D::makeCamera() {
 	// camera = math::perspective(45.f, 16.f / 9, 0.1f, 100.f);
 	// camera = math::lookAtDirection(position, direction, math::Vector3f(0.f, 1.f, 0.f));
-	camera = math::perspective(fov, aspect, 0.1f, 100.f);
-	camera *= math::lookAtDirection(position, direction, { 0.f, 1.f, 0.f });
+	camera = math::perspective(fov_h, aspect, near, far);
+	camera *= lookAtDirection(position, getDirection(), { 0.f, 1.f, 0.f });
 	// camera = math::orthogonal(16, 9);
 }
 
@@ -49,26 +54,55 @@ void mk::View3D::setPosition(math::Vector3f position) {
 
 mk::math::Vector3f mk::View3D::getPosition() const { return position; }
 
-mk::View3D::View3D(math::Vector3f position, math::Vector3f direction) {
-	setPosition(position);
-	lookAt(position + direction);
-}
-
-void mk::View3D::setDirection(math::Vector3f direction) {
-	this->direction = direction;
+void mk::View3D::setDirection(const math::Vector3f direction) {
+	auto [x, y, z]       = direction.vec_data;
+	this->pitch_yaw_roll = { std::asin(y), atan2f(z, x), 0.f };
 	makeCamera();
 }
 
-mk::math::Vector3f mk::View3D::getDirection() const { return direction; }
+mk::math::Vector3f mk::View3D::getDirection() const {
+	const auto pitch_sin = std::sin(pitch_yaw_roll.x);
+	const auto pitch_cos = std::cos(pitch_yaw_roll.x);
+	const auto yaw_sin   = std::sin(pitch_yaw_roll.y);
+	const auto yaw_cos   = std::cos(pitch_yaw_roll.y);
+	return { pitch_cos * yaw_cos, pitch_sin, pitch_cos * yaw_sin };
+}
 
-void mk::View3D::setFov(float fov) {
-	this->fov = fov;
+void mk::View3D::setFovH(const float fov) {
+	this->fov_h = fov;
 	makeCamera();
 }
 
-void mk::View3D::setAspect(float aspect) {
+float mk::View3D::getFovH() const { return fov_h; }
+
+float mk::View3D::getFovV() const { return fov_h / aspect; }
+
+void mk::View3D::setAspect(const float aspect) {
 	this->aspect = aspect;
 	makeCamera();
 }
+
+void mk::View3D::setNear(const float near) {
+	this->near = near;
+	makeCamera();
+}
+
+void mk::View3D::setFar(const float far) {
+	this->far = far;
+	makeCamera();
+}
+
+mk::math::Vector3f mk::View3D::getPithYawRoll() const { return pitch_yaw_roll; }
+
+void mk::View3D::setPithYawRoll(math::Vector3f pitch_yaw_roll) {
+	auto [x, y, z]       = pitch_yaw_roll.vec_data;
+	x                    = std::fmodf(x, 2. * M_PI);
+	y                    = std::fmodf(y, 2. * M_PI);
+	z                    = std::fmodf(z, 2. * M_PI);
+	this->pitch_yaw_roll = { x, y, z };
+	makeCamera();
+}
+
+float mk::View3D::getAspect() const { return aspect; }
 
 mk::math::Vector2f mk::View2D::getSize() const { return view.getSize(); }

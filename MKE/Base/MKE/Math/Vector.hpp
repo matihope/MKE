@@ -28,8 +28,6 @@ namespace mk::math {
 			constexpr Vec(T value): x(value), y(value) {}
 
 			constexpr Vec(T x, T y): x(x), y(y) {}
-
-			constexpr std::tuple<T, T> bind() const { return { x, y }; }
 		};
 
 		template<class T>
@@ -49,8 +47,6 @@ namespace mk::math {
 			constexpr Vec(T value): x(value), y(value), z(value) {}
 
 			constexpr Vec(T x, T y, T z): x(x), y(y), z(z) {}
-
-			constexpr std::tuple<T, T, T> bind() const { return { x, y, z }; }
 		};
 
 		template<class T>
@@ -71,8 +67,6 @@ namespace mk::math {
 			constexpr Vec(T value): x(value), y(value), z(value), w(value) {}
 
 			constexpr Vec(T x, T y, T z, T w): x(x), y(y), z(z), w(w) {}
-
-			constexpr std::tuple<T, T, T, T> bind() const { return { x, y, z, w }; }
 		};
 	}
 
@@ -125,6 +119,11 @@ namespace mk::math {
 			return *this;
 		}
 
+		constexpr Vector operator%=(const auto& rhs) {
+			for (usize p = 0; p < SIZE; p++) this->vec_data[p] %= rhs;
+			return *this;
+		}
+
 		constexpr Vector operator+(const auto& rhs) const { return Vector(*this) += rhs; }
 
 		constexpr Vector operator-(const auto& rhs) const { return Vector(*this) -= rhs; }
@@ -134,6 +133,8 @@ namespace mk::math {
 		constexpr Vector operator*(const auto& rhs) const { return Vector(*this) *= rhs; }
 
 		constexpr Vector operator/(const auto& rhs) const { return Vector(*this) /= rhs; }
+
+		constexpr Vector operator%(const auto& rhs) const { return Vector(*this) %= rhs; }
 
 		T length() const { return std::sqrt(lengthSquared()); }
 
@@ -164,10 +165,16 @@ namespace mk::math {
 			return stream;
 		}
 
-		constexpr Vector lerp(Vector target, float step) {
+		constexpr Vector lerp(Vector target, float step, float ZERO = EPS_ZERO) {
 			Vector res = operator*(1.f - step) + target * step;
-			if ((res - target).lengthSquared() < EPS_ZERO) return target;
+			if ((res - target).lengthSquared() < ZERO) return target;
 			return res;
+		}
+
+		constexpr Vector abs() const {
+			return { std::abs(this->vec_data[0]),
+				     std::abs(this->vec_data[1]),
+				     std::abs(this->vec_data[2]) };
 		}
 	};
 
@@ -177,11 +184,13 @@ namespace mk::math {
 	using Vector2f = Vector2<float>;
 	using Vector2i = Vector2<i32>;
 	using Vector2u = Vector2<u32>;
+	using Vector2d = Vector2<double>;
 
 	template<class T>
 	using Vector3 = Vector<impl::Vec, T, 3>;
 
 	using Vector3f = Vector3<float>;
+	using Vector3d = Vector3<double>;
 	using Vector3i = Vector3<i32>;
 	using Vector3u = Vector3<u32>;
 
@@ -191,6 +200,7 @@ namespace mk::math {
 	using Vector4f = Vector4<float>;
 	using Vector4i = Vector4<i32>;
 	using Vector4u = Vector4<u32>;
+	using Vector4d = Vector4<double>;
 
 	constexpr Vector2f normalizeVector(const Vector2f vector) {
 		if (vector.x == 0 || vector.y == 0) return vector;
@@ -208,4 +218,8 @@ namespace mk::math {
 			     lhs.z * rhs.x - lhs.x * rhs.z,
 			     lhs.x * rhs.y - lhs.y * rhs.x };
 	}
+
+	constexpr auto Vector3fZERO = Vector3f(0.f);
+	constexpr auto Vector3fUP   = Vector3f(0.f, 1.f, 0.f);
+	constexpr auto Vector3fDOWN = Vector3f(0.f, -1.f, 0.f);
 }  // namespace mk::Math

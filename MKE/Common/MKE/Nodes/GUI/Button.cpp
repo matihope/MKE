@@ -20,6 +20,12 @@ namespace mk::gui {
 		fixLabelPosition();
 	}
 
+	void Button::setPositionBase(const math::Vector3f position) {
+		WorldEntityUI::setPositionBase(position);
+		fixLabelPosition();
+		updateDefaultCollisionShape();
+	}
+
 	void Button::setFont(Font* newFont) {
 		m_label.setFont(newFont);
 		updateDefaultCollisionShape();
@@ -40,8 +46,8 @@ namespace mk::gui {
 
 	void Button::onDraw(RenderTarget& target, DrawContext context, const Game& game) const {
 		context.transform *= getTransform();
-		m_background.drawEntity(target, context, game, getDrawMode());
-		m_label.drawEntity(target, context, game, getDrawMode());
+		m_background.drawEntity(target, context, game, DrawMode::Mode2D, true);
+		m_label.drawEntity(target, context, game, getDrawMode(), true);
 
 #if (DEBUG)
 		target.render(*m_collision_shape, context);

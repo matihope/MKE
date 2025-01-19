@@ -21,15 +21,19 @@ namespace mk {
 
 		void setSmooth(bool smooth);
 
-		void generateMipmaps() const;
+		void generateMipmaps() ;
 
+		[[nodiscard]]
 		math::Vector2u getSize() const;
 
 		u32 getNativeHandle() const;
 
+		void setWrapMode(GLint mode = GL_CLAMP_TO_BORDER);
+
 	private:
 		math::Vector2u size{};
 		u32            texture_id{};
-		bool           is_smooth = true;
+		bool           is_smooth   = true;
+		bool           has_mipmaps = false;
 	};
 }

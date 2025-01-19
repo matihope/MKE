@@ -49,27 +49,30 @@ namespace game {
 				const math::RectF initial = my_rect;
 
 				math::RectF    helper       = my_rect;
-				math::Vector2f helper_delta = delta;
 				helper.left += delta.x;
 				if (!canMoveTo(helper)) {
-					while (!math::isZero(helper_delta.x)) {
-						helper.left = my_rect.left + helper_delta.x;
-						if (canMoveTo(helper)) my_rect = helper;
-						helper_delta.x /= 2;
-					}
-					auto diff = my_rect.getPosition().x - initial.getPosition().x;
-					delta.x   = std::min(std::abs(delta.x), std::abs(diff)) * math::sign(delta.x);
+					auto lmb = [&](float mid) {
+						helper.left   = initial.left + mid;
+						bool can_move = canMoveTo(helper);
+						if (math::sign(mid)) return can_move;
+						return !can_move;
+					};
+					// auto diff = my_rect.getPosition().x - initial.getPosition().x;
+					// delta.x   = std::min(std::abs(delta.x), std::abs(diff)) *
+					// math::sign(delta.x);
+					delta.x = math::binsearch(0.f, delta.x, lmb);
 				}
 				helper.left = initial.left + delta.x;
 				helper.top += delta.y;
 				if (!canMoveTo(helper)) {
-					while (!math::isZero(helper_delta.y)) {
-						helper.top = my_rect.top + helper_delta.y;
-						if (canMoveTo(helper)) my_rect = helper;
-						helper_delta.y /= 2;
-					}
-					auto diff = my_rect.getPosition().y - initial.getPosition().y;
-					delta.y   = std::min(std::abs(delta.y), std::abs(diff)) * math::sign(delta.y);
+					auto lmb = [&](float mid) {
+						helper.top    = initial.top + mid;
+						bool can_move = canMoveTo(helper);
+						// return !can_move;
+						if (math::sign(mid)) return can_move;
+						return !can_move;
+					};
+					delta.y = math::binsearch(0.f, delta.y, lmb);
 				}
 				my_rect.left = initial.left + delta.x;
 				my_rect.top  = initial.top + delta.y;
@@ -246,9 +249,9 @@ namespace game {
 
 		void touchedBodies(
 			const std::vector<const physics::RectBody*>& bodies, Color new_color = getRandColor()
-		) {
+		) const {
 			for (Block* b: blocks) {
-				for (auto bod: bodies)
+				for (const auto bod: bodies)
 					if (&b->body == bod) b->setColor(new_color);
 			}
 		}

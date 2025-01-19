@@ -27,7 +27,7 @@ namespace mk {
 
 		bool m_show;
 
-		void cleanEntities();
+		void cleanEntities(Game& game);
 
 		bool m_called_ready = false;
 
@@ -47,14 +47,18 @@ namespace mk {
 
 		void setPaused(bool paused);
 
+		void setVisible(bool visible);
+		void show();
+		void hide();
+
 		// We want to it be ordered to be able to iterate in an ordered way.
-		std::map<usize, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
+		std::map<i64, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
 
 		void addParent(WorldEntity* parent);
 
-		WorldEntity* getParent();
+		WorldEntity* getParent() const;
 
-		template<class T, unsigned int drawOrder = 0>
+		template<class T, i64 drawOrder = 0>
 		requires std::is_base_of_v<WorldEntity, T>
 		T* addChild(Game& game, std::unique_ptr<T> child) {
 			child->addParent(this);
@@ -64,7 +68,7 @@ namespace mk {
 			return my_child;
 		}
 
-		template<class T, unsigned int drawOrder = 0, class... Args>
+		template<class T, i64 drawOrder = 0, class... Args>
 		requires std::is_base_of_v<WorldEntity, T> T* addChild(Game& game, Args&&... args) {
 			auto new_child = std::make_unique<T>(std::forward<Args>(args)...);
 			return addChild<T, drawOrder>(game, std::move(new_child));
@@ -72,11 +76,19 @@ namespace mk {
 
 		void ready(Game& game) override;
 
+		void free(Game& game) override;
+
+
 		void update(Game& game, float dt) override;
 
 		void physicsUpdate(Game& game, const float dt) override;
 
 		virtual void onReady([[maybe_unused]] Game& game) {}
+
+		virtual void onFree([[maybe_unused]] Game& game) {}
+
+		// Called when REenters the top of the scene stack
+		virtual void onReReady([[maybe_unused]] Game& game) {}
 
 		virtual void onUpdate([[maybe_unused]] Game& game, [[maybe_unused]] float dt) {}
 
@@ -105,7 +117,11 @@ namespace mk {
 		virtual void beginDraw(RenderTarget& target, const Game& game) const = 0;
 
 		virtual void drawEntity(
-			RenderTarget& target, DrawContext context, const Game& game, DrawMode draw_mode
+			RenderTarget& target,
+			DrawContext   context,
+			const Game&   game,
+			DrawMode      draw_mode,
+			bool          began
 		) const;
 	};
 

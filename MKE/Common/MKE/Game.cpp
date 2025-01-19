@@ -39,7 +39,7 @@ namespace mk {
 	}
 
 	void Game::draw() {
-		m_window.clear(Color(21, 21, 21));
+		m_window.clear(clear_color);
 
 		if (!m_scene_stack.empty()) m_scene_stack.top()->beginDraw(m_window, *this);
 
@@ -50,12 +50,14 @@ namespace mk {
 
 	void Game::update() {
 		m_delta_time = m_clock.restart();
-		m_mouse_pos  = m_window.getMousePosition().type<float>();
 		// m_mouse_pos  = math::Vector2f(
 		//     getRenderWindow().mapPixelToCoords(sf::Mouse::getPosition(getRenderWindow()))
 		// );
 
-		while (!m_safe_scene_delete_queue.empty()) m_safe_scene_delete_queue.pop();
+		while (!m_safe_scene_delete_queue.empty()) {
+			m_safe_scene_delete_queue.front()->free(*this);
+			m_safe_scene_delete_queue.pop();
+		}
 
 		if (!m_scene_stack.empty()) {
 			m_physics_update_counter += m_delta_time;
@@ -92,6 +94,7 @@ namespace mk {
 			m_safe_scene_delete_queue.push(std::move(m_scene_stack.top()));
 			m_scene_stack.pop();
 		}
+		if (!m_scene_stack.empty()) m_scene_stack.top()->onReReady(*this);
 	}
 
 	void Game::replaceTopScene(std::unique_ptr<WorldEntity> newScene) {
@@ -100,18 +103,18 @@ namespace mk {
 	}
 
 	void Game::pollEvents() {
-		mk::Event event{};
+		Event event{};
 		while (m_window.pollEvent(event)) {
 			input_map_normal.handleEvent(event);
 			input_map_physics.handleEvent(event);
 
 			if (!m_scene_stack.empty()) m_scene_stack.top()->event(*this, event);
 
-			if (event.is<mk::Event::WindowClose>())
+			if (event.is<Event::WindowClose>())
 				stop();
 			else if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 				switch (ev->key) {
-				case mk::input::KEY::GRAVE:
+				case input::KEY::GRAVE:
 					popScene();
 					if (m_scene_stack.empty()) stop();
 					break;
@@ -149,8 +152,6 @@ namespace mk {
 		m_view_2d.setSize(viewportScale);
 		m_window.setView2D(m_view_2d);
 	}
-
-	math::Vector2f Game::getMousePos() { return m_mouse_pos; }
 
 	// const sf::View* Game::getView() { return &m_view; }
 
@@ -225,6 +226,10 @@ namespace mk {
 
 	mk::Font* Game::getDefaultFont() const { return m_default_font; }
 
+	void Game::setClearColor(const Color c) { clear_color = c; }
+
+	Color Game::getClearColor() const { return clear_color; }
+
 	bool Game::isKeyPressed(input::KEY key) const { return getInput().isKeyPressed(key); }
 
 	bool Game::isKeyJustPressed(input::KEY key) const { return getInput().isKeyJustPressed(key); }
@@ -247,5 +252,9 @@ namespace mk {
 		if (process_mode == ProcessMode::NORMAL) return input_map_normal;
 		return input_map_physics;
 	}
+
+	math::Vector2f Game::getMousePos() const { return getInput().getMousePosition(); }
+
+	math::Vector2f Game::getMouseDelta() const { return getInput().getMouseDelta(); }
 
 }  // namespace mk

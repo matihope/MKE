@@ -36,6 +36,7 @@ public:
 
 	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
 		const override {
+		// context.transform *= getTransform(); // We extend RectShape for some reason...
 		context.texture = texture;
 		mk::RectShape::onDraw(target, context, game);
 	}
@@ -58,7 +59,7 @@ public:
 
 	void onUpdate(mk::Game& game, float) override {
 		if (button->isPressed()) {
-			auto [w, h] = game.getWindowSize().bind();
+			auto [w, h] = game.getWindowSize().vec_data;
 			player->setPosition({ mk::Random::getReal<float>(0, w),
 			                      mk::Random::getReal<float>(0, h) });
 		}

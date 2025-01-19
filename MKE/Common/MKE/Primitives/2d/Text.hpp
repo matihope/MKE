@@ -34,9 +34,9 @@ namespace mk {
 		void render();
 		bool isEmpty() const;
 
-		mk::Font*                font{};
-		mk::Color                color = Colors::WHITE;
-		const mk::Font::CharMap* chars = nullptr;
+		Font*                font{};
+		Color                color = Colors::WHITE;
+		const Font::CharMap* chars = nullptr;
 
 		std::string text;
 		usize       char_size    = 32;
