@@ -9,20 +9,25 @@
 
 void Menu::onReady(mk::Game& game) {
 	game.setClearColor(mk::Color(34, 149, 32));
-	title_fg = addChild<mk::gui::Label>(game, game.getDefaultFont(), "Matcraft");
-	title_fg->setAlignment(mk::gui::HAlignment::MIDDLE, mk::gui::VAlignment::TOP);
-	title_fg->setOrigin({ 0, -40.f });
-	title_fg->setTextSize(128.f);
 	title_bg = addChild<mk::gui::Label>(game, game.getDefaultFont(), "Matcraft");
 	title_bg->setAlignment(mk::gui::HAlignment::MIDDLE, mk::gui::VAlignment::TOP);
-	title_bg->setOrigin({ 5.f, -45.f });
+	title_bg->setOrigin({ 0, -40.f });
 	title_bg->setTextSize(128.f);
-	title_fg->setColor(mk::Colors::BLACK);
+	title_bg->setColor(mk::Color(21, 21, 21));
+	title_fg = addChild<mk::gui::Label>(game, game.getDefaultFont(), "Matcraft");
+	title_fg->setAlignment(mk::gui::HAlignment::MIDDLE, mk::gui::VAlignment::TOP);
+	title_fg->setOrigin({ 5.f, -45.f });
+	title_fg->setTextSize(128.f);
 
 	play = addChild<mk::gui::Button>(game, game.getDefaultFont(), "Play");
 	play->setAlignment(mk::gui::HAlignment::MIDDLE, mk::gui::VAlignment::TOP);
 	play->setMinSpaceBetween({ BUTTON_PADDING, BUTTON_PADDING });
 	play->setTextSize(48.f);
+
+	gamemode_btn = addChild<mk::gui::Button>(game, game.getDefaultFont(), "Gamemode: Survival");
+	gamemode_btn->setAlignment(mk::gui::HAlignment::MIDDLE, mk::gui::VAlignment::TOP);
+	gamemode_btn->setMinSpaceBetween({ BUTTON_PADDING, BUTTON_PADDING });
+	gamemode_btn->setTextSize(48.f);
 
 	world_size_lbl = addChild<mk::gui::Label>(game, game.getDefaultFont());
 	world_size_lbl->setTextSize(48.f);
@@ -34,7 +39,7 @@ void Menu::onReady(mk::Game& game) {
 	world_size_down->setAlignment(mk::gui::HAlignment::RIGHT, mk::gui::VAlignment::CENTER);
 	world_size_down->setMinSpaceBetween({ BUTTON_PADDING, BUTTON_PADDING });
 
-	setWorldSizeLabel(game);
+	setLabels(game);
 }
 
 void Menu::onReReady(mk::Game& game) { game.setClearColor(mk::Color(34, 149, 32)); }
@@ -44,26 +49,35 @@ void Menu::onEvent(mk::Game& game, const mk::Event& event) {
 }
 
 void Menu::onUpdate(mk::Game& game, float dt) {
-	if (play->isPressed()) game.addScene<World>(world_size);
+	if (play->isPressed()) game.addScene<World>(gamemode, world_size);
 
 	if (world_size_up->isPressed() && world_size < 20) world_size++;
 	if (world_size_down->isPressed() && world_size > 0) world_size--;
+	if (gamemode_btn->isPressed())
+		gamemode = static_cast<PlayerMode>(static_cast<int>(gamemode) ^ 1);
 
-	if (world_size_down->isPressed() || world_size_up->isPressed()) setWorldSizeLabel(game);
+	if (world_size_down->isPressed() || world_size_up->isPressed() || gamemode_btn->isPressed())
+		setLabels(game);
 }
 
-void Menu::setWorldSizeLabel(const mk::Game& game) const {
+void Menu::setLabels(const mk::Game& game) const {
 	world_size_lbl->setString("World size: " + std::to_string(world_size));
+	gamemode_btn->setText(
+		std::string("Gamemode: ") + (gamemode == PlayerMode::SURVIVAL ? "Survival" : "Creative")
+	);
 	reLayout(game);
 }
 
 void Menu::reLayout(const mk::Game& game) const {
 	const auto [win_w, win_h] = game.getWindowSize().vec_data;
 	const auto [mid_w, mid_h] = (game.getWindowSize() / 2.f).vec_data;
-	title_fg->setPosition(mid_w, 0.f);
 	title_bg->setPosition(mid_w, 0.f);
+	title_fg->setPosition(mid_w, 0.f);
+
 	play->setPosition(mid_w, static_cast<float>(mid_h));
-	play->setMinSize({ win_w / 4.f, 0.f });
+	gamemode_btn->setPosition(mid_w, play->getBounds().bottom() + BUTTON_PADDING);
+	gamemode_btn->setMinSize({ win_w / 3.5f, 0.f });
+	play->setMinSize({ gamemode_btn->getBounds().width, 0.f });
 
 	world_size_lbl->setPosition(win_w / 2.f, win_h - win_h / 4.f);
 	const auto lbl_bounds = world_size_lbl->getBounds();

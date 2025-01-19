@@ -4,7 +4,7 @@
 #include "MKE/Nodes/GUI/TextureRect.hpp"
 
 class Player;
-class PlayerSlotBar;
+class Inventory;
 
 enum class CursorMode { FREE_MOUSE, PLAYING };
 
@@ -22,10 +22,13 @@ public:
 
 	usize getPlayerSlot() const;
 
+	[[nodiscard]]
+	Inventory& getInventory() const;
+
 private:
 	Player&    player;
 	CursorMode cursor_mode;
 
-	mk::gui::TextureRect* crosshair       = nullptr;
-	PlayerSlotBar*        player_slot_bar = nullptr;
+	mk::gui::TextureRect* crosshair = nullptr;
+	Inventory*            inv       = nullptr;
 };

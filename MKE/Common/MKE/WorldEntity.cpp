@@ -142,5 +142,9 @@ namespace mk {
 		drawEntity(target, context, game, DrawMode::ModeUI, false);
 	}
 
-	void WorldEntity::setVisible(bool visible) { m_show = visible; }
+	void WorldEntity::setVisible(const bool visible) { m_show = visible; }
+
+	void WorldEntity::show() { setVisible(true); }
+
+	void WorldEntity::hide() { setVisible(false); }
 }  // namespace mk

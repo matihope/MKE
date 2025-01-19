@@ -4,7 +4,7 @@ void World::onReady(mk::Game& game) {
 	std::cerr << "Creating a world of " << CHUNK_COUNT << " chunks, "
 			  << (CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * CHUNK_COUNT << " voxels..." << std::endl;
 	chunks.resize(CHUNK_COUNT);
-	player = addChild<Player, 10>(game, *this);
+	player = addChild<Player, 10>(game, *this, requested_player_mode);
 	chunk_shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 
 	constexpr auto bg_color = mk::Color(182, 242, 243);

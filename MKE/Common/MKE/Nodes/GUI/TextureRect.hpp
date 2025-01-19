@@ -6,9 +6,11 @@ namespace mk::gui {
 
 	class TextureRect final: public WorldEntityUI {
 	public:
-		explicit TextureRect(const Texture* texture);
+		explicit TextureRect(const Texture* texture = nullptr);
 
-		void onDraw(RenderTarget& target, DrawContext context, const Game& game) const override;
+		void onDraw(RenderTarget& target, DrawContext context, const Game& game) const override;void  setTexture(const Texture* texture);
+
+		math::RectF getBounds() const;
 
 	private:
 		RectPrimitive  rect;

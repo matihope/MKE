@@ -86,6 +86,8 @@ void mk::Transformable::setScale(float xscale, float yscale, float zscale) {
 	setScale({ xscale, yscale, zscale });
 }
 
+mk::math::Vector3f mk::Transformable::getScale() const { return scale; }
+
 void mk::Transformable::setRotation(float d_pitch, float d_yaw, float d_roll) {
 	setRotation({ d_pitch, d_yaw, d_roll });
 }

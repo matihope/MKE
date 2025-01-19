@@ -16,7 +16,7 @@ public:
 		  int_position(position),
 		  camera(camera) {
 		setPosition(position.type<float>() * CHUNK_SIZE);
-		voxels.fill(VoxelType::AIR);
+		voxels.fill(GameItem::AIR);
 	}
 
 	void onReady(mk::Game& game) override;
@@ -25,8 +25,8 @@ public:
 		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
 	) const override;
 
-	void      setBlock(usize x, usize y, usize z, VoxelType type, bool rebuild = true);
-	VoxelType getBlockType(usize x, usize y, usize z) const;
+	void      setBlock(usize x, usize y, usize z, GameItem type, bool rebuild = true);
+	GameItem getBlockType(usize x, usize y, usize z) const;
 
 	mk::math::Vector3i getIntPosition() const;
 
@@ -35,15 +35,15 @@ public:
 private:
 	mk::math::Vector3i int_position;
 	mk::Camera3D*      camera;
-	void               clearFacesOf(VoxelType type);
-	VoxelTextureFaces& getFacesOf(VoxelType type);
+	void               clearFacesOf(GameItem type);
+	VoxelTextureFaces& getFacesOf(GameItem type);
 
 	ChunkDrawMode chunk_draw_mode = ChunkDrawMode::ONLY_OPAQUE;
 
 	void buildMeshes();
 
-	std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> voxels{};
-	std::map<VoxelType, VoxelTextureFaces>                      faces{};
+	std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> voxels{};
+	std::map<GameItem, VoxelTextureFaces>                      faces{};
 };
 
 /*

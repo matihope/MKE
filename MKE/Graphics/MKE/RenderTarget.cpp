@@ -35,7 +35,6 @@ const mk::View2D& mk::RenderTarget::getDefaultView2D() const {
 }
 
 const mk::View3D& mk::RenderTarget::getDefaultView3D() const {
-	std::cerr << getSize() << '\n';
 	default_view_3d.setAspect(getSize().x / getSize().y);
 	return default_view_3d;
 }

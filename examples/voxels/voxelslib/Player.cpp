@@ -1,15 +1,17 @@
 #include "Player.hpp"
 
+#include "Inventory.hpp"
 #include "World.hpp"
 #include "chunk_utils.hpp"
 #include "ray_cast_voxel.hpp"
 
 constexpr float SAFE_FRAC_PI_2 = M_PI_2 - 0.0001;
 
-Player::Player(World& world): world(world) {}
+Player::Player(World& world, const PlayerMode mode): player_mode(mode), world(world) {}
 
 void Player::onReady(mk::Game& game) {
 	setPosition({ 0.f, CHUNK_SIZE + 1.f, 0.f });
+
 
 	// Camera
 	camera = addChild<mk::Camera3D>(game);
@@ -20,6 +22,9 @@ void Player::onReady(mk::Game& game) {
 	camera->setFov(75.f);
 
 	player_ui = addChild<PlayerUI, 10'000>(game, *this);
+	if (player_mode == PlayerMode::CREATIVE)
+		for (usize id = 1; id < VOXEL_TYPES; ++id)
+			player_ui->getInventory().addItems(static_cast<GameItem>(id), 64);
 }
 
 void Player::onUpdate(mk::Game& game, const float dt) {
@@ -47,23 +52,32 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 		world.chunk_shader.setVector3f("player_position", eye_position);
 		for (auto voxel: voxels) {
 			if (auto [chunk, chv] = world.getChunkAndPos(voxel); chunk) {
-				if (chunk->getBlockType(chv.x, chv.y, chv.z) != VoxelType::AIR) {
-					// Here mark a block
+				if (chunk->getBlockType(chv.x, chv.y, chv.z) != GameItem::AIR) {
+					// Mark a block
 					world.chunk_shader.setBool("highlight.on", true);
 					world.chunk_shader.setVector3f("highlight.position", voxel.type<float>());
 					if (game.isMouseJustPressed(mk::input::MOUSE_LEFT)) {
-						chunk->setBlock(chv.x, chv.y, chv.z, VoxelType::AIR, true);
+						const auto block_type = chunk->getBlockType(chv.x, chv.y, chv.z);
+						if (!(player_mode == PlayerMode::SURVIVAL && block_type == GameItem::BEDROCK
+						    )) {
+							if (player_mode == PlayerMode::SURVIVAL)
+								player_ui->getInventory().addItems(
+									chunk->getBlockType(chv.x, chv.y, chv.z), 1
+								);
+							chunk->setBlock(chv.x, chv.y, chv.z, GameItem::AIR, true);
+						}
 					} else if (game.isMouseJustPressed(mk::input::MOUSE_RIGHT)) {
-						if (prev) {
+						if (prev && playerIsNotInVoxel(*prev)) {
 							if (auto [chunk_prev, chv_prev] = world.getChunkAndPos(*prev);
 							    chunk_prev) {
-								chunk_prev->setBlock(
-									chv_prev.x,
-									chv_prev.y,
-									chv_prev.z,
-									static_cast<VoxelType>(player_ui->getPlayerSlot() + 1),
-									true
-								);
+								const auto type = player_mode == PlayerMode::CREATIVE
+								                    ? player_ui->getInventory().getHeldItem()
+								                    : player_ui->getInventory().useHeldItem();
+								if (type != GameItem::AIR) {
+									chunk_prev->setBlock(
+										chv_prev.x, chv_prev.y, chv_prev.z, type, true
+									);
+								}
 							}
 						}
 					}
@@ -167,10 +181,10 @@ void Player::resolveUpdateCreative(const mk::Game& game, const float dt) {
 	player_input   = player_input.normalizeOrZero() * PLAYER_SPEED_FLYING;
 	if (game.isKeyPressed(KEY::LEFT_CONTROL)) player_input *= PLAYER_BOOST_FLYING;
 
-	auto forward = camera->getDirection();
-	forward.y    = 0;
-	forward      = forward.normalizeOrZero();
-	auto right   = -cross(mk::math::Vector3fUP, forward).normalizeOrZero();
+	auto forward     = camera->getDirection();
+	forward.y        = 0;
+	forward          = forward.normalizeOrZero();
+	const auto right = -cross(mk::math::Vector3fUP, forward).normalizeOrZero();
 
 	const auto move_dir = forward * player_input.z + right * player_input.x;
 	move_vec            = move_vec.lerp(move_dir, dt * PLAYER_LERP_SPEED_FLYING, 1e-4f);
@@ -184,13 +198,7 @@ mk::math::Vector3f Player::moveAndSlide(const mk::math::Vector3f speed, const fl
 	const auto original_speed = dspeed;
 	dspeed *= ddt;
 	if (!mk::math::isZero(dspeed.lengthSquared())) {
-		const auto pos = getGlobalPosition().type<double>();
-
-		const auto upper_sphere
-			= pos + mk::math::Vector3d(0, PLAYER_HEIGHT - PLAYER_WIDTH / 2.f, 0);
-		const auto lower_sphere = pos + mk::math::Vector3d(0, PLAYER_WIDTH / 2.f, 0);
-
-		for (auto sph: { upper_sphere, lower_sphere }) {
+		for (auto sph: getUpperLowerSphere()) {
 			for (i32 dx = -1; dx < 2; dx++) {
 				for (i32 dy = -1; dy < 2; dy++) {
 					for (i32 dz = -1; dz < 2; dz++) {
@@ -210,7 +218,7 @@ mk::math::Vector3f Player::moveAndSlide(const mk::math::Vector3f speed, const fl
 							auto tested_voxel = sph_voxel + mk::math::Vector3i(dx, dy, dz);
 							auto [chunk, vox] = world.getChunkAndPos(tested_voxel);
 							if (chunk
-							    && chunk->getBlockType(vox.x, vox.y, vox.z) != VoxelType::AIR) {
+							    && chunk->getBlockType(vox.x, vox.y, vox.z) != GameItem::AIR) {
 								auto overlap = getVolumeOverlap(
 									tested_voxel.type<double>(),
 									{ 1. },
@@ -240,4 +248,24 @@ mk::math::Vector3f Player::moveAndSlide(const mk::math::Vector3f speed, const fl
 	return { dspeed.x == original_speed.x * ddt ? speed.x : 0.f,
 		     dspeed.y == original_speed.y * ddt ? speed.y : 0.f,
 		     dspeed.z == original_speed.z * ddt ? speed.z : 0.f };
+}
+
+std::array<mk::math::Vector3d, 2> Player::getUpperLowerSphere() const {
+	const auto pos          = getGlobalPosition().type<double>();
+	const auto upper_sphere = pos + mk::math::Vector3d(0, PLAYER_HEIGHT - PLAYER_WIDTH / 2., 0);
+	const auto lower_sphere = pos + mk::math::Vector3d(0, PLAYER_WIDTH / 2., 0);
+	return { upper_sphere, lower_sphere };
+}
+
+bool Player::playerIsNotInVoxel(const mk::math::Vector3i voxel) const {
+	for (const auto sph: getUpperLowerSphere()) {
+		const auto overlap = getVolumeOverlap(
+			voxel.type<double>(),
+			{ 1.0 },
+			sph - mk::math::Vector3d{ PLAYER_WIDTH / 2. },
+			{ PLAYER_WIDTH }
+		);
+		if (overlap.x && overlap.y && overlap.z) return false;
+	}
+	return true;
 }

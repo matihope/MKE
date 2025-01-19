@@ -4,49 +4,8 @@
 
 #include "PlayerUI.hpp"
 #include "Player.hpp"
+#include "Inventory.hpp"
 
-class PlayerSlotBar final: public mk::WorldEntityUI {
-public:
-	void onReady(mk::Game& game) override {
-		// Load slot bar
-		auto slot_bar_texture = game.resources().getTexture("slot_bar.png");
-		game.resources().setTextureSmooth("slot_bar.png", false);
-		slot_bar = addChild<mk::gui::TextureRect>(game, slot_bar_texture);
-		auto [slot_bar_width, slot_bar_height] = slot_bar_texture->getSize().type<float>().vec_data;
-		slot_bar->setOrigin(slot_bar_width / 2.f, slot_bar_height + 5.f);
-		const auto origin = slot_bar->getOrigin();
-
-		auto selected_slot_texture = game.resources().getTexture("selected_slot.png");
-		game.resources().setTextureSmooth("selected_slot.png", false);
-		selected_slot = addChild<mk::gui::TextureRect, 1>(game, selected_slot_texture);
-		// selected_slot->setOrigin(origin + mk::math::Vector3f{1.f, 1.f, 0.f});
-		selected_slot->setOrigin(origin);
-		repositionSelection();
-	}
-
-	void changeSlot(const i32 shift) {
-		current_slot += shift;
-		current_slot %= slots;
-		if (current_slot < 0) current_slot += slots;
-		repositionSelection();
-	}
-
-	i32 getCurrentSlot() const { return current_slot; }
-
-private:
-	void repositionSelection() const {
-		selected_slot->setPosition(
-			(mk::math::Vector2i(1, 0) * current_slot * slot_size).type<float>()
-		);
-	}
-
-	static constexpr i32 slot_size    = 20;
-	static constexpr i32 slots        = 9;
-	i32                  current_slot = 0;
-
-	mk::gui::TextureRect* slot_bar      = nullptr;
-	mk::gui::TextureRect* selected_slot = nullptr;
-};
 
 PlayerUI::PlayerUI(Player& player): player(player), cursor_mode(CursorMode::FREE_MOUSE) {}
 
@@ -66,26 +25,35 @@ void PlayerUI::onReady(mk::Game& game) {
 	crosshair->setPosition(win_w / 2.f, win_h / 2.f);
 
 	// Load player slot bar
-	player_slot_bar = addChild<PlayerSlotBar>(game);
-	player_slot_bar->setPosition(win_w / 2.f, win_h);
-	player_slot_bar->setScale({ 3.f });
+	inv = addChild<Inventory>(game);
+	inv->setPosition(win_w / 2.f, win_h);
+	inv->setScale({ 3.f });
 }
 
 void PlayerUI::onEvent(mk::Game& game, const mk::Event& event) {
 	if (auto ev = event.get<mk::Event::WindowResized>(); ev) {
 		auto [ww, wh] = ev->new_size.type<float>().vec_data;
 		crosshair->setPosition(ww / 2.0f, wh / 2.f);
-		player_slot_bar->setPosition(ww / 2.f, wh);
+		inv->setPosition(ww / 2.f, wh);
 	}
 	if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 		if (ev->key == mk::input::KEY::ESCAPE) setCursorMode(CursorMode::FREE_MOUSE, game);
+		if (ev->key == mk::input::KEY::NUM_1) inv->changeSlot(0 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_2) inv->changeSlot(1 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_3) inv->changeSlot(2 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_4) inv->changeSlot(3 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_5) inv->changeSlot(4 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_6) inv->changeSlot(5 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_7) inv->changeSlot(6 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_8) inv->changeSlot(7 - inv->getCurrentSlot());
+		if (ev->key == mk::input::KEY::NUM_9) inv->changeSlot(8 - inv->getCurrentSlot());
 	}
 	if (const auto ev = event.get<mk::Event::MouseButtonPressed>(); ev) {
 		if (ev->button == mk::input::MOUSE_LEFT && cursor_mode == CursorMode::FREE_MOUSE)
 			setCursorMode(CursorMode::PLAYING, game);
 	}
 	if (const auto ev = event.get<mk::Event::MouseScrolled>(); ev)
-		player_slot_bar->changeSlot(mk::math::sign(ev->delta.y));
+		inv->changeSlot(mk::math::sign(ev->delta.y));
 }
 
 void PlayerUI::setCursorMode(const CursorMode mode, mk::Game& game) {
@@ -104,4 +72,8 @@ void PlayerUI::setCursorMode(const CursorMode mode, mk::Game& game) {
 	this->cursor_mode = mode;
 }
 
-usize PlayerUI::getPlayerSlot() const { return player_slot_bar->getCurrentSlot(); }
+usize PlayerUI::getPlayerSlot() const { return inv->getCurrentSlot(); }
+
+Inventory& PlayerUI::getInventory() const {
+	return *inv;
+}

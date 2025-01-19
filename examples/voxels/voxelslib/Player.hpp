@@ -1,9 +1,9 @@
 #pragma once
+
 #include "PlayerUI.hpp"
 #include "MKE/Camera.hpp"
 #include "MKE/Game.hpp"
 #include "MKE/WorldEntity.hpp"
-#include "MKE/Primitives/3d/CubePrimitive.hpp"
 
 class World;
 
@@ -11,7 +11,7 @@ enum class PlayerMode { SURVIVAL, CREATIVE };
 
 class Player final: public mk::WorldEntity3D {
 public:
-	explicit Player(World& world);
+	explicit Player(World& world, PlayerMode mode);
 	void onReady(mk::Game& game) override;
 
 	void onUpdate(mk::Game& game, float dt) override;
@@ -41,10 +41,16 @@ private:
 
 	mk::math::Vector3f moveAndSlide(mk::math::Vector3f dspeed, float ddt);
 
+	[[nodiscard]]
+	std::array<mk::math::Vector3d, 2> getUpperLowerSphere() const;
+
+	[[nodiscard]]
+	bool playerIsNotInVoxel(mk::math::Vector3i voxel) const;
+
 	mk::math::Vector3f move_vec;
 	mk::Camera3D*      camera = nullptr;
 
 	PlayerUI*  player_ui;
-	PlayerMode player_mode{ PlayerMode::SURVIVAL };
+	PlayerMode player_mode;
 	World&     world;
 };

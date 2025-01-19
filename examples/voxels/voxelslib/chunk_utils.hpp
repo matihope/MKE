@@ -4,15 +4,16 @@
 
 #include <utility>
 
-enum class VoxelType : u8 { AIR, GRASS, DIRT, STONE, LOG, LEAF, _NUM_TYPES };
-constexpr u8   VOXEL_TYPES                 = static_cast<u8>(VoxelType::_NUM_TYPES);
+enum class GameItem : u8 { AIR, GRASS, DIRT, STONE, LOG, LEAF, BEDROCK, _NUM_BLOCKS };
+constexpr u8   VOXEL_TYPES                 = static_cast<u8>(GameItem::_NUM_BLOCKS);
 constexpr bool IS_TRANSLUCENT[VOXEL_TYPES] = {
 	true,   // AIR
 	false,  // GRASS
 	false,  // DIRT
 	false,  // STONE
 	false,  // LOG
-	true    // LEAF
+	true,   // LEAF
+	false   // BEDROCK
 };
 
 
@@ -104,5 +105,5 @@ constexpr mk::math::Vector3i getBottomLeftFor(const FaceDir dir) {
 }
 
 void               initTextures(mk::Game& game);
-const mk::Texture* getVoxelTexture(VoxelType type, FaceDir dir);
-const mk::Texture* getVoxelTexture(VoxelType type, usize dir_id);
+const mk::Texture* getVoxelTexture(GameItem type, FaceDir dir);
+const mk::Texture* getVoxelTexture(GameItem type, usize dir_id);

@@ -41,6 +41,8 @@ namespace mk {
 		void setScale(math::Vector3f scale);
 		void setScale(float xscale, float yscale, float zscale);
 
+		math::Vector3f getScale() const;
+
 		math::Matrix4f getTransform() const;
 		math::Matrix4f getRotationTransform() const;
 

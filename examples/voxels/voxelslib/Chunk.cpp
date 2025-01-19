@@ -3,7 +3,7 @@
 #include "MKE/Shaders/SimpleShader.hpp"
 
 namespace {
-	bool anyOf(auto voxels, VoxelType type) {
+	bool anyOf(auto voxels, GameItem type) {
 		for (auto& val: voxels)
 			if (val == type) return true;
 		return false;
@@ -34,11 +34,13 @@ void Chunk::onReady(mk::Game& game) {
 			for (usize y = 0; y < CHUNK_SIZE; ++y) {
 				for (usize z = 0; z < CHUNK_SIZE; ++z)
 					if (y == CHUNK_SIZE - 1)
-						setBlock(x, y, z, VoxelType::GRASS, false);
+						setBlock(x, y, z, GameItem::GRASS, false);
 					else if (y >= CHUNK_SIZE - 4)
-						setBlock(x, y, z, VoxelType::DIRT, false);
+						setBlock(x, y, z, GameItem::DIRT, false);
+					else if (y > 0)
+						setBlock(x, y, z, GameItem::STONE, false);
 					else
-						setBlock(x, y, z, VoxelType::STONE, false);
+						setBlock(x, y, z, GameItem::BEDROCK, false);
 			}
 		}
 	}
@@ -57,7 +59,7 @@ void Chunk::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 }
 
 void Chunk::setBlock(
-	const usize x, const usize y, const usize z, VoxelType type, const bool rebuild
+	const usize x, const usize y, const usize z, GameItem type, const bool rebuild
 ) {
 	MK_ASSERT(x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE);
 	const auto idx  = getIdx(x, y, z);
@@ -69,24 +71,24 @@ void Chunk::setBlock(
 	if (rebuild) buildMeshes();
 }
 
-VoxelType Chunk::getBlockType(usize x, usize y, usize z) const { return voxels[getIdx(x, y, z)]; }
+GameItem Chunk::getBlockType(usize x, usize y, usize z) const { return voxels[getIdx(x, y, z)]; }
 
 mk::math::Vector3i Chunk::getIntPosition() const { return int_position; }
 
-void Chunk::clearFacesOf(const VoxelType type) {
+void Chunk::clearFacesOf(const GameItem type) {
 	if (const auto it = faces.find(type); it != faces.end()) faces.erase(it);
 }
 
-VoxelTextureFaces& Chunk::getFacesOf(const VoxelType type) {
+VoxelTextureFaces& Chunk::getFacesOf(const GameItem type) {
 	auto [obj, _] = faces.try_emplace(type, type, camera);
 	return obj->second;
 }
 
 constexpr bool isFaceVisible(
-	VoxelType                                                          type,
-	const std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
-	const mk::math::Vector3i                                           pos,
-	const FaceDir                                                      face
+	GameItem                                                          type,
+	const std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
+	const mk::math::Vector3i                                          pos,
+	const FaceDir                                                     face
 ) {
 	if (voxels[getIdx(pos)] != type) return false;
 	if (const auto new_pos = pos + getDirVec(face); isValid(new_pos))
@@ -95,10 +97,10 @@ constexpr bool isFaceVisible(
 }
 
 void buildFaceArray(
-	VoxelType                                                          type,
-	const std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
-	const FaceDir                                                      dir,
-	VoxelTextureFaces&                                                 face_array
+	GameItem                                                          type,
+	const std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
+	const FaceDir                                                     dir,
+	VoxelTextureFaces&                                                face_array
 ) {
 	std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> faces_to_draw{};
 	std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> checked{};
@@ -171,7 +173,7 @@ void buildFaceArray(
 
 void Chunk::buildMeshes() {
 	for (usize type_index = 1; type_index < VOXEL_TYPES; ++type_index) {
-		const auto voxel_type = static_cast<VoxelType>(type_index);
+		const auto voxel_type = static_cast<GameItem>(type_index);
 		if (anyOf(voxels, voxel_type)) {
 			auto& voxel_faces = getFacesOf(voxel_type);
 			// Greedy meshing here.
