@@ -50,6 +50,8 @@ private:
 
 PlayerUI::PlayerUI(Player& player): player(player), cursor_mode(CursorMode::FREE_MOUSE) {}
 
+void PlayerUI::onFree(mk::Game& game) { setCursorMode(CursorMode::FREE_MOUSE, game); }
+
 void PlayerUI::onReady(mk::Game& game) {
 	setCursorMode(CursorMode::PLAYING, game);
 

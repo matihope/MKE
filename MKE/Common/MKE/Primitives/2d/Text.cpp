@@ -101,8 +101,9 @@ void mk::Text2D::render() {
 		const auto& ch = chars->at(c);
 
 		math::RectF char_bounds{};
-		char_bounds.left   = x + ch.bearing.x;
-		char_bounds.top    = -float(ch.size.y - ch.bearing.y);
+		char_bounds.left = x + ch.bearing.x;
+		char_bounds.top
+			= -static_cast<float>(static_cast<i32>(ch.size.y) - static_cast<i32>(ch.bearing.y));
 		char_bounds.width  = ch.size.x;
 		char_bounds.height = ch.size.y;
 
@@ -207,8 +208,8 @@ mk::math::RectF mk::Text2D::getLocalBounds() const {
 
 mk::math::RectF mk::Text2D::getGlobalBounds() const {
 	auto transform    = getTransform();
-	auto top_left     = getPosition2D();
-	auto bottom_right = top_left + getLocalBounds().getSize();
+	auto top_left     = math::Vector2f{ 0.f, 0.f };
+	auto bottom_right = getLocalBounds().getSize();
 
 	auto new_top_left     = transform ^ top_left;
 	auto new_bottom_right = transform ^ bottom_right;

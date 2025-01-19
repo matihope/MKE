@@ -3,6 +3,7 @@
 void World::onReady(mk::Game& game) {
 	std::cerr << "Creating a world of " << CHUNK_COUNT << " chunks, "
 			  << (CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * CHUNK_COUNT << " voxels..." << std::endl;
+	chunks.resize(CHUNK_COUNT);
 	player = addChild<Player, 10>(game, *this);
 	chunk_shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 
@@ -38,10 +39,19 @@ void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 	// Here we should not draw chunks that player cannot see.
 	context.shader       = &chunk_shader;
 	constexpr float DIST = CHUNK_SIZE * (FOG_DISTANCE + 3);
-	for (auto& chunk: chunk_list)
+
+	for (auto& chunk: chunk_list) {
+		const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_OPAQUE);
 		if (auto pos = chunk.getPosition();
 		    (player->getCamera()->getPosition() - pos).lengthSquared() <= DIST * DIST)
 			chunk.drawEntity(target, context, game, getDrawMode(), true);
+	}
+	for (auto& chunk: chunk_list) {
+		const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_TRANSLUCENT);
+		if (auto pos = chunk.getPosition();
+		    (player->getCamera()->getPosition() - pos).lengthSquared() <= DIST * DIST)
+			chunk.drawEntity(target, context, game, getDrawMode(), true);
+	}
 }
 
 std::pair<Chunk*, mk::math::Vector3i>
@@ -59,9 +69,9 @@ std::pair<Chunk*, mk::math::Vector3i>
 	return { chunk, { x, y, z } };
 }
 
-usize World::getChunkIndex(const mk::math::Vector3i coords) {
-	constexpr i32 WIDTH  = WORLD_SIZE * 2 + 1;
-	const auto    ch_pos = coords + WORLD_SIZE;
+usize World::getChunkIndex(const mk::math::Vector3i coords) const {
+	const i32  WIDTH  = WORLD_SIZE * 2 + 1;
+	const auto ch_pos = coords + WORLD_SIZE;
 	return static_cast<usize>(
 		(ch_pos.y - WORLD_SIZE) * WIDTH * WIDTH + ch_pos.x * WIDTH + ch_pos.z
 	);
@@ -70,7 +80,6 @@ usize World::getChunkIndex(const mk::math::Vector3i coords) {
 void World::addChunk(mk::Game& game, Chunk&& chunk) {
 	const auto idx = getChunkIndex(chunk.getIntPosition());
 	chunk_list.push_back(std::move(chunk));
-	MK_ASSERT(idx < chunks.size(), "Invalid chunk index");
 	chunks[idx] = &chunk_list.back();
 	chunk_list.back().onReady(game);
 }

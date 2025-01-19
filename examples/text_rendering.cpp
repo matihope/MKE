@@ -20,7 +20,7 @@ int main() {
 		if (window.isKeyPressed(mk::input::KEY::SPACE))
 			text.setString("space");
 		else
-			text.setString("Test");
+			text.setString("Test+");
 
 		window.render(text, window.getCurrentView2D().getTransform());
 		window.display();

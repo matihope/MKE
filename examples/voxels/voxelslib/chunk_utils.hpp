@@ -4,8 +4,17 @@
 
 #include <utility>
 
-enum class VoxelType : u8 { AIR, GRASS, DIRT, STONE };
-constexpr u8 VOXEL_TYPES = 4;
+enum class VoxelType : u8 { AIR, GRASS, DIRT, STONE, LOG, LEAF, _NUM_TYPES };
+constexpr u8   VOXEL_TYPES                 = static_cast<u8>(VoxelType::_NUM_TYPES);
+constexpr bool IS_TRANSLUCENT[VOXEL_TYPES] = {
+	true,   // AIR
+	false,  // GRASS
+	false,  // DIRT
+	false,  // STONE
+	false,  // LOG
+	true    // LEAF
+};
+
 
 enum class FaceDir : u8 { NORTH, EAST, SOUTH, WEST, UP, DOWN };
 constexpr u8 FACE_DIRS = 6;

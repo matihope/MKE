@@ -5,6 +5,11 @@
 #include "MKE/Game.hpp"
 #include "MKE/WorldEntity.hpp"
 
+enum class ChunkDrawMode {
+	ONLY_OPAQUE,
+	ONLY_TRANSLUCENT,
+};
+
 class Chunk final: public mk::WorldEntity3D {
 public:
 	Chunk(mk::Camera3D* camera, mk::math::Vector3i position):
@@ -13,7 +18,6 @@ public:
 		setPosition(position.type<float>() * CHUNK_SIZE);
 		voxels.fill(VoxelType::AIR);
 	}
-
 
 	void onReady(mk::Game& game) override;
 
@@ -26,16 +30,20 @@ public:
 
 	mk::math::Vector3i getIntPosition() const;
 
+	void setChunkDrawMode(const ChunkDrawMode mode) { chunk_draw_mode = mode; }
+
 private:
 	mk::math::Vector3i int_position;
 	mk::Camera3D*      camera;
 	void               clearFacesOf(VoxelType type);
 	VoxelTextureFaces& getFacesOf(VoxelType type);
 
+	ChunkDrawMode chunk_draw_mode = ChunkDrawMode::ONLY_OPAQUE;
+
 	void buildMeshes();
 
-	std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>                     voxels{};
-	std::map<VoxelType, VoxelTextureFaces>                                          faces{};
+	std::array<VoxelType, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> voxels{};
+	std::map<VoxelType, VoxelTextureFaces>                      faces{};
 };
 
 /*

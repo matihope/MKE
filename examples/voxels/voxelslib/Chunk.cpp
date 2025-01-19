@@ -47,7 +47,13 @@ void Chunk::onReady(mk::Game& game) {
 
 void Chunk::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game&) const {
 	context.transform *= getTransform();
-	for (const auto& arr: faces | std::views::values) target.render(arr, context);
+	for (const auto& [tp, arr]: faces) {
+		const bool is_translucent = IS_TRANSLUCENT[static_cast<usize>(tp)];
+		if ((chunk_draw_mode == ChunkDrawMode::ONLY_TRANSLUCENT && is_translucent)
+		    || (chunk_draw_mode == ChunkDrawMode::ONLY_OPAQUE && !is_translucent)) {
+			target.render(arr, context);
+		}
+	}
 }
 
 void Chunk::setBlock(
@@ -84,7 +90,7 @@ constexpr bool isFaceVisible(
 ) {
 	if (voxels[getIdx(pos)] != type) return false;
 	if (const auto new_pos = pos + getDirVec(face); isValid(new_pos))
-		return voxels[getIdx(new_pos)] == VoxelType::AIR;
+		return IS_TRANSLUCENT[static_cast<usize>(voxels[getIdx(new_pos)])];
 	return true;
 }
 

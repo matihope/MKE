@@ -54,7 +54,10 @@ namespace mk {
 		//     getRenderWindow().mapPixelToCoords(sf::Mouse::getPosition(getRenderWindow()))
 		// );
 
-		while (!m_safe_scene_delete_queue.empty()) m_safe_scene_delete_queue.pop();
+		while (!m_safe_scene_delete_queue.empty()) {
+			m_safe_scene_delete_queue.front()->free(*this);
+			m_safe_scene_delete_queue.pop();
+		}
 
 		if (!m_scene_stack.empty()) {
 			m_physics_update_counter += m_delta_time;
@@ -91,6 +94,7 @@ namespace mk {
 			m_safe_scene_delete_queue.push(std::move(m_scene_stack.top()));
 			m_scene_stack.pop();
 		}
+		if (!m_scene_stack.empty()) m_scene_stack.top()->onReReady(*this);
 	}
 
 	void Game::replaceTopScene(std::unique_ptr<WorldEntity> newScene) {
@@ -99,14 +103,14 @@ namespace mk {
 	}
 
 	void Game::pollEvents() {
-		mk::Event event{};
+		Event event{};
 		while (m_window.pollEvent(event)) {
 			input_map_normal.handleEvent(event);
 			input_map_physics.handleEvent(event);
 
 			if (!m_scene_stack.empty()) m_scene_stack.top()->event(*this, event);
 
-			if (event.is<mk::Event::WindowClose>())
+			if (event.is<Event::WindowClose>())
 				stop();
 			else if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 				switch (ev->key) {

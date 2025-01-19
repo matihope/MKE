@@ -8,11 +8,13 @@ namespace mk {
 		return newest_id++;
 	}
 
-	void WorldEntity::cleanEntities() {
-		for (auto& layer: m_entity_pool) {
-			for (auto it = layer.second.begin(); it != layer.second.end(); it++) {
-				WorldEntity* entity = it->get();
-				if (entity->isDying()) it = layer.second.erase(it);
+	void WorldEntity::cleanEntities(Game& game) {
+		for (auto& layer: m_entity_pool | std::views::values) {
+			for (auto it = layer.begin(); it != layer.end(); ++it) {
+				if (WorldEntity* entity = it->get(); entity->isDying()) {
+					entity->free(game);
+					it = layer.erase(it);
+				}
 			}
 		}
 	}
@@ -34,7 +36,7 @@ namespace mk {
 
 	void WorldEntity::addParent(WorldEntity* parent) { m_parent = parent; }
 
-	WorldEntity* WorldEntity::getParent() { return m_parent; }
+	WorldEntity* WorldEntity::getParent() const { return m_parent; }
 
 	void WorldEntity::ready(Game& game) {
 		if (!m_called_ready) {
@@ -45,20 +47,26 @@ namespace mk {
 		}
 	}
 
+	void WorldEntity::free(Game& game) {
+		onFree(game);
+		for (const auto& layer: m_entity_pool | std::views::values)
+			for (auto& entity: layer) entity->free(game);
+	}
+
 	void WorldEntity::update(Game& game, float dt) {
-		cleanEntities();
+		cleanEntities(game);
 
 		if (m_is_paused) return;
 		onUpdate(game, dt);
-		for (const auto& layer: m_entity_pool)
-			for (auto& entity: layer.second) entity->update(game, dt);
+		for (const auto& layer: m_entity_pool | std::views::values)
+			for (auto& entity: layer) entity->update(game, dt);
 	}
 
 	void WorldEntity::physicsUpdate(Game& game, const float dt) {
 		if (m_is_paused) return;
 		onPhysicsUpdate(game, dt);
-		for (const auto& layer: m_entity_pool)
-			for (auto& entity: layer.second) entity->physicsUpdate(game, dt);
+		for (const auto& layer: m_entity_pool | std::views::values)
+			for (auto& entity: layer) entity->physicsUpdate(game, dt);
 	}
 
 	math::Vector3f WorldEntity::getGlobalPosition() const {

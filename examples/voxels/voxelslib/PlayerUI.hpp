@@ -12,6 +12,8 @@ class PlayerUI final: public mk::WorldEntityUI {
 public:
 	explicit PlayerUI(Player& player);
 
+	void onFree(mk::Game& game) override;
+
 	void onReady(mk::Game& game) override;
 
 	void onEvent(mk::Game& game, const mk::Event& event) override;

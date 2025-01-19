@@ -20,7 +20,7 @@ namespace mk {
 
 		void event(Game& game, const Event& event) override;
 
-		void setPosition(math::Vector3f position) override;
+		void setPositionBase(math::Vector3f position) override;
 		// no need for getPosition() since WorldEntity3D::getPosition() == view.getPosition()
 
 		void           setDirection(math::Vector3f direction);
@@ -32,17 +32,14 @@ namespace mk {
 		void           setPitchYawRoll(math::Vector3f pitch_yaw_roll);
 		math::Vector3f getPitchYawRoll() const;
 
-		void setFov(float fov);
-		[[nodiscard]]
+		void  setFov(float fov);
 		float getFovH() const;
 		float getFovV() const;
 
-		void setAspect(float aspect);
-		float  getAspect() const {
-			return view.getAspect();
-		}
-		void setNear(float near);
-		void setFar(float far);
+		void  setAspect(float aspect);
+		float getAspect() const;
+		void  setNear(float near);
+		void  setFar(float far);
 
 
 	private:

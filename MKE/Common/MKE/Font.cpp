@@ -68,7 +68,6 @@ const mk::Font::CharMap& mk::Font::getChars(const FontParams& font_params) {
 				);
 				continue;
 			}
-
 			Character& character = char_map->second.at(c);
 
 			glBindTexture(GL_TEXTURE_2D, character.texture.getNativeHandle());

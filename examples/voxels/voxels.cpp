@@ -1,3 +1,4 @@
+#include "Menu.hpp"
 #include "World.hpp"
 
 
@@ -5,20 +6,19 @@
 
 /*
  * TODO:
+ * - Player UI (better inventory)
+ * - Equipment/Survival
  * - Infinite world
- * - menu to adjust FOV, RENDER DISTANCE, ETC.
  * - better terrain generation (like from a 3d function)
  * - Add menu
  * - Add trees
- * - Player UI (better inventory)
- * - Equipment/Survival
- * - Print coordinates
+ * - menu to adjust FOV, RENDER DISTANCE, ETC.
  */
 
 
 int main() {
 	mk::Game game("settings.json");
 	initTextures(game);
-	game.addScene<World>();
+	game.addScene<Menu>();
 	game.run();
 }

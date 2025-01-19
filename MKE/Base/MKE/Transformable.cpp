@@ -3,7 +3,7 @@
 
 void mk::Transformable::setOrigin(math::Vector2f origin) { setOrigin(origin.x, origin.y); }
 
-void mk::Transformable::setOrigin(math::Vector3f origin) { this->origin = origin; }
+void mk::Transformable::setOrigin(math::Vector3f origin) { setOriginBase(origin); }
 
 void mk::Transformable::setOrigin(float x, float y) { setOrigin({ x, y, origin.z }); }
 
@@ -15,7 +15,7 @@ void mk::Transformable::setPosition(math::Vector2f position) {
 	setPosition(position.x, position.y);
 }
 
-void mk::Transformable::setPosition(math::Vector3f position) { this->position = position; }
+void mk::Transformable::setPosition(math::Vector3f position) { setPositionBase(position); }
 
 void mk::Transformable::setPosition(float x, float y) { setPosition(x, y, position.z); }
 
@@ -23,7 +23,7 @@ void mk::Transformable::setPosition(float x, float y, float z) { setPosition({ x
 
 void mk::Transformable::move(math::Vector2f delta) { move(delta.x, delta.y); }
 
-void mk::Transformable::move(math::Vector3f delta) { position += delta; }
+void mk::Transformable::move(math::Vector3f delta) { moveBase(delta); }
 
 void mk::Transformable::move(float delta_x, float delta_y) {
 	move(math::Vector3f(delta_x, delta_y, 0));
@@ -39,7 +39,7 @@ mk::math::Vector2f mk::Transformable::getPosition2D() const { return { position.
 
 mk::math::Vector3f mk::Transformable::getPosition() const { return position; }
 
-void mk::Transformable::setRotation(math::Vector3f rotation) { this->rotation = rotation; }
+void mk::Transformable::setRotation(math::Vector3f rotation) { setRotationBase(rotation); }
 
 void mk::Transformable::rotate(float d_pitch, float d_yaw, float d_roll) {
 	rotate({ d_pitch, d_yaw, d_roll });
@@ -64,7 +64,23 @@ mk::math::Matrix4f mk::Transformable::getRotationTransform() const {
 	return result;
 }
 
-void mk::Transformable::setScale(math::Vector3f scale) { this->scale = scale; }
+void mk::Transformable::setOriginBase(const math::Vector3f origin) { this->origin = origin; }
+
+void mk::Transformable::setPositionBase(const math::Vector3f position) {
+	this->position = position;
+}
+
+void mk::Transformable::moveBase(const math::Vector3f delta) { position += delta; }
+
+void mk::Transformable::rotateBase(math::Vector3f delta) { rotation += delta; }
+
+void mk::Transformable::setRotationBase(const math::Vector3f rotation) {
+	this->rotation = rotation;
+}
+
+void mk::Transformable::setScaleBase(math::Vector3f scale) { this->scale = scale; }
+
+void mk::Transformable::setScale(const math::Vector3f scale) { setScaleBase(scale); }
 
 void mk::Transformable::setScale(float xscale, float yscale, float zscale) {
 	setScale({ xscale, yscale, zscale });
@@ -93,4 +109,4 @@ mk::math::Matrix4f mk::Transformable::getTransform() const {
 	return position_matrix * getRotationTransform() * scale_matrix * origin_matrix;
 }
 
-void mk::Transformable::rotate(float d_pitch) { rotation.x += d_pitch; }
+void mk::Transformable::rotate(const float d_pitch) { rotate(d_pitch, 0.f, 0.f); }

@@ -20,6 +20,12 @@ namespace mk::gui {
 		fixLabelPosition();
 	}
 
+	void Button::setPositionBase(const math::Vector3f position) {
+		WorldEntityUI::setPositionBase(position);
+		fixLabelPosition();
+		updateDefaultCollisionShape();
+	}
+
 	void Button::setFont(Font* newFont) {
 		m_label.setFont(newFont);
 		updateDefaultCollisionShape();

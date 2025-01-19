@@ -9,6 +9,8 @@ mk::ResPath getTexturePath(const VoxelType type, const FaceDir dir) {
 	if (type == VoxelType::GRASS) path = "grass_";
 	if (type == VoxelType::DIRT) path = "dirt_";
 	if (type == VoxelType::STONE) path = "stone_";
+	if (type == VoxelType::LOG) path = "log_";
+	if (type == VoxelType::LEAF) path = "leaf_";
 	switch (dir) {
 	case FaceDir::NORTH:
 	case FaceDir::EAST:

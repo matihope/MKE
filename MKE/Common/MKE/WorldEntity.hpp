@@ -27,7 +27,7 @@ namespace mk {
 
 		bool m_show;
 
-		void cleanEntities();
+		void cleanEntities(Game& game);
 
 		bool m_called_ready = false;
 
@@ -54,7 +54,7 @@ namespace mk {
 
 		void addParent(WorldEntity* parent);
 
-		WorldEntity* getParent();
+		WorldEntity* getParent() const;
 
 		template<class T, i64 drawOrder = 0>
 		requires std::is_base_of_v<WorldEntity, T>
@@ -74,11 +74,19 @@ namespace mk {
 
 		void ready(Game& game) override;
 
+		void free(Game& game) override;
+
+
 		void update(Game& game, float dt) override;
 
 		void physicsUpdate(Game& game, const float dt) override;
 
 		virtual void onReady([[maybe_unused]] Game& game) {}
+
+		virtual void onFree([[maybe_unused]] Game& game) {}
+
+		// Called when REenters the top of the scene stack
+		virtual void onReReady([[maybe_unused]] Game& game) {}
 
 		virtual void onUpdate([[maybe_unused]] Game& game, [[maybe_unused]] float dt) {}
 

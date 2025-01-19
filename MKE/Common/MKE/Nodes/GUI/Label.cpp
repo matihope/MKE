@@ -66,12 +66,12 @@ namespace mk::gui {
 		// m_text.setCharacterScaling(2.0);
 	}
 
-	void Label::setColor(const mk::Color newColor) { m_text.setColor(newColor); }
+	void Label::setColor(const Color newColor) { m_text.setColor(newColor); }
 
 	math::RectF Label::getBounds() const {
 		auto bounds = m_text.getGlobalBounds();
-		bounds.left += getPosition2D().x;
-		bounds.top += getPosition2D().y;
+		bounds.left += getPosition().x;
+		bounds.top  += getPosition().y;
 		return bounds;
 	}
 
