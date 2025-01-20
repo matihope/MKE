@@ -1,7 +1,4 @@
 #include "Menu.hpp"
-#include "World.hpp"
-
-
 #include <MKE/Game.hpp>
 
 /*
@@ -13,10 +10,7 @@
  * - Improve drawing speed
  *
  * - Fix translucency?
- * - Equipment/Survival
  * - Infinite world
- * - Add menu
- * - Add trees
  * - menu to adjust FOV, RENDER DISTANCE, ETC.
  */
 

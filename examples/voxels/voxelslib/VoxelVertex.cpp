@@ -2,11 +2,10 @@
 #include "glad/glad.h"
 
 void VoxelVertex::configureVertexAttribute() {
-	glVertexAttribPointer(
+	glVertexAttribIPointer(
 		0,
 		sizeof(position) / sizeof(i32),
 		GL_INT,
-		GL_FALSE,
 		sizeof(VoxelVertex),
 		(void*)(0)
 	);

@@ -24,19 +24,20 @@ uniform bool FOG_ON;
 void main()
 {
     vec4 color = ourColor;
-    vec3 voxel_center = highlight.position + 0.5;
-    vec3 test_highlight = abs(voxel_center - pixelPos);
+    vec3 highlight_center = highlight.position + 0.5;
+    vec3 dist_to_center = abs(highlight_center - pixelPos);
 
-    if (highlight.on &&
-    test_highlight.x <= 0.5 &&
-    test_highlight.y <= 0.5 &&
-    test_highlight.z <= 0.5
+    if (highlight.on
+    && dist_to_center.x <= 0.5 + BUFF
+    && dist_to_center.y <= 0.5 + BUFF
+    && dist_to_center.z <= 0.5 + BUFF
     ) {
         // Now have fun
-        BUFF *= sqrt(length(voxel_center - player_position));
-        int goodx = int(test_highlight.x >= 0.5 - BUFF);
-        int goody = int(test_highlight.y >= 0.5 - BUFF);
-        int goodz = int(test_highlight.z >= 0.5 - BUFF);
+        BUFF *= sqrt(length(highlight_center - player_position));
+
+        int goodx = int(dist_to_center.x >= 0.5 - BUFF);
+        int goody = int(dist_to_center.y >= 0.5 - BUFF);
+        int goodz = int(dist_to_center.z >= 0.5 - BUFF);
         if (goodx + goody + goodz >= 2)
         color *= vec4(vec3(2.0), 1);
     }
