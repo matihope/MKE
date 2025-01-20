@@ -14,6 +14,7 @@ enum class GameItem : u8 {
 	BEDROCK,
 	DIAMOND_ORE,
 	GOLD_ORE,
+	WATER,
 	_NUM_BLOCKS
 };
 constexpr u8   VOXEL_TYPES                 = static_cast<u8>(GameItem::_NUM_BLOCKS);
@@ -27,6 +28,7 @@ constexpr bool IS_TRANSLUCENT[VOXEL_TYPES] = {
 	false,  // BEDROCK
 	false,  // DIAMOND_ORE
 	false,  // GOLD ORE
+	true,   // WATER
 };
 
 

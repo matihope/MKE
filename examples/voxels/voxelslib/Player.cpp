@@ -16,6 +16,7 @@ void Player::onReady(mk::Game& game) {
 	camera->setDirection({ 0.f, 0.f, 1.f });
 	auto [win_w, win_h] = game.getRenderWindow().getSize().type<float>().vec_data;
 	camera->setAspect(win_w / win_h);
+	recalcFov(game);
 
 	player_ui = addChild<PlayerUI, 10'000>(game, *this);
 	if (game_mode == GameMode::CREATIVE)
@@ -128,9 +129,7 @@ void Player::onEvent(mk::Game& game, const mk::Event& event) {
 		if (ev->key == mk::input::KEY::MINUS) setPlayerHp(game, getPlayerHp() - 1);
 		if (ev->key == mk::input::KEY::EQUAL) setPlayerHp(game, getPlayerHp() + 1);
 	}
-	if (const auto ev = event.get<mk::Event::WindowResized>(); ev) {
-		camera->setFov(75.f * (ev->new_size.x / ev->new_size.y));
-	}
+	if (event.is<mk::Event::WindowResized>()) recalcFov(game);
 }
 
 mk::Camera3D* Player::getCamera() const { return camera; }
@@ -186,6 +185,11 @@ requires std::is_arithmetic_v<K> constexpr mk::math::Vector3<K> getVolumeOverlap
 	}
 	if (result.x && result.y && result.z) return result;
 	return { K(0) };
+}
+
+void Player::recalcFov(const mk::Game& game) {
+	auto [win_w, win_h] = game.getWindowSize().type<float>().vec_data;
+	camera->setFov(90.f * std::sqrt(win_w / win_h));
 }
 
 void Player::resolveUpdateSurvival(mk::Game& game, const float dt) {

@@ -34,14 +34,15 @@ public:
 
 	void setPlayerHp(mk::Game& game, i32 hp);
 
+
 private:
-	const float PLAYER_LERP_SPEED_FLYING = 4.f;
-	const float PLAYER_BOOST_FLYING      = 5.f;
-	const float PLAYER_SPEED_FLYING      = 10.f;
-	const float PLAYER_SPEED_WALKING     = 5.f;
-	const float PLAYER_BOOST_WALKING     = 1.5;
-	const float PLAYER_JUMP_FORCE        = 6.8f;
-	const float PLAYER_GRAVITY           = -0.32f;
+	const float PLAYER_LERP_SPEED_FLYING    = 4.f;
+	const float PLAYER_BOOST_FLYING         = 5.f;
+	const float PLAYER_SPEED_FLYING         = 10.f;
+	const float PLAYER_SPEED_WALKING        = 5.f;
+	const float PLAYER_BOOST_WALKING        = 1.5;
+	const float PLAYER_JUMP_FORCE           = 6.8f;
+	const float PLAYER_GRAVITY              = -0.32f;
 	const float PLAYER_BUILD_RANGE_CREATIVE = 10.f;
 	const float PLAYER_BUILD_RANGE_SURVIVAL = 7.f;
 
@@ -53,6 +54,8 @@ private:
 	const float PLAYER_HEIGHT             = 1.8;
 	const float PLAYER_WIDTH              = 0.5;
 	const float PLAYER_EYE_OFFSET         = 0.15;  // (below player's top)
+
+	void recalcFov(const mk::Game& game);
 
 	void resolveUpdateSurvival(mk::Game& game, float dt);
 	void resolveUpdateCreative(mk::Game& game, float dt);

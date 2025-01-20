@@ -36,7 +36,7 @@ void Chunk::onReady(mk::Game& game) {}
 void Chunk::generateTerrain(mk::Game& game, World& world) {
 	for (i32 x = 0; x < CHUNK_SIZE; ++x) {
 		for (i32 z = 0; z < CHUNK_SIZE; ++z) {
-			i32 top_grass = world.getChunkGenHeight(
+			i32 TOP_BLOCK = world.getChunkGenHeight(
 				x + int_position.x * CHUNK_SIZE, z + int_position.z * CHUNK_SIZE
 			);
 			for (i32 y = 0; y < CHUNK_SIZE; ++y) {
@@ -45,17 +45,21 @@ void Chunk::generateTerrain(mk::Game& game, World& world) {
 
 				if (voxel_world_pos.y == 0)
 					setBlock(x, y, z, GameItem::BEDROCK, false);
-				else if (voxel_world_pos.y == top_grass)
-					setBlock(x, y, z, GameItem::GRASS, false);
-				else if (top_grass >= voxel_world_pos.y && voxel_world_pos.y >= top_grass - 2)
-					setBlock(x, y, z, GameItem::DIRT, false);
-				else if (voxel_world_pos.y < top_grass) {
-					if (mk::Random::getInt(0, 120) == 0)
-						setBlock(x, y, z, GameItem::DIAMOND_ORE, false);
-					else if (mk::Random::getInt(0, 80) == 0)
-						setBlock(x, y, z, GameItem::GOLD_ORE, false);
-					else
-						setBlock(x, y, z, GameItem::STONE, false);
+				else if (TOP_BLOCK < 10) {
+					if (voxel_world_pos.y <= 10) setBlock(x, y, z, GameItem::WATER, false);
+				} else {
+					if (voxel_world_pos.y == TOP_BLOCK)
+						setBlock(x, y, z, GameItem::GRASS, false);
+					else if (TOP_BLOCK >= voxel_world_pos.y && voxel_world_pos.y >= TOP_BLOCK - 2)
+						setBlock(x, y, z, GameItem::DIRT, false);
+					else if (voxel_world_pos.y < TOP_BLOCK) {
+						if (mk::Random::getInt(0, 120) == 0)
+							setBlock(x, y, z, GameItem::DIAMOND_ORE, false);
+						else if (mk::Random::getInt(0, 80) == 0)
+							setBlock(x, y, z, GameItem::GOLD_ORE, false);
+						else
+							setBlock(x, y, z, GameItem::STONE, false);
+					}
 				}
 			}
 		}
@@ -141,14 +145,16 @@ VoxelTextureFaces& Chunk::getFacesOf(const GameItem type) {
 }
 
 constexpr bool isFaceVisible(
-	GameItem                                                          type,
+	GameItem                                                          pos_type,
 	const std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
 	const mk::math::Vector3i                                          pos,
 	const FaceDir                                                     face
 ) {
-	if (voxels[getIdx(pos)] != type) return false;
-	if (const auto new_pos = pos + getDirVec(face); isValid(new_pos))
+	if (voxels[getIdx(pos)] != pos_type) return false;
+	if (const auto new_pos = pos + getDirVec(face); isValid(new_pos)) {
+		if (pos_type == GameItem::WATER && voxels[getIdx(new_pos)] == GameItem::WATER) return false;
 		return IS_TRANSLUCENT[static_cast<usize>(voxels[getIdx(new_pos)])];
+	}
 	return true;
 }
 

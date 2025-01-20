@@ -14,6 +14,7 @@ mk::ResPath getTexturePath(const GameItem type, const FaceDir dir) {
 	if (type == GameItem::BEDROCK) path = "bedrock_";
 	if (type == GameItem::DIAMOND_ORE) path = "diamond_ore_";
 	if (type == GameItem::GOLD_ORE) path = "gold_ore_";
+	if (type == GameItem::WATER) path = "water_";
 	switch (dir) {
 	case FaceDir::NORTH:
 	case FaceDir::EAST:
