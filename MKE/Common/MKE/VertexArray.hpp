@@ -123,6 +123,7 @@ namespace mk {
 		u32                   vertex_buffer{};
 		usize                 vertex_buffer_size{};
 		bool                  vertex_buffer_modified{};
+		// TODO: Change this to vector...
 		std::unique_ptr<Vert> vertices{};
 
 		u32                  index_buffer{};

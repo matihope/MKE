@@ -128,6 +128,9 @@ void Player::onEvent(mk::Game& game, const mk::Event& event) {
 			setGameMode(game_mode == GameMode::SURVIVAL ? GameMode::CREATIVE : GameMode::SURVIVAL);
 		if (ev->key == mk::input::KEY::MINUS) setPlayerHp(game, getPlayerHp() - 1);
 		if (ev->key == mk::input::KEY::EQUAL) setPlayerHp(game, getPlayerHp() + 1);
+		if (ev->key == mk::input::KEY::O) world.setFogDistance(world.getFogDistance() + 1);
+		if (ev->key == mk::input::KEY::L && world.getFogDistance() > 1)
+			world.setFogDistance(world.getFogDistance() - 1);
 	}
 	if (event.is<mk::Event::WindowResized>()) recalcFov(game);
 }

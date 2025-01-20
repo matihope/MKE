@@ -6,8 +6,11 @@
 
 #include "World.hpp"
 #include "MKE/Game.hpp"
+#include "MKE/Random.hpp"
 
 void Menu::onReady(mk::Game& game) {
+	mk::Random::initRandom();
+
 	game.setClearColor(mk::Color(34, 149, 32));
 	title_bg = addChild<mk::gui::Label>(game, game.getDefaultFont(), "Matcraft");
 	title_bg->setAlignment(mk::gui::HAlignment::MIDDLE, mk::gui::VAlignment::TOP);
@@ -57,7 +60,7 @@ void Menu::onEvent(mk::Game& game, const mk::Event& event) {
 void Menu::onUpdate(mk::Game& game, float dt) {
 	if (play->isPressed()) game.addScene<World>(gamemode, world_size);
 
-	if (world_size_up->isPressed() && world_size < 20) world_size++;
+	if (world_size_up->isPressed() && world_size < 1000) world_size++;
 	if (world_size_down->isPressed() && world_size > 0) world_size--;
 	if (gamemode_btn->isPressed()) gamemode = static_cast<GameMode>(static_cast<int>(gamemode) ^ 1);
 

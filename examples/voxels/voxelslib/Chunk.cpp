@@ -51,9 +51,10 @@ void Chunk::generateTerrain(mk::Game& game) {
 					else if (TOP_BLOCK >= voxel_world_pos.y && voxel_world_pos.y >= TOP_BLOCK - 2)
 						setBlock(x, y, z, GameItem::DIRT, false);
 					else if (voxel_world_pos.y < TOP_BLOCK) {
-						if (mk::Random::getInt(0, 120) == 0)
+						// Underground
+						if (mk::Random::getInt(0, 240) == 0)
 							setBlock(x, y, z, GameItem::DIAMOND_ORE, false);
-						else if (mk::Random::getInt(0, 80) == 0)
+						else if (mk::Random::getInt(0, 120) == 0)
 							setBlock(x, y, z, GameItem::GOLD_ORE, false);
 						else
 							setBlock(x, y, z, GameItem::STONE, false);
@@ -104,13 +105,14 @@ void Chunk::generateTrees(mk::Game& game) {
 void Chunk::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game&) const {
 	context.transform *= getTransform();
 	world.chunk_shader.setVector3i("chunk_position", int_position * CHUNK_SIZE);
-	for (const auto& [tp, arr]: faces) {
-		const bool is_translucent = IS_TRANSLUCENT[static_cast<usize>(tp)];
-		if ((chunk_draw_mode == ChunkDrawMode::ONLY_TRANSLUCENT && is_translucent)
-		    || (chunk_draw_mode == ChunkDrawMode::ONLY_OPAQUE && !is_translucent)) {
-			target.render(arr, context);
-		}
-	}
+	target.render(*faces, context);
+	// for (const auto& [tp, arr]: faces) {
+	// 	const bool is_translucent = IS_TRANSLUCENT[static_cast<usize>(tp)];
+	// 	if ((chunk_draw_mode == ChunkDrawMode::ONLY_TRANSLUCENT && is_translucent)
+	// 	    || (chunk_draw_mode == ChunkDrawMode::ONLY_OPAQUE && !is_translucent)) {
+	// 		target.render(arr, context);
+	// 	}
+	// }
 }
 
 void Chunk::setBlock(
@@ -133,15 +135,6 @@ GameItem Chunk::getBlockType(const mk::math::Vector3u pos) const {
 }
 
 mk::math::Vector3i Chunk::getIntPosition() const { return int_position; }
-
-void Chunk::clearFacesOf(const GameItem type) {
-	if (const auto it = faces.find(type); it != faces.end()) faces.erase(it);
-}
-
-VoxelTextureFaces& Chunk::getFacesOf(const GameItem type) {
-	auto [obj, _] = faces.try_emplace(type, type, camera);
-	return obj->second;
-}
 
 constexpr bool isFaceVisible(
 	GameItem                                                          pos_type,
@@ -226,32 +219,30 @@ void buildFaceArray(
 					exp_right += grow_right;
 				} while (isValid(exp_right));
 				// Add face here!
-				if (size_right) face_array.addFace(curr_pos, dir, size_right, size_up);
+				if (size_right) face_array.addFace(curr_pos, dir, size_right, size_up, type);
 			}
 		}
 	}
 }
 
 void Chunk::buildMeshes() {
+	faces->clearFaces();
 	for (usize type_index = 1; type_index < VOXEL_TYPES; ++type_index) {
 		const auto voxel_type = static_cast<GameItem>(type_index);
 		if (anyOf(voxels, voxel_type)) {
-			auto& voxel_faces = getFacesOf(voxel_type);
 			// Greedy meshing here.
-			voxel_faces.clearFaces();
 			for (usize dir_id = 0; dir_id < FACE_DIRS; dir_id++)
-				buildFaceArray(voxel_type, voxels, static_cast<FaceDir>(dir_id), voxel_faces);
-			voxel_faces.save();
-		} else {
-			clearFacesOf(voxel_type);
+				buildFaceArray(voxel_type, voxels, static_cast<FaceDir>(dir_id), *faces);
 		}
 	}
+	faces->save();
 }
 
 Chunk::Chunk(mk::Camera3D* camera, const mk::math::Vector3i position, World& world):
 	  world(world),
 	  int_position(position),
 	  camera(camera) {
+	faces = std::make_unique<VoxelTextureFaces>();
 	setPosition(position.type<float>() * CHUNK_SIZE);
 	voxels.fill(GameItem::AIR);
 }

@@ -13,11 +13,15 @@ void World::onReady(mk::Game& game) {
 	chunks.resize(CHUNK_COUNT);
 	chunk_shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 
+	texture_batch = game.resources().getTexture("texture_batch.png");
+	game.resources().setTextureSmooth("texture_batch.png", false);
+
 	constexpr auto bg_color = mk::Color(182, 242, 243);
 	game.setClearColor(bg_color);
 	chunk_shader.setColor("BG_COLOR", bg_color);
-	chunk_shader.setFloat("FOG_DIST", CHUNK_SIZE * FOG_DISTANCE);
-	chunk_shader.setFloat("FOG_DIST_0", CHUNK_SIZE * (FOG_DISTANCE + 1));
+	setFogDistance(FOG_DISTANCE);
+	chunk_shader.setFloat("TEXTURE_WIDTH", texture_batch->getSize().x);
+	chunk_shader.setFloat("TEXTURE_HEIGHT", texture_batch->getSize().y);
 	chunk_shader.setBool("FOG_ON", fog_on);
 
 	player = addChild<Player, 10>(game, *this, requested_player_mode);
@@ -30,6 +34,8 @@ void World::onReady(mk::Game& game) {
 
 	for (auto& chunk: chunk_list) chunk.generateTerrain(game);
 	for (auto& chunk: chunk_list) chunk.generateTrees(game);
+
+
 	player->initialReposition();
 }
 
@@ -49,25 +55,29 @@ void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// Here we should not draw chunks that player cannot see.
-	context.shader       = &chunk_shader;
-	constexpr float DIST = CHUNK_SIZE * (FOG_DISTANCE + 3);
+	context.shader  = &chunk_shader;
+	context.texture = texture_batch;
+
+	const float DIST = CHUNK_SIZE * (FOG_DISTANCE + 3);
 
 	// Drawing chunks...
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	for (auto& chunk: chunk_list) {
-		const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_OPAQUE);
+		// const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_OPAQUE);
 		if (auto pos = chunk.getPosition();
 		    (player->getCamera()->getPosition() - pos).lengthSquared() <= DIST * DIST)
 			chunk.drawEntity(target, context, game, getDrawMode(), true);
 	}
-	for (auto& chunk: chunk_list) {
-		const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_TRANSLUCENT);
-		if (auto pos = chunk.getPosition();
-		    (player->getCamera()->getPosition() - pos).lengthSquared() <= DIST * DIST)
-			chunk.drawEntity(target, context, game, getDrawMode(), true);
-	}
+	// for (auto& chunk: chunk_list) {
+	// 	const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_TRANSLUCENT);
+	// 	if (auto pos = chunk.getPosition();
+	// 	    (player->getCamera()->getPosition() - pos).lengthSquared() <= DIST * DIST)
+	// 		chunk.drawEntity(target, context, game, getDrawMode(), true);
+	// }
 }
+
+float World::getFogDistance() const { return FOG_DISTANCE; }
 
 std::pair<Chunk*, mk::math::Vector3i>
 	World::getChunkAndPos(const mk::math::Vector3i world_pos) const {
@@ -104,6 +114,6 @@ i32 World::getChunkGenHeight(const i32 x, const i32 z) const {
 	double value = perlin_noise.octave2D_01(x * 0.01, z * 0.01, 4);
 
 	constexpr double mountains_level = 0.8;
-	if (value >= mountains_level) value *= std::pow(1 + value - mountains_level, 3);
+	if (value >= mountains_level) value *= std::pow(1 + value - mountains_level, 4);
 	return value * CHUNK_SIZE + 3;
 }

@@ -1,20 +1,22 @@
 #version 410 core
 
-layout (location = 0) in ivec3 aPos;
-layout (location = 1) in vec2 aTex;
-layout (location = 2) in vec4 aColor;
+layout (location = 0) in int triData;
 
 uniform ivec3 chunk_position;
 uniform mat4 transform;
 uniform mat4 camera;
 
-out vec4 ourColor;
 out vec3 pixelPos;  // We want to interpolate this
-out vec2 TexCoord;
+flat out int direction;
+flat out int block_type;
 void main()
 {
-    gl_Position = camera * vec4(chunk_position + aPos, 1.0);
-    TexCoord = aTex;
-    ourColor = aColor;
-    pixelPos = chunk_position + aPos;
+    int position_z = triData & 63;
+    int position_y = (triData & (63 << 6)) >> 6;
+    int position_x = (triData & (63 << 12)) >> 12;
+    direction = (triData >> 18) & 7;
+    block_type = (triData >> 21) & 15;
+    ivec3 pos = ivec3(position_x, position_y, position_z);
+    gl_Position = camera * vec4(chunk_position + pos, 1.0);
+    pixelPos = chunk_position + pos;
 }
