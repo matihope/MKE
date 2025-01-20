@@ -1,5 +1,6 @@
 #include "Player.hpp"
 
+#include "DeathScreen.hpp"
 #include "Inventory.hpp"
 #include "World.hpp"
 #include "chunk_utils.hpp"
@@ -7,24 +8,34 @@
 
 constexpr float SAFE_FRAC_PI_2 = M_PI_2 - 0.0001;
 
-Player::Player(World& world, const PlayerMode mode): player_mode(mode), world(world) {}
+Player::Player(World& world, const GameMode mode): game_mode(mode), world(world) {}
 
 void Player::onReady(mk::Game& game) {
-	setPosition({ 0.f, CHUNK_SIZE + 1.f, 0.f });
-
-
 	// Camera
 	camera = addChild<mk::Camera3D>(game);
-	camera->setPosition(getPosition());
 	camera->setDirection({ 0.f, 0.f, 1.f });
 	auto [win_w, win_h] = game.getRenderWindow().getSize().type<float>().vec_data;
 	camera->setAspect(win_w / win_h);
-	camera->setFov(75.f);
 
 	player_ui = addChild<PlayerUI, 10'000>(game, *this);
-	if (player_mode == PlayerMode::CREATIVE)
+	if (game_mode == GameMode::CREATIVE)
 		for (usize id = 1; id < VOXEL_TYPES; ++id)
 			player_ui->getInventory().addItems(static_cast<GameItem>(id), 64);
+
+	setGameMode(game_mode);
+}
+
+void Player::initialReposition() {
+	i32 pos = 256;
+	while (pos) {
+		auto [ch, vox] = world.getChunkAndPos({ 0, pos - 1, 0 });
+		if (!ch || ch->getBlockType(vox.type<u32>()) == GameItem::AIR)
+			pos--;
+		else
+			break;
+	}
+	setPosition({ 0.5f, static_cast<float>(pos) + 0.1f, 0.5f });
+	camera->setPosition(getPosition());
 }
 
 void Player::onUpdate(mk::Game& game, const float dt) {
@@ -45,7 +56,10 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 		// Select a block
 		auto eye_position = camera->getPosition();
 		auto voxels       = castVoxelRay(
-            eye_position.type<double>(), camera->getDirection().type<double>(), 10.f
+            eye_position.type<double>(),
+            camera->getDirection().type<double>(),
+            game_mode == GameMode::CREATIVE ? PLAYER_BUILD_RANGE_CREATIVE
+												  : PLAYER_BUILD_RANGE_SURVIVAL
         );
 		std::optional<mk::math::Vector3i> prev;
 		world.chunk_shader.setBool("highlight.on", false);
@@ -58,9 +72,8 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 					world.chunk_shader.setVector3f("highlight.position", voxel.type<float>());
 					if (game.isMouseJustPressed(mk::input::MOUSE_LEFT)) {
 						const auto block_type = chunk->getBlockType(chv.x, chv.y, chv.z);
-						if (!(player_mode == PlayerMode::SURVIVAL && block_type == GameItem::BEDROCK
-						    )) {
-							if (player_mode == PlayerMode::SURVIVAL)
+						if (!(game_mode == GameMode::SURVIVAL && block_type == GameItem::BEDROCK)) {
+							if (game_mode == GameMode::SURVIVAL)
 								player_ui->getInventory().addItems(
 									chunk->getBlockType(chv.x, chv.y, chv.z), 1
 								);
@@ -70,7 +83,7 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 						if (prev && playerIsNotInVoxel(*prev)) {
 							if (auto [chunk_prev, chv_prev] = world.getChunkAndPos(*prev);
 							    chunk_prev) {
-								const auto type = player_mode == PlayerMode::CREATIVE
+								const auto type = game_mode == GameMode::CREATIVE
 								                    ? player_ui->getInventory().getHeldItem()
 								                    : player_ui->getInventory().useHeldItem();
 								if (type != GameItem::AIR) {
@@ -92,11 +105,11 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 void Player::onPhysicsUpdate(mk::Game& game, const float dt) {
 	if (dt <= 2.f / 60.f) {
 		// Move the player
-		switch (player_mode) {
-		case PlayerMode::SURVIVAL:
+		switch (game_mode) {
+		case GameMode::SURVIVAL:
 			resolveUpdateSurvival(game, dt);
 			break;
-		case PlayerMode::CREATIVE:
+		case GameMode::CREATIVE:
 			resolveUpdateCreative(game, dt);
 			break;
 		}
@@ -110,14 +123,42 @@ void Player::onPhysicsUpdate(mk::Game& game, const float dt) {
 void Player::onEvent(mk::Game& game, const mk::Event& event) {
 	WorldEntity3D::onEvent(game, event);
 	if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
-		if (ev->key == mk::input::KEY::G && game.isKeyPressed(mk::input::KEY::LEFT_CONTROL)) {
-			player_mode
-				= player_mode == PlayerMode::SURVIVAL ? PlayerMode::CREATIVE : PlayerMode::SURVIVAL;
-		}
+		if (ev->key == mk::input::KEY::G && game.isKeyPressed(mk::input::KEY::LEFT_CONTROL))
+			setGameMode(game_mode == GameMode::SURVIVAL ? GameMode::CREATIVE : GameMode::SURVIVAL);
+		if (ev->key == mk::input::KEY::MINUS) setPlayerHp(game, getPlayerHp() - 1);
+		if (ev->key == mk::input::KEY::EQUAL) setPlayerHp(game, getPlayerHp() + 1);
+	}
+	if (const auto ev = event.get<mk::Event::WindowResized>(); ev) {
+		camera->setFov(75.f * (ev->new_size.x / ev->new_size.y));
 	}
 }
 
 mk::Camera3D* Player::getCamera() const { return camera; }
+
+void Player::setGameMode(const GameMode game_mode) {
+	this->game_mode = game_mode;
+	if (game_mode == GameMode::CREATIVE)
+		player_ui->hideHp();
+	else
+		player_ui->showHp();
+}
+
+GameMode Player::getGameMode() const { return game_mode; }
+
+i32 Player::getMaxHp() const { return PLAYER_MAX_HP; }
+
+i32 Player::getPlayerHp() const { return player_hp; }
+
+void Player::setPlayerHp(mk::Game& game, i32 hp) {
+	hp = std::min(hp, PLAYER_MAX_HP);
+	hp = std::max(hp, 0);
+	if (hp <= 0)
+		game.replaceTopScene<DeathScreen>();
+	else {
+		player_hp = hp;
+		player_ui->setHp(hp);
+	}
+}
 
 template<class K>
 requires std::is_arithmetic_v<K> constexpr mk::math::Vector3<K> getVolumeOverlap(
@@ -147,7 +188,7 @@ requires std::is_arithmetic_v<K> constexpr mk::math::Vector3<K> getVolumeOverlap
 	return { K(0) };
 }
 
-void Player::resolveUpdateSurvival(const mk::Game& game, const float dt) {
+void Player::resolveUpdateSurvival(mk::Game& game, const float dt) {
 	using namespace mk::input;
 
 	mk::math::Vector3f player_input{ 0.f };
@@ -168,10 +209,10 @@ void Player::resolveUpdateSurvival(const mk::Game& game, const float dt) {
 		= forward * player_input.z + right * player_input.x + mk::math::Vector3fUP * move_vec.y;
 	move_vec = move_vec.lerp(move_dir, dt * PLAYER_LERP_SPEED_WALKING, 1e-4f);
 	move_vec.y += PLAYER_GRAVITY;
-	move_vec = moveAndSlide(move_vec, dt);
+	move_vec = moveAndSlide(game, move_vec, dt);
 }
 
-void Player::resolveUpdateCreative(const mk::Game& game, const float dt) {
+void Player::resolveUpdateCreative(mk::Game& game, const float dt) {
 	using namespace mk::input;
 
 	mk::math::Vector3f player_input;
@@ -188,11 +229,12 @@ void Player::resolveUpdateCreative(const mk::Game& game, const float dt) {
 
 	const auto move_dir = forward * player_input.z + right * player_input.x;
 	move_vec            = move_vec.lerp(move_dir, dt * PLAYER_LERP_SPEED_FLYING, 1e-4f);
-	move_vec            = moveAndSlide(move_vec + mk::math::Vector3fUP * player_input.y, dt);
+	move_vec            = moveAndSlide(game, move_vec + mk::math::Vector3fUP * player_input.y, dt);
 	move_vec.y          = 0;
 }
 
-mk::math::Vector3f Player::moveAndSlide(const mk::math::Vector3f speed, const float dt) {
+mk::math::Vector3f
+	Player::moveAndSlide(mk::Game& game, const mk::math::Vector3f speed, const float dt) {
 	auto       dspeed         = speed.type<double>();
 	auto       ddt            = static_cast<double>(dt);
 	const auto original_speed = dspeed;
@@ -226,6 +268,14 @@ mk::math::Vector3f Player::moveAndSlide(const mk::math::Vector3f speed, const fl
 									{ PLAYER_WIDTH }
 								);
 								if (overlap.x && overlap.y && overlap.z) {
+									// Resolve hit
+									if (game_mode == GameMode::SURVIVAL && coord == 1
+									    && speed.y < 0.f) {
+										const auto dmg = std::pow(-(speed.y / 10.f), 2.5);
+										setPlayerHp(
+											game, static_cast<i32>(std::ceil(getPlayerHp() - dmg))
+										);
+									}
 									// dspeed.vec_data[coord]
 									// 	= std::max(
 									// 		  0.,

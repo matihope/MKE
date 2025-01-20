@@ -4,7 +4,18 @@
 
 #include <utility>
 
-enum class GameItem : u8 { AIR, GRASS, DIRT, STONE, LOG, LEAF, BEDROCK, _NUM_BLOCKS };
+enum class GameItem : u8 {
+	AIR,
+	GRASS,
+	DIRT,
+	STONE,
+	LOG,
+	LEAF,
+	BEDROCK,
+	DIAMOND_ORE,
+	GOLD_ORE,
+	_NUM_BLOCKS
+};
 constexpr u8   VOXEL_TYPES                 = static_cast<u8>(GameItem::_NUM_BLOCKS);
 constexpr bool IS_TRANSLUCENT[VOXEL_TYPES] = {
 	true,   // AIR
@@ -13,7 +24,9 @@ constexpr bool IS_TRANSLUCENT[VOXEL_TYPES] = {
 	false,  // STONE
 	false,  // LOG
 	true,   // LEAF
-	false   // BEDROCK
+	false,  // BEDROCK
+	false,  // DIAMOND_ORE
+	false,  // GOLD ORE
 };
 
 

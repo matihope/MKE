@@ -1,4 +1,5 @@
 #pragma once
+#include "Alignments.hpp"
 #include "MKE/DrawContext.hpp"
 #include "MKE/Font.hpp"
 #include "MKE/Font.hpp"
@@ -6,10 +7,6 @@
 #include "MKE/WorldEntity.hpp"
 
 namespace mk::gui {
-	enum class HAlignment { LEFT, MIDDLE, RIGHT };
-
-	enum class VAlignment { TOP, CENTER, BOTTOM };
-
 	class Label: public WorldEntityUI {
 		Font*       m_font{};
 		HAlignment  m_halignment = HAlignment::LEFT;
@@ -23,8 +20,10 @@ namespace mk::gui {
 
 		Label(Font* font, const std::string& text);
 
-		void               setFont(Font* font);
-		void               setString(const std::string& text);
+		void setFont(Font* font);
+		void setString(const std::string& text);
+
+		[[nodiscard]]
 		const std::string& getString() const;
 
 		void setAlignment(HAlignment newHAlignment, VAlignment newVAlignment);

@@ -19,6 +19,7 @@ namespace mk::gui {
 		else
 			rect.setSize(math::Vector2f{ 1.f });
 		this->texture = texture;
+		realign();
 	}
 
 	math::RectF TextureRect::getBounds() const {
@@ -30,5 +31,40 @@ namespace mk::gui {
 		if (bottom_right.x < top_left.x) std::swap(bottom_right.x, top_left.x);
 		if (bottom_right.y < top_left.y) std::swap(bottom_right.y, top_left.y);
 		return { top_left.x, top_left.y, bottom_right.x - top_left.x, bottom_right.y - top_left.y };
+	}
+
+	void TextureRect::setAlignment(HAlignment newHAlignment, VAlignment newVAlignment) {
+		v_alignment = newVAlignment;
+		h_alignment = newHAlignment;
+		realign();
+	}
+
+	void TextureRect::realign() {
+		auto [width, height] = getBounds().getSize().vec_data;
+
+		math::Vector2f offset{};
+		switch (v_alignment) {
+		case VAlignment::TOP:
+			break;
+		case VAlignment::CENTER:
+			offset.y = height / 2;
+			break;
+		case VAlignment::BOTTOM:
+			offset.y = height;
+			break;
+		}
+
+		switch (h_alignment) {
+		case HAlignment::LEFT:
+			break;
+		case HAlignment::MIDDLE:
+			offset.x = width / 2;
+			break;
+		case HAlignment::RIGHT:
+			offset.x = width;
+			break;
+		}
+
+		rect.setPosition(-offset);
 	}
 }

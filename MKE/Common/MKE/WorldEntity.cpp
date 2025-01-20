@@ -19,10 +19,7 @@ namespace mk {
 		}
 	}
 
-	WorldEntity::WorldEntity(): m_entityId(detail::id_counter()) {
-		m_parent = nullptr;
-		m_show   = true;
-	}
+	WorldEntity::WorldEntity() = default;
 
 	EntityID WorldEntity::getId() const { return m_entityId; }
 

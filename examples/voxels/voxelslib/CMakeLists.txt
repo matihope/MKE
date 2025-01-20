@@ -18,6 +18,8 @@ add_library(voxelslib
         Menu.hpp
         Inventory.cpp
         Inventory.hpp
+        DeathScreen.cpp
+        DeathScreen.hpp
 )
-target_link_libraries(voxelslib MKE-Engine)
+target_link_libraries(voxelslib MKE-Engine siv_perlin_noise)
 target_include_directories(voxelslib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

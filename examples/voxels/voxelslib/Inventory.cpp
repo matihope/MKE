@@ -19,12 +19,13 @@ void Inventory::onReady(mk::Game& game) {
 	selected_slot->setOrigin(origin);
 
 	for (usize x = 0; x < SLOTS_W; ++x) {
-		for (usize y = 0; y < 1; ++y) {
+		for (usize y = 0; y < SLOTS_H; ++y) {
 			auto slot                        = addChild<Slot, 2>(game);
 			inventory_slots[y * SLOTS_W + x] = slot;
 			slot->setPosition(
 				x * SLOT_WIDTH + slot_bar->getBounds().left, slot_bar->getBounds().top
 			);
+			if (y > 0) slot->hide();
 		}
 	}
 
@@ -69,7 +70,7 @@ void Inventory::addItems(const GameItem item, i32 count) {
 }
 
 void Inventory::repositionSelection() const {
-	selected_slot->setPosition(current_slot * SLOT_WIDTH, 0);
+	selected_slot->setPosition(current_slot * SLOT_WIDTH - 1, -1);
 }
 
 void Inventory::Slot::onReady(mk::Game& game) {
@@ -99,6 +100,7 @@ void Inventory::Slot::setCount(const i32 count) {
 	MK_ASSERT(count >= 0, "Count cannot be negative");
 	this->count = count;
 	if (count == 0) {
+		hide();
 	} else {
 		show();
 		label->setString(std::to_string(count));

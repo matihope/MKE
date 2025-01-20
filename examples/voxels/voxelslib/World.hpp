@@ -9,11 +9,11 @@
 #include "MKE/WorldEntity.hpp"
 #include "MKE/Nodes/2d/RectShape.hpp"
 
+#include <PerlinNoise.hpp>
+
 class World final: public mk::WorldEntity3D {
 public:
-	explicit World(const PlayerMode player_mode, const i32 world_size):
-		  WORLD_SIZE(world_size),
-		  requested_player_mode(player_mode) {}
+	explicit World(GameMode player_mode, i32 world_size, std::optional<usize> seed = {});
 
 	void onReady(mk::Game& game) override;
 
@@ -32,9 +32,14 @@ public:
 
 	std::pair<Chunk*, mk::math::Vector3i> getChunkAndPos(mk::math::Vector3i world_pos) const;
 
+	i32 getChunkGenHeight(i32 x, i32 z) const;
+
 private:
+	siv::PerlinNoise perlin_noise;
+
 	const i32 WORLD_SIZE;  // CHUNK_CNT = (WORLD_SIZE * 2 + 1) ** 2 * 2
-	const i32 CHUNK_COUNT = (WORLD_SIZE * 2 + 1) * (WORLD_SIZE * 2 + 1) * 2;
+	const i32 CHUNK_LAYERS = 4;
+	const i32 CHUNK_COUNT  = (WORLD_SIZE * 2 + 1) * (WORLD_SIZE * 2 + 1) * CHUNK_LAYERS;
 
 	void  addChunk(mk::Game& game, Chunk&& chunk);
 	usize getChunkIndex(mk::math::Vector3i coords) const;
@@ -44,5 +49,6 @@ private:
 	// std::map<i32, std::map<i32, std::map<i32, Chunk*>>> chunks;
 	std::vector<Chunk*> chunks = {};
 
-	PlayerMode requested_player_mode;
+	GameMode requested_player_mode;
 };
+

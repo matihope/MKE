@@ -20,12 +20,12 @@ namespace mk {
 
 	class WorldEntity: public Transformable, public Updatable {
 	protected:
-		EntityID m_entityId;
+		EntityID m_entityId = detail::id_counter();
 
 		bool         m_toKill = false;
-		WorldEntity* m_parent;
+		WorldEntity* m_parent{};
 
-		bool m_show;
+		bool m_show = true;
 
 		void cleanEntities(Game& game);
 
@@ -81,7 +81,7 @@ namespace mk {
 
 		void update(Game& game, float dt) override;
 
-		void physicsUpdate(Game& game, const float dt) override;
+		void physicsUpdate(Game& game, float dt) override;
 
 		virtual void onReady([[maybe_unused]] Game& game) {}
 

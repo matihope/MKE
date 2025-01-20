@@ -42,10 +42,16 @@ void Menu::onReady(mk::Game& game) {
 	setLabels(game);
 }
 
-void Menu::onReReady(mk::Game& game) { game.setClearColor(mk::Color(34, 149, 32)); }
+void Menu::onReReady(mk::Game& game) {
+	game.setClearColor(mk::Color(34, 149, 32));
+	setLabels(game);
+}
 
 void Menu::onEvent(mk::Game& game, const mk::Event& event) {
 	if (const auto ev = event.get<mk::Event::WindowResized>(); ev) reLayout(game);
+	if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
+		if (ev->key == mk::input::KEY::M) game.addScene<World>(GameMode::SURVIVAL, 1);
+	}
 }
 
 void Menu::onUpdate(mk::Game& game, float dt) {
@@ -53,8 +59,7 @@ void Menu::onUpdate(mk::Game& game, float dt) {
 
 	if (world_size_up->isPressed() && world_size < 20) world_size++;
 	if (world_size_down->isPressed() && world_size > 0) world_size--;
-	if (gamemode_btn->isPressed())
-		gamemode = static_cast<PlayerMode>(static_cast<int>(gamemode) ^ 1);
+	if (gamemode_btn->isPressed()) gamemode = static_cast<GameMode>(static_cast<int>(gamemode) ^ 1);
 
 	if (world_size_down->isPressed() || world_size_up->isPressed() || gamemode_btn->isPressed())
 		setLabels(game);
@@ -63,7 +68,7 @@ void Menu::onUpdate(mk::Game& game, float dt) {
 void Menu::setLabels(const mk::Game& game) const {
 	world_size_lbl->setString("World size: " + std::to_string(world_size));
 	gamemode_btn->setText(
-		std::string("Gamemode: ") + (gamemode == PlayerMode::SURVIVAL ? "Survival" : "Creative")
+		std::string("Gamemode: ") + (gamemode == GameMode::SURVIVAL ? "Survival" : "Creative")
 	);
 	reLayout(game);
 }

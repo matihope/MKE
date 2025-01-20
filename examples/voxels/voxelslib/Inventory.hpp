@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <array>
 
+class HpBar;
+
 class Inventory final: public mk::WorldEntityUI {
 public:
 	void onReady(mk::Game& game) override;
@@ -27,7 +29,7 @@ private:
 
 	static constexpr i32 SLOT_WIDTH   = 20;
 	static constexpr i32 SLOT_HEIGHT  = 20;
-	static constexpr i32 SLOT_PADDING  = 2;
+	static constexpr i32 SLOT_PADDING = 2;
 	static constexpr i32 SLOTS_W      = 9;
 	static constexpr i32 SLOTS_H      = 4;
 	static constexpr i32 STACK_SIZE   = 64;

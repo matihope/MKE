@@ -97,11 +97,6 @@ namespace mk {
 		if (!m_scene_stack.empty()) m_scene_stack.top()->onReReady(*this);
 	}
 
-	void Game::replaceTopScene(std::unique_ptr<WorldEntity> newScene) {
-		popScene();
-		addScene(std::move(newScene));
-	}
-
 	void Game::pollEvents() {
 		Event event{};
 		while (m_window.pollEvent(event)) {

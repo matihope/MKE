@@ -6,6 +6,51 @@
 #include "Player.hpp"
 #include "Inventory.hpp"
 
+class HpBar final: public mk::WorldEntityUI {
+public:
+	HpBar(usize max_hp = 20) {
+		MK_ASSERT(max_hp % 2 == 0, "Hp must be even");
+		hearts.resize(max_hp / 2);
+	}
+
+	void onReady(mk::Game& game) override {
+		full_heart = game.resources().getTexture("full_heart.png");
+		game.resources().setTextureSmooth("full_heart.png", false);
+		half_heart = game.resources().getTexture("half_heart.png");
+		game.resources().setTextureSmooth("half_heart.png", false);
+		empty_heart = game.resources().getTexture("empty_heart.png");
+		game.resources().setTextureSmooth("empty_heart.png", false);
+
+		for (usize i = 0; i < hearts.size(); i++) {
+			hearts[i] = addChild<mk::gui::TextureRect>(game);
+			hearts[i]->setPosition(i * 18, 0);
+			hearts[i]->setAlignment(mk::gui::HAlignment::LEFT, mk::gui::VAlignment::BOTTOM);
+			hearts[i]->setTexture(full_heart);
+		}
+	}
+
+	void setHp(i32 hp) {
+		MK_ASSERT(hp <= hearts.size() * 2, "Hp out of range");
+		for (const auto& heart: hearts) {
+			if (hp >= 2) {
+				heart->setTexture(full_heart);
+				hp -= 2;
+			} else if (hp) {
+				heart->setTexture(half_heart);
+				hp--;
+			} else {
+				heart->setTexture(empty_heart);
+			}
+		}
+	}
+
+private:
+	const mk::Texture* full_heart;
+	const mk::Texture* half_heart;
+	const mk::Texture* empty_heart;
+
+	std::vector<mk::gui::TextureRect*> hearts;
+};
 
 PlayerUI::PlayerUI(Player& player): player(player), cursor_mode(CursorMode::FREE_MOUSE) {}
 
@@ -22,20 +67,17 @@ void PlayerUI::onReady(mk::Game& game) {
 	crosshair = addChild<mk::gui::TextureRect>(game, crosshair_texture);
 	crosshair->setOrigin(crosshair_texture->getSize().type<float>() / 2.f);
 	crosshair->setScale({ 2.f });
-	crosshair->setPosition(win_w / 2.f, win_h / 2.f);
 
 	// Load player slot bar
 	inv = addChild<Inventory>(game);
-	inv->setPosition(win_w / 2.f, win_h);
 	inv->setScale({ 3.f });
+
+	hp_bar = addChild<HpBar>(game, player.getMaxHp());
+	repositionElements(game);
 }
 
 void PlayerUI::onEvent(mk::Game& game, const mk::Event& event) {
-	if (auto ev = event.get<mk::Event::WindowResized>(); ev) {
-		auto [ww, wh] = ev->new_size.type<float>().vec_data;
-		crosshair->setPosition(ww / 2.0f, wh / 2.f);
-		inv->setPosition(ww / 2.f, wh);
-	}
+	if (auto ev = event.get<mk::Event::WindowResized>(); ev) repositionElements(game);
 	if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 		if (ev->key == mk::input::KEY::ESCAPE) setCursorMode(CursorMode::FREE_MOUSE, game);
 		if (ev->key == mk::input::KEY::NUM_1) inv->changeSlot(0 - inv->getCurrentSlot());
@@ -74,6 +116,17 @@ void PlayerUI::setCursorMode(const CursorMode mode, mk::Game& game) {
 
 usize PlayerUI::getPlayerSlot() const { return inv->getCurrentSlot(); }
 
-Inventory& PlayerUI::getInventory() const {
-	return *inv;
+Inventory& PlayerUI::getInventory() const { return *inv; }
+
+void PlayerUI::showHp() { hp_bar->show(); }
+
+void PlayerUI::hideHp() { hp_bar->hide(); }
+
+void PlayerUI::setHp(const i32 hp) { hp_bar->setHp(hp); }
+
+void PlayerUI::repositionElements(const mk::Game& game) {
+	auto [ww, wh] = game.getWindowSize().type<float>().vec_data;
+	crosshair->setPosition(ww / 2.0f, wh / 2.f);
+	inv->setPosition(ww / 2.f, wh);
+	hp_bar->setPosition(inv->getPosition2D() - mk::math::Vector2f(20.0 * 4.5 * 3.0, 88.f));
 }

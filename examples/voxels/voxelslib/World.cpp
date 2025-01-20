@@ -1,10 +1,16 @@
 #include "World.hpp"
 
+#include "MKE/Random.hpp"
+
+World::World(const GameMode player_mode, const i32 world_size, const std::optional<usize> seed):
+	  perlin_noise(seed ? seed.value() : mk::Random::getInt(0, 255)),
+	  WORLD_SIZE(world_size),
+	  requested_player_mode(player_mode) {}
+
 void World::onReady(mk::Game& game) {
 	std::cerr << "Creating a world of " << CHUNK_COUNT << " chunks, "
 			  << (CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * CHUNK_COUNT << " voxels..." << std::endl;
 	chunks.resize(CHUNK_COUNT);
-	player = addChild<Player, 10>(game, *this, requested_player_mode);
 	chunk_shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 
 	constexpr auto bg_color = mk::Color(182, 242, 243);
@@ -14,11 +20,17 @@ void World::onReady(mk::Game& game) {
 	chunk_shader.setFloat("FOG_DIST_0", CHUNK_SIZE * (FOG_DISTANCE + 1));
 	chunk_shader.setBool("FOG_ON", fog_on);
 
+	player = addChild<Player, 10>(game, *this, requested_player_mode);
+
 	for (int x = -WORLD_SIZE; x <= WORLD_SIZE; x++) {
-		for (int y = 0; y <= 1; y++)
+		for (int y = 0; y < CHUNK_LAYERS; y++)
 			for (int z = -WORLD_SIZE; z <= WORLD_SIZE; z++)
 				addChunk(game, Chunk(player->getCamera(), mk::math::Vector3i(x, y, z)));
 	}
+
+	for (auto& chunk: chunk_list) chunk.generateTerrain(game, *this);
+	for (auto& chunk: chunk_list) chunk.generateTrees(game, *this);
+	player->initialReposition();
 }
 
 void World::onEvent(mk::Game& game, const mk::Event& event) {
@@ -74,18 +86,24 @@ std::pair<Chunk*, mk::math::Vector3i>
 
 usize World::getChunkIndex(const mk::math::Vector3i coords) const {
 	if (coords.x < -WORLD_SIZE || coords.x > WORLD_SIZE) return std::numeric_limits<usize>::max();
-	if (coords.y < 0 || coords.y > 1) return std::numeric_limits<usize>::max();
+	if (coords.y < 0 || coords.y >= CHUNK_LAYERS) return std::numeric_limits<usize>::max();
 	if (coords.z < -WORLD_SIZE || coords.z > WORLD_SIZE) return std::numeric_limits<usize>::max();
 	const i32  WIDTH  = WORLD_SIZE * 2 + 1;
-	const auto ch_pos = coords + WORLD_SIZE;
-	return static_cast<usize>(
-		(ch_pos.y - WORLD_SIZE) * WIDTH * WIDTH + ch_pos.x * WIDTH + ch_pos.z
-	);
+	const auto ch_pos = coords + mk::math::Vector3i{ WORLD_SIZE, 0, WORLD_SIZE };
+	return static_cast<usize>(ch_pos.y * WIDTH * WIDTH + ch_pos.x * WIDTH + ch_pos.z);
 }
 
 void World::addChunk(mk::Game& game, Chunk&& chunk) {
 	const auto idx = getChunkIndex(chunk.getIntPosition());
 	chunk_list.push_back(std::move(chunk));
-	chunks[idx] = &chunk_list.back();
+	chunks.at(idx) = &chunk_list.back();
 	chunk_list.back().onReady(game);
+}
+
+i32 World::getChunkGenHeight(const i32 x, const i32 z) const {
+	double value = perlin_noise.octave2D_01(x * 0.01, z * 0.01, 4);
+
+	constexpr double mountains_level = 0.8;
+	if (value >= mountains_level) value *= std::pow(1 + value - mountains_level, 3);
+	return value * CHUNK_SIZE + 3;
 }

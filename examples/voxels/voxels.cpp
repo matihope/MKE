@@ -6,9 +6,10 @@
 
 /*
  * TODO:
- * - Player UI (better inventory)
- * - better terrain generation (like from a 3d function)
  * - Add Trees
+ *
+ * -
+ * - Player UI (better inventory)
  * - Improve drawing speed
  *
  * - Fix translucency?

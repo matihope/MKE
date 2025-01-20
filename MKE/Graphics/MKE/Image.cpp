@@ -12,6 +12,7 @@ void mk::Image::load(const ResPath& image) {
 
 	auto ext = image.extension();
 	MK_ASSERT(ext == ".jpg" || ext == ".png", "Invalid image extension: ", image.getPath());
+	MK_ASSERT(image.exists(), "File " + image.getPath().string() + " does not exist!");
 
 	data = stbi_load(image.strPath(), (i32*) &width, (i32*) &height, (i32*) &nrChannels, 4);
 	MK_ASSERT(data != nullptr, "Couldn\'t load the image data");

@@ -74,7 +74,7 @@ namespace mk {
 			return addScene<T>(std::make_unique<T>(std::forward<Args>(args)...));
 		}
 
-		template<class T, class... Args>
+		template<class T>
 		T* addScene(std::unique_ptr<T> new_scene) {
 			if (isRunning()) new_scene->ready(*this);
 			T* ref = new_scene.get();
@@ -82,7 +82,11 @@ namespace mk {
 			return ref;
 		}
 
-		void replaceTopScene(std::unique_ptr<WorldEntity> newScene);
+		template<class T, class... Args>
+		T* replaceTopScene(Args&&... args) {
+			popScene();
+			return addScene<T>(std::make_unique<T>(std::forward<Args>(args)...));
+		}
 
 		/**
 		 * @brief Immediately replace a top scene, but schedule the old one for safe deletion.

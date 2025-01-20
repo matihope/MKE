@@ -1,4 +1,7 @@
 #include "Chunk.hpp"
+
+#include "World.hpp"
+#include "MKE/Random.hpp"
 #include "MKE/Primitives/3d/CubePrimitive.hpp"
 #include "MKE/Shaders/SimpleShader.hpp"
 
@@ -28,19 +31,68 @@ namespace {
 	constexpr usize getIdx(const mk::math::Vector3i pos) { return getIdx(pos.x, pos.y, pos.z); }
 }
 
-void Chunk::onReady(mk::Game& game) {
-	if (int_position.y == 0) {
-		for (usize x = 0; x < CHUNK_SIZE; ++x) {
-			for (usize y = 0; y < CHUNK_SIZE; ++y) {
-				for (usize z = 0; z < CHUNK_SIZE; ++z)
-					if (y == CHUNK_SIZE - 1)
-						setBlock(x, y, z, GameItem::GRASS, false);
-					else if (y >= CHUNK_SIZE - 4)
-						setBlock(x, y, z, GameItem::DIRT, false);
-					else if (y > 0)
-						setBlock(x, y, z, GameItem::STONE, false);
+void Chunk::onReady(mk::Game& game) {}
+
+void Chunk::generateTerrain(mk::Game& game, World& world) {
+	for (i32 x = 0; x < CHUNK_SIZE; ++x) {
+		for (i32 z = 0; z < CHUNK_SIZE; ++z) {
+			i32 top_grass = world.getChunkGenHeight(
+				x + int_position.x * CHUNK_SIZE, z + int_position.z * CHUNK_SIZE
+			);
+			for (i32 y = 0; y < CHUNK_SIZE; ++y) {
+				const mk::math::Vector3i voxel_world_pos
+					= mk::math::Vector3i(x, y, z) + int_position * CHUNK_SIZE;
+
+				if (voxel_world_pos.y == 0)
+					setBlock(x, y, z, GameItem::BEDROCK, false);
+				else if (voxel_world_pos.y == top_grass)
+					setBlock(x, y, z, GameItem::GRASS, false);
+				else if (top_grass >= voxel_world_pos.y && voxel_world_pos.y >= top_grass - 2)
+					setBlock(x, y, z, GameItem::DIRT, false);
+				else if (voxel_world_pos.y < top_grass) {
+					if (mk::Random::getInt(0, 120) == 0)
+						setBlock(x, y, z, GameItem::DIAMOND_ORE, false);
+					else if (mk::Random::getInt(0, 80) == 0)
+						setBlock(x, y, z, GameItem::GOLD_ORE, false);
 					else
-						setBlock(x, y, z, GameItem::BEDROCK, false);
+						setBlock(x, y, z, GameItem::STONE, false);
+				}
+			}
+		}
+	}
+}
+
+void Chunk::generateTrees(mk::Game& game, World& world) {
+	constexpr i32 LEAF_BUFF = 2;
+	for (i32 x = LEAF_BUFF; x < CHUNK_SIZE - LEAF_BUFF - 1; ++x) {
+		for (i32 z = LEAF_BUFF; z < CHUNK_SIZE - LEAF_BUFF - 1; ++z) {
+			i32 y = 31 - LEAF_BUFF;
+			while (y) {
+				const i32 TREE_HEIGHT = mk::Random::getInt(2 + LEAF_BUFF + 1, 6 + LEAF_BUFF + 1);
+				if (i32 height = 32 - y; height >= TREE_HEIGHT
+				                         && y + TREE_HEIGHT + LEAF_BUFF < CHUNK_SIZE
+				                         && voxels[getIdx(x, y - 1, z)] != GameItem::AIR
+				                         && voxels[getIdx(x, y, z)] == GameItem::AIR) {
+					if (mk::Random::getInt(0, CHUNK_SIZE * CHUNK_SIZE * 3) == 0) {
+						for (i32 t_x = -2; t_x <= 2; t_x++) {
+							for (i32 t_y = -2; t_y <= 2; t_y++)
+								for (i32 t_z = -2; t_z <= 2; t_z++) {
+									if (t_x * t_x + t_y * t_y + t_z * t_z >= 6) continue;
+									setBlock(
+										x + t_x,
+										y + TREE_HEIGHT - t_y - 1,
+										z + t_z,
+										GameItem::LEAF,
+										false
+									);
+								}
+						}
+						for (i32 t_y = 0; t_y < TREE_HEIGHT; ++t_y)
+							setBlock(x, y + t_y, z, GameItem::LOG, false);
+					}
+					break;
+				}
+				y--;
 			}
 		}
 	}
@@ -72,6 +124,10 @@ void Chunk::setBlock(
 }
 
 GameItem Chunk::getBlockType(usize x, usize y, usize z) const { return voxels[getIdx(x, y, z)]; }
+
+GameItem Chunk::getBlockType(const mk::math::Vector3u pos) const {
+	return getBlockType(pos.x, pos.y, pos.z);
+}
 
 mk::math::Vector3i Chunk::getIntPosition() const { return int_position; }
 

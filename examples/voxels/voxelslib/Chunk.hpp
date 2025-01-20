@@ -5,6 +5,8 @@
 #include "MKE/Game.hpp"
 #include "MKE/WorldEntity.hpp"
 
+class World;
+
 enum class ChunkDrawMode {
 	ONLY_OPAQUE,
 	ONLY_TRANSLUCENT,
@@ -12,7 +14,7 @@ enum class ChunkDrawMode {
 
 class Chunk final: public mk::WorldEntity3D {
 public:
-	Chunk(mk::Camera3D* camera, mk::math::Vector3i position):
+	Chunk(mk::Camera3D* camera, const mk::math::Vector3i position):
 		  int_position(position),
 		  camera(camera) {
 		setPosition(position.type<float>() * CHUNK_SIZE);
@@ -21,12 +23,16 @@ public:
 
 	void onReady(mk::Game& game) override;
 
+	void generateTerrain(mk::Game& game, World& world);
+	void generateTrees(mk::Game& game, World& world);
+
 	void onDraw(
 		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
 	) const override;
 
 	void      setBlock(usize x, usize y, usize z, GameItem type, bool rebuild = true);
 	GameItem getBlockType(usize x, usize y, usize z) const;
+	GameItem getBlockType(mk::math::Vector3u pos) const;
 
 	mk::math::Vector3i getIntPosition() const;
 

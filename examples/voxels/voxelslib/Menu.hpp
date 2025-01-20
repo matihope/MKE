@@ -19,7 +19,7 @@ private:
 	mk::gui::Label*  title_fg     = nullptr;
 	mk::gui::Button* play         = nullptr;
 	mk::gui::Button* gamemode_btn = nullptr;
-	PlayerMode       gamemode     = PlayerMode::SURVIVAL;
+	GameMode       gamemode     = GameMode::SURVIVAL;
 
 	mk::gui::Label*        world_size_lbl  = nullptr;
 	mk::gui::Button*       world_size_up   = nullptr;

@@ -5,6 +5,7 @@
 
 class Player;
 class Inventory;
+class HpBar;
 
 enum class CursorMode { FREE_MOUSE, PLAYING };
 
@@ -25,10 +26,17 @@ public:
 	[[nodiscard]]
 	Inventory& getInventory() const;
 
+	void showHp();
+	void hideHp();
+	void setHp(i32 hp);
+
+
 private:
+	void repositionElements(const mk::Game& game);
 	Player&    player;
 	CursorMode cursor_mode;
 
 	mk::gui::TextureRect* crosshair = nullptr;
 	Inventory*            inv       = nullptr;
+	HpBar*                hp_bar    = nullptr;
 };
