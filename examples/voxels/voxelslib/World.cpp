@@ -25,11 +25,11 @@ void World::onReady(mk::Game& game) {
 	for (int x = -WORLD_SIZE; x <= WORLD_SIZE; x++) {
 		for (int y = 0; y < CHUNK_LAYERS; y++)
 			for (int z = -WORLD_SIZE; z <= WORLD_SIZE; z++)
-				addChunk(game, Chunk(player->getCamera(), mk::math::Vector3i(x, y, z)));
+				addChunk(game, Chunk(player->getCamera(), mk::math::Vector3i(x, y, z), *this));
 	}
 
-	for (auto& chunk: chunk_list) chunk.generateTerrain(game, *this);
-	for (auto& chunk: chunk_list) chunk.generateTrees(game, *this);
+	for (auto& chunk: chunk_list) chunk.generateTerrain(game);
+	for (auto& chunk: chunk_list) chunk.generateTrees(game);
 	player->initialReposition();
 }
 

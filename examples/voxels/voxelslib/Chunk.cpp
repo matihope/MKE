@@ -2,8 +2,6 @@
 
 #include "World.hpp"
 #include "MKE/Random.hpp"
-#include "MKE/Primitives/3d/CubePrimitive.hpp"
-#include "MKE/Shaders/SimpleShader.hpp"
 
 namespace {
 	bool anyOf(auto voxels, GameItem type) {
@@ -33,7 +31,7 @@ namespace {
 
 void Chunk::onReady(mk::Game& game) {}
 
-void Chunk::generateTerrain(mk::Game& game, World& world) {
+void Chunk::generateTerrain(mk::Game& game) {
 	for (i32 x = 0; x < CHUNK_SIZE; ++x) {
 		for (i32 z = 0; z < CHUNK_SIZE; ++z) {
 			i32 TOP_BLOCK = world.getChunkGenHeight(
@@ -66,7 +64,7 @@ void Chunk::generateTerrain(mk::Game& game, World& world) {
 	}
 }
 
-void Chunk::generateTrees(mk::Game& game, World& world) {
+void Chunk::generateTrees(mk::Game& game) {
 	constexpr i32 LEAF_BUFF = 2;
 	for (i32 x = LEAF_BUFF; x < CHUNK_SIZE - LEAF_BUFF - 1; ++x) {
 		for (i32 z = LEAF_BUFF; z < CHUNK_SIZE - LEAF_BUFF - 1; ++z) {
@@ -105,6 +103,7 @@ void Chunk::generateTrees(mk::Game& game, World& world) {
 
 void Chunk::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game&) const {
 	context.transform *= getTransform();
+	world.chunk_shader.setVector3i("chunk_position", int_position * CHUNK_SIZE);
 	for (const auto& [tp, arr]: faces) {
 		const bool is_translucent = IS_TRANSLUCENT[static_cast<usize>(tp)];
 		if ((chunk_draw_mode == ChunkDrawMode::ONLY_TRANSLUCENT && is_translucent)
@@ -247,4 +246,12 @@ void Chunk::buildMeshes() {
 			clearFacesOf(voxel_type);
 		}
 	}
+}
+
+Chunk::Chunk(mk::Camera3D* camera, const mk::math::Vector3i position, World& world):
+	  world(world),
+	  int_position(position),
+	  camera(camera) {
+	setPosition(position.type<float>() * CHUNK_SIZE);
+	voxels.fill(GameItem::AIR);
 }

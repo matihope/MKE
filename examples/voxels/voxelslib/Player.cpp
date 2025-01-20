@@ -70,7 +70,7 @@ void Player::onUpdate(mk::Game& game, const float dt) {
 				if (chunk->getBlockType(chv.x, chv.y, chv.z) != GameItem::AIR) {
 					// Mark a block
 					world.chunk_shader.setBool("highlight.on", true);
-					world.chunk_shader.setVector3f("highlight.position", voxel.type<float>());
+					world.chunk_shader.setVector3i("highlight.position", voxel);
 					if (game.isMouseJustPressed(mk::input::MOUSE_LEFT)) {
 						const auto block_type = chunk->getBlockType(chv.x, chv.y, chv.z);
 						if (!(game_mode == GameMode::SURVIVAL && block_type == GameItem::BEDROCK)) {

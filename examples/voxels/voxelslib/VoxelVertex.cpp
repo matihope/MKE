@@ -8,7 +8,7 @@ void VoxelVertex::configureVertexAttribute() {
 		GL_INT,
 		GL_FALSE,
 		sizeof(VoxelVertex),
-		static_cast<void*>(nullptr)
+		(void*)(0)
 	);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(

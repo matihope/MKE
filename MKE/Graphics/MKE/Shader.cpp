@@ -115,3 +115,9 @@ void mk::Shader::setVector3f(const std::string& name, const math::Vector3f& vec)
 		program_id, glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z
 	);
 }
+
+void mk::Shader::setVector3i(const std::string& name, const math::Vector3i& vec) const {
+	glProgramUniform3i(
+		program_id, glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z
+	);
+}

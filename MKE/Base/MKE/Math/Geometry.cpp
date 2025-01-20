@@ -114,12 +114,4 @@ namespace mk::math {
 		return points;
 	}
 
-	std::vector<Vector3i> gridTraverse(Vector3f start, Vector3f direction, float max_length) {
-		std::vector<Vector3i> points;
-		// $ray = start + t * direction$ for $t >= 0$
-		// stepXYZ - sign of direction
-		// tMaxXYZ - min val fo $t$ the ray crosses boundary.
-		// tDeltaXYZ - how far along the ray we must move on the axis to change width of the pixel.
-	}
-
 }  // namespace mk::Math

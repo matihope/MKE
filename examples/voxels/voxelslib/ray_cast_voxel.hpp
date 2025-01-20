@@ -4,12 +4,9 @@
  * Algorithm for Ray Tracing" (Amanatides and Woo).
  */
 
-
 #include "MKE/Math/Vector.hpp"
 
 
-#include <limits>
-#include <algorithm>
 #include <cmath>
 #include <vector>
 

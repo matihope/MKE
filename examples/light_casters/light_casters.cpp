@@ -49,7 +49,7 @@ public:
 	void onReady(mk::Game& game) override {
 		// Camera
 		cam = addChild<mk::Camera3D>(game);
-		cam->setPosition({ 5.f });
+		cam->setPosition(mk::math::Vector3f{ 5.f });
 		cam->lookAt({ 0.f });
 
 		// Objects

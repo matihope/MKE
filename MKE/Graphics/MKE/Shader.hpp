@@ -32,6 +32,7 @@ namespace mk {
 		void setColor(const std::string& name, mk::Color color) const;
 		void setMatrix4f(const std::string& name, const math::Matrix4f& value) const;
 		void setVector3f(const std::string& name, const math::Vector3f& vec) const;
+		void setVector3i(const std::string& name, const math::Vector3i& vec) const;
 
 	private:
 		bool is_compiled = false;

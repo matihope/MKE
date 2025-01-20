@@ -8,7 +8,7 @@ uniform sampler2D ourTexture;
 
 struct Highlighter {
     bool on;
-    vec3 position;
+    ivec3 position;
 };
 
 uniform Highlighter highlight;
@@ -55,4 +55,3 @@ void main()
         }
     }
 }
-

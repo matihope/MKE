@@ -14,23 +14,17 @@ enum class ChunkDrawMode {
 
 class Chunk final: public mk::WorldEntity3D {
 public:
-	Chunk(mk::Camera3D* camera, const mk::math::Vector3i position):
-		  int_position(position),
-		  camera(camera) {
-		setPosition(position.type<float>() * CHUNK_SIZE);
-		voxels.fill(GameItem::AIR);
-	}
+	Chunk(mk::Camera3D* camera, const mk::math::Vector3i position, World& world);
 
 	void onReady(mk::Game& game) override;
 
-	void generateTerrain(mk::Game& game, World& world);
-	void generateTrees(mk::Game& game, World& world);
+	void generateTerrain(mk::Game& game);
+	void generateTrees(mk::Game& game);
 
-	void onDraw(
-		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
-	) const override;
+	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
+		const override;
 
-	void      setBlock(usize x, usize y, usize z, GameItem type, bool rebuild = true);
+	void     setBlock(usize x, usize y, usize z, GameItem type, bool rebuild = true);
 	GameItem getBlockType(usize x, usize y, usize z) const;
 	GameItem getBlockType(mk::math::Vector3u pos) const;
 
@@ -39,6 +33,7 @@ public:
 	void setChunkDrawMode(const ChunkDrawMode mode) { chunk_draw_mode = mode; }
 
 private:
+	World&             world;
 	mk::math::Vector3i int_position;
 	mk::Camera3D*      camera;
 	void               clearFacesOf(GameItem type);
@@ -51,28 +46,3 @@ private:
 	std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> voxels{};
 	std::map<GameItem, VoxelTextureFaces>                      faces{};
 };
-
-/*
-Idea:
-
-====
-Every chunk consists of 64 * 6 layers of faces.
-Each Layer has to be reconstructed on the modification of the chunk.
-This cannot help us draw fewer triangles, but can help us reduce the number of draw calls.
-
-If only we knew how to draw multiple textures on one rectangle (triangle pair).
-How could we get information about a block_kind inside fragment_shader.
-====
-
-====
-!!!
-Each texture has its own VertexArray, and we compose each chunk of faces of a single texture.
-
-====
-!!!
-Positive z = north
-Positive y = UP
-Positive x = east
-
-
-*/
