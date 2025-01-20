@@ -40,11 +40,11 @@ add_library(MKE-Common
     MKE/Collisions/CollisionComponent/CollisionComponent.hpp
     MKE/Collisions/CollisionShape/CollisionShape.cpp
     MKE/Collisions/CollisionShape/CollisionShape.hpp
-        MKE/Nodes/GUI/TextureRect.cpp
-        MKE/Nodes/GUI/TextureRect.hpp
-        MKE/Nodes/GUI/alignments.hpp
-        MKE/Nodes/GUI/ColorRect.cpp
-        MKE/Nodes/GUI/ColorRect.hpp
+    MKE/Nodes/GUI/TextureRect.cpp
+    MKE/Nodes/GUI/TextureRect.hpp
+    MKE/Nodes/GUI/Alignments.hpp
+    MKE/Nodes/GUI/ColorRect.cpp
+    MKE/Nodes/GUI/ColorRect.hpp
 )
 target_link_libraries(MKE-Common MKE-Base MKE-Graphics ${FREETYPE_LIBRARIES})
 target_include_directories(MKE-Common PUBLIC ${FREETYPE_INCLUDE_DIRS})
