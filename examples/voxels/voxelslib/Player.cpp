@@ -254,7 +254,7 @@ mk::math::Vector3f
 						for (usize coord = 0; coord < 3; coord++) {
 							auto sph_now = sph
 							             + mk::math::Vector3d(
-											   coord == 0 ? dspeed.vec_data[0] : 0.f,
+											   coord == 0 ? dspeed.vec_data[0]: 0.f,
 											   coord == 1 ? dspeed.vec_data[1] : 0.f,
 											   coord == 2 ? dspeed.vec_data[2] : 0.f
 										 );
@@ -283,15 +283,6 @@ mk::math::Vector3f
 											game, static_cast<i32>(std::ceil(getPlayerHp() - dmg))
 										);
 									}
-									// dspeed.vec_data[coord]
-									// 	= std::max(
-									// 		  0.,
-									// 		  dspeed.vec_data[coord]
-									// 			  - overlap.vec_data[coord]
-									// 					* (mk::math::sign(dspeed.vec_data[coord]) +
-									// 0.01)
-									// 	  )
-									//     * mk::math::sign(dspeed.vec_data[coord]);
 									dspeed.vec_data[coord] = 0.;
 								}
 							}

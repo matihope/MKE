@@ -29,8 +29,6 @@ namespace {
 	constexpr usize getIdx(const mk::math::Vector3i pos) { return getIdx(pos.x, pos.y, pos.z); }
 }
 
-void Chunk::onReady(mk::Game& game) {}
-
 void Chunk::generateTerrain(mk::Game& game) {
 	for (i32 x = 0; x < CHUNK_SIZE; ++x) {
 		for (i32 z = 0; z < CHUNK_SIZE; ++z) {
@@ -106,13 +104,6 @@ void Chunk::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 	context.transform *= getTransform();
 	world.chunk_shader.setVector3i("chunk_position", int_position * CHUNK_SIZE);
 	target.render(*faces, context);
-	// for (const auto& [tp, arr]: faces) {
-	// 	const bool is_translucent = IS_TRANSLUCENT[static_cast<usize>(tp)];
-	// 	if ((chunk_draw_mode == ChunkDrawMode::ONLY_TRANSLUCENT && is_translucent)
-	// 	    || (chunk_draw_mode == ChunkDrawMode::ONLY_OPAQUE && !is_translucent)) {
-	// 		target.render(arr, context);
-	// 	}
-	// }
 }
 
 void Chunk::setBlock(
@@ -140,7 +131,8 @@ constexpr bool isFaceVisible(
 	GameItem                                                          pos_type,
 	const std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
 	const mk::math::Vector3i                                          pos,
-	const FaceDir                                                     face
+	const FaceDir                                                     face,
+	World&                                                            world
 ) {
 	if (voxels[getIdx(pos)] != pos_type) return false;
 	if (const auto new_pos = pos + getDirVec(face); isValid(new_pos)) {
@@ -154,7 +146,8 @@ void buildFaceArray(
 	GameItem                                                          type,
 	const std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
 	const FaceDir                                                     dir,
-	VoxelTextureFaces&                                                face_array
+	VoxelTextureFaces&                                                face_array,
+	World&                                                            world
 ) {
 	std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> faces_to_draw{};
 	std::array<bool, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE> checked{};
@@ -162,7 +155,8 @@ void buildFaceArray(
 	for (i32 x = 0; x < CHUNK_SIZE; x++) {
 		for (i32 y = 0; y < CHUNK_SIZE; y++)
 			for (i32 z = 0; z < CHUNK_SIZE; z++)
-				faces_to_draw[getIdx(x, y, z)] = isFaceVisible(type, voxels, { x, y, z }, dir);
+				faces_to_draw[getIdx(x, y, z)]
+					= isFaceVisible(type, voxels, { x, y, z }, dir, world);
 	}
 
 	const auto bottom_left           = getBottomLeftFor(dir);
@@ -232,7 +226,7 @@ void Chunk::buildMeshes() {
 		if (anyOf(voxels, voxel_type)) {
 			// Greedy meshing here.
 			for (usize dir_id = 0; dir_id < FACE_DIRS; dir_id++)
-				buildFaceArray(voxel_type, voxels, static_cast<FaceDir>(dir_id), *faces);
+				buildFaceArray(voxel_type, voxels, static_cast<FaceDir>(dir_id), *faces, world);
 		}
 	}
 	faces->save();

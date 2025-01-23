@@ -17,8 +17,6 @@ class Chunk final: public mk::WorldEntity3D {
 public:
 	Chunk(mk::Camera3D* camera, mk::math::Vector3i position, World& world);
 
-	void onReady(mk::Game& game) override;
-
 	void generateTerrain(mk::Game& game);
 	void generateTrees(mk::Game& game);
 

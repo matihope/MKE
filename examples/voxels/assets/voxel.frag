@@ -23,6 +23,8 @@ uniform float TEXTURE_WIDTH;
 uniform float TEXTURE_HEIGHT;
 uniform bool FOG_ON;
 
+uniform float TIME;
+
 vec2 getBaseTexCoords() {
     vec3 dec;
     modf(pixelPos.x, dec.x);
@@ -30,6 +32,7 @@ vec2 getBaseTexCoords() {
     modf(pixelPos.z, dec.z);
 
     vec3 rems = pixelPos - dec;
+
     if(rems.x < 0) rems.x += 1;
     if(rems.y < 0) rems.y += 1;
     if(rems.z < 0) rems.z += 1;
@@ -53,7 +56,20 @@ vec2 getBaseTexCoords() {
 
 vec2 getTexCoords() {
     vec2 base = getBaseTexCoords();
+
+//     Move water
+    if (block_type == 9) {
+        base.x += (sin(TIME * 0.9) - 1) / 6.0;
+        base.y += (cos(TIME * 1.2) - 1) / 6.0;
+        if (base.x > 1.0) base.x -= 1.0;
+        if (base.x < 0.0) base.x += 1.0;
+        if (base.y > 1.0) base.y -= 1.0;
+        if (base.y < 0.0) base.y += 1.0;
+    }
+
     base.x += block_type;
+
+
     switch (direction) {
         case 0:
         case 1:
@@ -77,6 +93,7 @@ void main()
 
     vec3 highlight_center = highlight.position + 0.5;
     vec3 dist_to_center = abs(highlight_center - pixelPos);
+    float len_to_cam = length(highlight_center - player_position);
 
     if (highlight.on
     && dist_to_center.x <= 0.5 + BUFF
@@ -84,7 +101,7 @@ void main()
     && dist_to_center.z <= 0.5 + BUFF
     ) {
         // Now have fun
-        BUFF *= sqrt(length(highlight_center - player_position));
+        BUFF *= sqrt(len_to_cam);
 
         int goodx = int(dist_to_center.x >= 0.5 - BUFF);
         int goody = int(dist_to_center.y >= 0.5 - BUFF);

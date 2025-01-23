@@ -35,7 +35,7 @@ void GameInput::handleEvent(const Event& event) {
 	else if (auto ev = event.get<Event::MouseButtonReleased>(); ev)
 		pressed_mouse[(usize) ev->button] = false;
 	else if (auto ev = event.get<Event::MouseMoved>(); ev) {
-		if (mouse_position != math::Vector2f(-1.f)) mouse_delta = ev->new_position - mouse_position;
+		if (mouse_position != math::Vector2f(-1.f)) mouse_delta += ev->new_position - mouse_position;
 		mouse_position = ev->new_position;
 	}
 }

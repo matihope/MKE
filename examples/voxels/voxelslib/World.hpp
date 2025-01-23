@@ -23,6 +23,8 @@ public:
 
 	void onEvent(mk::Game& game, const mk::Event& event) override;
 
+	void onUpdate(mk::Game& game, float dt) override;
+
 	void onDraw(
 		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
 	) const override;
@@ -57,6 +59,7 @@ private:
 	GameMode requested_player_mode;
 
 	const mk::Texture* texture_batch{};
+	float time = 0.f;
 };
 
 inline void World::setFogDistance(float fd) {

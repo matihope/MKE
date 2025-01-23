@@ -48,6 +48,11 @@ void World::onEvent(mk::Game& game, const mk::Event& event) {
 	}
 }
 
+void World::onUpdate(mk::Game& game, const float dt) {
+	time += dt;
+	chunk_shader.setFloat("TIME", time);
+}
+
 void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game) const {
 	if (wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -115,5 +120,5 @@ i32 World::getChunkGenHeight(const i32 x, const i32 z) const {
 
 	constexpr double mountains_level = 0.8;
 	if (value >= mountains_level) value *= std::pow(1 + value - mountains_level, 4);
-	return value * CHUNK_SIZE + 3;
+	return value * CHUNK_SIZE * 3 + 3;
 }
