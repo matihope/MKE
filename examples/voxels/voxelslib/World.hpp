@@ -54,7 +54,7 @@ private:
 	std::list<Chunk> chunk_list;
 	// std::unordered_map<i32, std::unordered_map<i32, std::unordered_map<i32, Chunk*>>> chunks;
 	// std::map<i32, std::map<i32, std::map<i32, Chunk*>>> chunks;
-	std::vector<Chunk*> chunks = {};
+	std::unordered_map<usize, Chunk*> chunks = {};
 
 	GameMode requested_player_mode;
 
@@ -65,6 +65,6 @@ private:
 inline void World::setFogDistance(float fd) {
 	FOG_DISTANCE = fd;
 	chunk_shader.setFloat("FOG_DIST", CHUNK_SIZE * FOG_DISTANCE);
-	chunk_shader.setFloat("FOG_DIST_0", CHUNK_SIZE * (FOG_DISTANCE + 1));
+	chunk_shader.setFloat("FOG_DIST_0", CHUNK_SIZE * (FOG_DISTANCE + 3));
 }
 

@@ -10,7 +10,7 @@ World::World(const GameMode player_mode, const i32 world_size, const std::option
 void World::onReady(mk::Game& game) {
 	std::cerr << "Creating a world of " << CHUNK_COUNT << " chunks, "
 			  << (CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * CHUNK_COUNT << " voxels..." << std::endl;
-	chunks.resize(CHUNK_COUNT);
+	// chunks.resize(CHUNK_COUNT);
 	chunk_shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
 
 	texture_batch = game.resources().getTexture("texture_batch.png");
@@ -63,23 +63,31 @@ void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 	context.shader  = &chunk_shader;
 	context.texture = texture_batch;
 
-	const float DIST = CHUNK_SIZE * (FOG_DISTANCE + 3);
+	const float RENDER_DISTANCE = CHUNK_SIZE * (FOG_DISTANCE + std::sqrt(3) * 3);
 
 	// Drawing chunks...
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
+
+	constexpr auto cmp = [](auto p1, auto p2) { return p1.first < p2.first; };
+	std::priority_queue<
+		std::pair<float, const Chunk*>,
+		std::vector<std::pair<float, const Chunk*>>,
+		decltype(cmp)>
+		chunk_queue(cmp);
+
 	for (auto& chunk: chunk_list) {
-		// const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_OPAQUE);
-		if (auto pos = chunk.getPosition();
-		    (player->getCamera()->getPosition() - pos).lengthSquared() <= DIST * DIST)
-			chunk.drawEntity(target, context, game, getDrawMode(), true);
+		const auto chunk_center = chunk.getPosition().type<float>() + CHUNK_SIZE / 2.0;
+		const auto dist_vec     = (player->getCamera()->getPosition() - chunk_center);
+		const auto dist         = dist_vec.lengthSquared();
+		if (dist <= RENDER_DISTANCE * RENDER_DISTANCE) chunk_queue.emplace(dist, &chunk);
 	}
-	// for (auto& chunk: chunk_list) {
-	// 	const_cast<Chunk&>(chunk).setChunkDrawMode(ChunkDrawMode::ONLY_TRANSLUCENT);
-	// 	if (auto pos = chunk.getPosition();
-	// 	    (player->getCamera()->getPosition() - pos).lengthSquared() <= DIST * DIST)
-	// 		chunk.drawEntity(target, context, game, getDrawMode(), true);
-	// }
+
+	while (!chunk_queue.empty()) {
+		auto [_, chunk] = chunk_queue.top();
+		chunk->drawEntity(target, context, game, getDrawMode(), true);
+		chunk_queue.pop();
+	}
 }
 
 float World::getFogDistance() const { return FOG_DISTANCE; }
@@ -95,7 +103,7 @@ std::pair<Chunk*, mk::math::Vector3i>
 	const auto ch_z  = mk::math::customDiv(world_pos.z, CHUNK_SIZE);
 	const auto idx   = getChunkIndex({ ch_x, ch_y, ch_z });
 	Chunk*     chunk = nullptr;
-	if (idx < chunks.size()) chunk = chunks[idx];
+	if (idx < chunks.size()) chunk = chunks.at(idx);
 	return { chunk, { x, y, z } };
 }
 
@@ -105,13 +113,13 @@ usize World::getChunkIndex(const mk::math::Vector3i coords) const {
 	if (coords.z < -WORLD_SIZE || coords.z > WORLD_SIZE) return std::numeric_limits<usize>::max();
 	const i32  WIDTH  = WORLD_SIZE * 2 + 1;
 	const auto ch_pos = coords + mk::math::Vector3i{ WORLD_SIZE, 0, WORLD_SIZE };
-	return static_cast<usize>(ch_pos.y * WIDTH * WIDTH + ch_pos.x * WIDTH + ch_pos.z);
+	return ch_pos.y * WIDTH * WIDTH + ch_pos.x * WIDTH + ch_pos.z;
 }
 
 void World::addChunk(mk::Game& game, Chunk&& chunk) {
 	const auto idx = getChunkIndex(chunk.getIntPosition());
 	chunk_list.push_back(std::move(chunk));
-	chunks.at(idx) = &chunk_list.back();
+	chunks[idx] = &chunk_list.back();
 	chunk_list.back().onReady(game);
 }
 
@@ -120,5 +128,5 @@ i32 World::getChunkGenHeight(const i32 x, const i32 z) const {
 
 	constexpr double mountains_level = 0.8;
 	if (value >= mountains_level) value *= std::pow(1 + value - mountains_level, 4);
-	return value * CHUNK_SIZE * 3 + 3;
+	return value * CHUNK_SIZE * 2 + 3;
 }

@@ -248,20 +248,19 @@ mk::math::Vector3f
 	dspeed *= ddt;
 	if (!mk::math::isZero(dspeed.lengthSquared())) {
 		for (auto sph: getUpperLowerSphere()) {
-			for (i32 dx = -1; dx < 2; dx++) {
-				for (i32 dy = -1; dy < 2; dy++) {
-					for (i32 dz = -1; dz < 2; dz++) {
-						for (usize coord = 0; coord < 3; coord++) {
+			for (usize coord = 0; coord < 3; coord++) {
+				for (i32 dx = -1; dx < 2; dx++) {
+					for (i32 dy = -1; dy < 2; dy++) {
+						for (i32 dz = -1; dz < 2; dz++) {
+							if (dspeed.vec_data[coord] == 0) continue;
 							auto sph_now = sph
 							             + mk::math::Vector3d(
-											   coord == 0 ? dspeed.vec_data[0]: 0.f,
-											   coord == 1 ? dspeed.vec_data[1] : 0.f,
-											   coord == 2 ? dspeed.vec_data[2] : 0.f
+											   dspeed.vec_data[0],
+											   coord >= 1 ? dspeed.vec_data[1] : 0.f,
+											   coord >= 2 ? dspeed.vec_data[2] : 0.f
 										 );
 							auto sph_voxel = mk::math::Vector3i(
-								std::floorf(sph_now.x),
-								std::floorf(sph_now.y),
-								std::floorf(sph_now.z)
+								std::floor(sph_now.x), std::floor(sph_now.y), std::floor(sph_now.z)
 							);
 
 							auto tested_voxel = sph_voxel + mk::math::Vector3i(dx, dy, dz);
