@@ -3,11 +3,9 @@
 
 /*
  * TODO:
- * - Add Trees
- *
- * -
  * - Player UI (better inventory)
  * - Improve drawing speed
+ * - Add crafting
  *
  * - Fix translucency?
  * - Infinite world

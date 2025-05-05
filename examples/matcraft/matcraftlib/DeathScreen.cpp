@@ -23,7 +23,7 @@ void DeathScreen::onEvent(mk::Game& game, const mk::Event& event) {
 	if (const auto ev = event.get<mk::Event::WindowResized>(); ev) reposition(game);
 }
 
-void DeathScreen::onUpdate(mk::Game& game, float dt) {
+void DeathScreen::onUpdate(mk::Game& game, float) {
 	if (menu_btn->isPressed()) game.popScene();
 }
 

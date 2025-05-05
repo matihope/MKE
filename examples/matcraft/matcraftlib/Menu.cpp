@@ -57,7 +57,7 @@ void Menu::onEvent(mk::Game& game, const mk::Event& event) {
 	}
 }
 
-void Menu::onUpdate(mk::Game& game, float dt) {
+void Menu::onUpdate(mk::Game& game, float) {
 	if (play->isPressed()) game.addScene<World>(gamemode, world_size);
 
 	if (world_size_up->isPressed() && world_size < 1000) world_size++;

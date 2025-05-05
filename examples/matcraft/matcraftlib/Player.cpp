@@ -39,7 +39,7 @@ void Player::initialReposition() {
 	camera->setPosition(getPosition());
 }
 
-void Player::onUpdate(mk::Game& game, const float dt) {
+void Player::onUpdate(mk::Game& game, const float) {
 	if (game.getRenderWindow().getMouseCursorMode() == mk::Window::MouseMode::GRABBED) {
 		// Rotate camera
 		auto [mouse_dx, mouse_dy] = game.getMouseDelta().vec_data;

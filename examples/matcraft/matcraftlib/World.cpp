@@ -3,8 +3,8 @@
 #include "MKE/Random.hpp"
 
 World::World(const GameMode player_mode, const i32 world_size, const std::optional<usize> seed):
-	  perlin_noise(seed ? seed.value() : mk::Random::getInt(0, 255)),
 	  WORLD_SIZE(world_size),
+	  perlin_noise(seed ? seed.value() : mk::Random::getInt(0, 255)),
 	  requested_player_mode(player_mode) {}
 
 void World::onReady(mk::Game& game) {
@@ -39,7 +39,7 @@ void World::onReady(mk::Game& game) {
 	player->initialReposition();
 }
 
-void World::onEvent(mk::Game& game, const mk::Event& event) {
+void World::onEvent(mk::Game&, const mk::Event& event) {
 	if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 		if (ev->key == mk::input::KEY::T) wireframe ^= 1;
 		if (ev->key == mk::input::KEY::F) chunk_shader.setBool("FOG_ON", fog_on ^= 1);
@@ -48,7 +48,7 @@ void World::onEvent(mk::Game& game, const mk::Event& event) {
 	}
 }
 
-void World::onUpdate(mk::Game& game, const float dt) {
+void World::onUpdate(mk::Game&, const float dt) {
 	time += dt;
 	chunk_shader.setFloat("TIME", time);
 }
@@ -92,8 +92,8 @@ void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 
 float World::getFogDistance() const { return FOG_DISTANCE; }
 
-std::pair<Chunk*, mk::math::Vector3i>
-	World::getChunkAndPos(const mk::math::Vector3i world_pos) const {
+std::pair<Chunk*, mk::math::Vector3i> World::getChunkAndPos(const mk::math::Vector3i world_pos
+) const {
 	auto [x, y, z] = (world_pos % CHUNK_SIZE).vec_data;
 	if (x < 0) x += CHUNK_SIZE;
 	if (y < 0) y += CHUNK_SIZE;
