@@ -1,6 +1,6 @@
 # MK Engine (MKE)
 
-A personal general purpose C++ game engine.
+A personal general purpose C++/OpenGL game engine.
 
 ## Showcase
 
