@@ -15,8 +15,8 @@ A personal general purpose C++ game engine.
     * Destroyable/placeable blocks
     * Transparent materials
     * Simple 3D physics (player/world collisions)
-  ![Menu](readme_res/matcraft_menu.png)
   ![Gameplay](readme_res/matcraft_gameplay.png)
+  ![Menu](readme_res/matcraft_menu.png)
   ![House](readme_res/matcraft_house.png)
 
 ## Setup
