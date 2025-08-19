@@ -207,7 +207,7 @@ void mk::Window::setRawMouseMotion(const bool enable) const {
 		else
 			glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
 	else
-		std::cerr << " -- Error: Raw mouse motion not supported!" << '\n';
+		std::cerr << " -- Warning: Raw mouse motion not supported!" << '\n';
 }
 
 mk::Window::~Window() { glfwDestroyWindow(window); }
