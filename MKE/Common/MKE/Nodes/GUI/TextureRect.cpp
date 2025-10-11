@@ -5,7 +5,7 @@ namespace mk::gui {
 		setTexture(texture);
 	}
 
-	void TextureRect::onDraw(RenderTarget& target, DrawContext context, const Game& game) const {
+	void TextureRect::onDraw(RenderTarget& target, DrawContext context, const Game&) const {
 		if (texture) {
 			context.transform *= getTransform();
 			context.texture = texture;

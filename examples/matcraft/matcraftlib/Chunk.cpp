@@ -29,7 +29,7 @@ namespace {
 	constexpr usize getIdx(const mk::math::Vector3i pos) { return getIdx(pos.x, pos.y, pos.z); }
 }
 
-void Chunk::generateTerrain(mk::Game& game) {
+void Chunk::generateTerrain(mk::Game& ) {
 	for (i32 x = 0; x < CHUNK_SIZE; ++x) {
 		for (i32 z = 0; z < CHUNK_SIZE; ++z) {
 			i32 TOP_BLOCK = world.getChunkGenHeight(
@@ -63,7 +63,7 @@ void Chunk::generateTerrain(mk::Game& game) {
 	}
 }
 
-void Chunk::generateTrees(mk::Game& game) {
+void Chunk::generateTrees(mk::Game& ) {
 	constexpr i32 LEAF_BUFF = 2;
 	for (i32 x = LEAF_BUFF; x < CHUNK_SIZE - LEAF_BUFF - 1; ++x) {
 		for (i32 z = LEAF_BUFF; z < CHUNK_SIZE - LEAF_BUFF - 1; ++z) {
@@ -132,7 +132,7 @@ constexpr bool isFaceVisible(
 	const std::array<GameItem, CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE>& voxels,
 	const mk::math::Vector3i                                          pos,
 	const FaceDir                                                     face,
-	World&                                                            world
+	World&                                                           
 ) {
 	if (voxels[getIdx(pos)] != pos_type) return false;
 	if (const auto new_pos = pos + getDirVec(face); isValid(new_pos)) {

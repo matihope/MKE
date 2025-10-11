@@ -59,8 +59,6 @@ void PlayerUI::onFree(mk::Game& game) { setCursorMode(CursorMode::FREE_MOUSE, ga
 void PlayerUI::onReady(mk::Game& game) {
 	setCursorMode(CursorMode::PLAYING, game);
 
-	auto [win_w, win_h] = game.getWindowSize().type<float>().vec_data;
-
 	// Load crosshair
 	auto crosshair_texture = game.resources().getTexture("crosshair.png");
 	game.resources().setTextureSmooth("crosshair.png", false);
