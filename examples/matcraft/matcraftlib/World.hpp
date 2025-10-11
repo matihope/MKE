@@ -15,6 +15,7 @@ class World final: public mk::WorldEntity3D {
 	const i32 WORLD_SIZE;  // CHUNK_CNT = (WORLD_SIZE * 2 + 1) ** 2 * 2
 	const i32 CHUNK_LAYERS = 4;
 	const i32 CHUNK_COUNT  = (WORLD_SIZE * 2 + 1) * (WORLD_SIZE * 2 + 1) * CHUNK_LAYERS;
+	static constexpr mk::Color BG_COLOR = mk::Color(182, 242, 243);
 
 public:
 	explicit World(GameMode player_mode, i32 world_size, std::optional<usize> seed = {});
@@ -25,9 +26,8 @@ public:
 
 	void onUpdate(mk::Game& game, float dt) override;
 
-	void onDraw(
-		mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game
-	) const override;
+	void onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::Game& game)
+		const override;
 
 	Player* player{};
 	bool    wireframe = false;
@@ -37,7 +37,7 @@ public:
 
 	void setFogDistance(float fd);
 
-	float FOG_DISTANCE = 20;
+	float fog_distance = 20;
 
 	mk::Shader chunk_shader;
 
@@ -51,6 +51,8 @@ private:
 	void  addChunk(mk::Game& game, Chunk&& chunk);
 	usize getChunkIndex(mk::math::Vector3i coords) const;
 
+	void reloadChunkShader();
+
 	std::list<Chunk> chunk_list;
 	// std::unordered_map<i32, std::unordered_map<i32, std::unordered_map<i32, Chunk*>>> chunks;
 	// std::map<i32, std::map<i32, std::map<i32, Chunk*>>> chunks;
@@ -59,12 +61,5 @@ private:
 	GameMode requested_player_mode;
 
 	const mk::Texture* texture_batch{};
-	float time = 0.f;
+	float              time = 0.f;
 };
-
-inline void World::setFogDistance(float fd) {
-	FOG_DISTANCE = fd;
-	chunk_shader.setFloat("FOG_DIST", CHUNK_SIZE * FOG_DISTANCE);
-	chunk_shader.setFloat("FOG_DIST_0", CHUNK_SIZE * (FOG_DISTANCE + 3));
-}
-

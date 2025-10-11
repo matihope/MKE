@@ -16,13 +16,8 @@ void World::onReady(mk::Game& game) {
 	texture_batch = game.resources().getTexture("texture_batch.png");
 	game.resources().setTextureSmooth("texture_batch.png", false);
 
-	constexpr auto bg_color = mk::Color(182, 242, 243);
-	game.setClearColor(bg_color);
-	chunk_shader.setColor("BG_COLOR", bg_color);
-	setFogDistance(FOG_DISTANCE);
-	chunk_shader.setFloat("TEXTURE_WIDTH", texture_batch->getSize().x);
-	chunk_shader.setFloat("TEXTURE_HEIGHT", texture_batch->getSize().y);
-	chunk_shader.setBool("FOG_ON", fog_on);
+	game.setClearColor(BG_COLOR);
+	reloadChunkShader();
 
 	player = addChild<Player, 10>(game, *this, requested_player_mode);
 
@@ -43,8 +38,10 @@ void World::onEvent(mk::Game&, const mk::Event& event) {
 	if (const auto ev = event.get<mk::Event::KeyPressed>(); ev) {
 		if (ev->key == mk::input::KEY::T) wireframe ^= 1;
 		if (ev->key == mk::input::KEY::F) chunk_shader.setBool("FOG_ON", fog_on ^= 1);
-		if (ev->key == mk::input::KEY::R)
+		if (ev->key == mk::input::KEY::R) {
 			chunk_shader.load(mk::ResPath("voxel.vert"), mk::ResPath("voxel.frag"));
+			reloadChunkShader();
+		}
 	}
 }
 
@@ -63,7 +60,7 @@ void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 	context.shader  = &chunk_shader;
 	context.texture = texture_batch;
 
-	const float RENDER_DISTANCE = CHUNK_SIZE * (FOG_DISTANCE + std::sqrt(3) * 3);
+	const float RENDER_DISTANCE = CHUNK_SIZE * (fog_distance + std::sqrt(3) * 3);
 
 	// Drawing chunks...
 	glEnable(GL_CULL_FACE);
@@ -90,7 +87,7 @@ void World::onDraw(mk::RenderTarget& target, mk::DrawContext context, const mk::
 	}
 }
 
-float World::getFogDistance() const { return FOG_DISTANCE; }
+float World::getFogDistance() const { return fog_distance; }
 
 std::pair<Chunk*, mk::math::Vector3i> World::getChunkAndPos(const mk::math::Vector3i world_pos
 ) const {
@@ -129,4 +126,18 @@ i32 World::getChunkGenHeight(const i32 x, const i32 z) const {
 	constexpr double mountains_level = 0.8;
 	if (value >= mountains_level) value *= std::pow(1 + value - mountains_level, 4);
 	return value * CHUNK_SIZE * 2 + 3;
+}
+
+void World::setFogDistance(float fd) {
+	fog_distance = fd;
+	chunk_shader.setFloat("FOG_DIST", CHUNK_SIZE * fog_distance);
+	chunk_shader.setFloat("FOG_DIST_0", CHUNK_SIZE * (fog_distance + 3));
+}
+
+void World::reloadChunkShader() {
+	setFogDistance(fog_distance);
+	chunk_shader.setBool("FOG_ON", fog_on);
+	chunk_shader.setColor("BG_COLOR", BG_COLOR);
+	chunk_shader.setFloat("TEXTURE_WIDTH", texture_batch->getSize().x);
+	chunk_shader.setFloat("TEXTURE_HEIGHT", texture_batch->getSize().y);
 }
