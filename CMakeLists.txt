@@ -31,7 +31,12 @@ function(add_example example_name USES)
 endfunction(add_example)
 
 macro(add_example_assets example_name)
-    target_compile_definitions(${example_name} PUBLIC "CUSTOM_ASSETS_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/assets\"")
+    target_compile_definitions(${example_name} PRIVATE "CUSTOM_ASSETS_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/assets\"")
+    # Force-include the auto asset-root initializer into this example's TU only.
+    # It reads CUSTOM_ASSETS_PATH (defined just above) and registers the asset
+    # root at startup, so engine-side ResPath loads resolve correctly. The
+    # engine libraries never get this flag, so the macro stays example-local.
+    target_compile_options(${example_name} PRIVATE -include ${CMAKE_SOURCE_DIR}/MKE/Base/MKE/AutoAssetRoot.hpp)
 endmacro(add_example_assets)
 
 # Dependencies

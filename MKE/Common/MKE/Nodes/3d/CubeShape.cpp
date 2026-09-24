@@ -4,3 +4,5 @@ void mk::CubeShape::onDraw(RenderTarget& target, DrawContext context, const Game
 	context.transform *= getTransform();
 	target.render(cube, context);
 }
+
+void mk::CubeShape::setColor(Color color) { cube.setColor(color); }

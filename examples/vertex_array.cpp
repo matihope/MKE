@@ -33,7 +33,7 @@ int main() {
 
 	while (!window.isExitRequested()) {
 		window.clear(mk::Colors::DARK);
-		window.render(vertex_array, mk::DummyTransformable().getTransform());
+		window.render(vertex_array, mk::DrawContext(mk::DummyTransformable().getTransform()));
 		window.display();
 	}
 }

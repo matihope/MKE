@@ -5,6 +5,34 @@
 #include <sstream>
 
 namespace mk {
+	namespace {
+		// Function-local statics: constructed on first use, so setAssetRoot()
+		// running during another TU's static init sees a fully-constructed
+		// object. Namespace-scope globals here would hit the static
+		// initialization order fiasco — the asset-root setter (in the example
+		// TU) can run before this TU's globals are constructed, which would
+		// then reset the value back to empty.
+		std::filesystem::path& assetRootStorage() {
+			static std::filesystem::path root;
+			return root;
+		}
+
+		bool& assetRootSet() {
+			static bool set = false;
+			return set;
+		}
+	}  // namespace
+
+	void setAssetRoot(std::filesystem::path root) {
+		assetRootStorage() = std::move(root);
+		assetRootSet()     = true;
+	}
+
+	const std::filesystem::path& assetRoot() {
+		if (!assetRootSet()) MK_PANIC("Asset root is not set");
+		return assetRootStorage();
+	}
+
 	const std::filesystem::path& ResPath::getPath() const { return real_path; }
 
 	bool ResPath::exists() const { return std::filesystem::exists(real_path); }

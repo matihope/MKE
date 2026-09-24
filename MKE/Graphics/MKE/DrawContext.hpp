@@ -8,10 +8,10 @@ namespace mk {
 	struct DrawContext {
 		DrawContext() = default;
 
-		DrawContext(const Shader* shader);
-		DrawContext(const Texture* texture);
+		explicit DrawContext(const Shader* shader);
+		explicit DrawContext(const Texture* texture);
 
-		DrawContext(const math::Matrix4f& camera);
+		explicit DrawContext(const math::Matrix4f& camera);
 
 		virtual void bind();
 

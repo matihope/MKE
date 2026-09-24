@@ -1,23 +1,26 @@
 #pragma once
 
-#include "MKE/Panic.hpp"
 #include <string>
 #include <filesystem>
 
 namespace mk {
+	// Runtime root that all relative resource paths resolve against.
+	// Set once at startup (see AutoAssetRoot.hpp / setAssetRoot); reading it
+	// before it is set panics. Kept as a runtime value so it lives in exactly
+	// one translation unit: baking it in per-target via a macro caused an ODR
+	// violation, because ResPath's constructor is inline and resolved
+	// differently in the example TU (macro set) vs the engine libraries (macro
+	// unset) — which optimized builds tripped over.
+	void                         setAssetRoot(std::filesystem::path root);
+	const std::filesystem::path& assetRoot();
+
 	class ResPath {
 		friend class std::hash<ResPath>;
 
 	public:
 		ResPath() = default;
 
-		inline ResPath([[maybe_unused]] const std::filesystem::path& path) {
-#ifdef CUSTOM_ASSETS_PATH
-			real_path = std::filesystem::path(CUSTOM_ASSETS_PATH) / path;
-#else
-			MK_PANIC("CUSTOM_ASSETS_PATH is not set");
-#endif
-		}
+		inline ResPath(const std::filesystem::path& path) { real_path = assetRoot() / path; }
 
 		inline ResPath(const char* path): mk::ResPath(std::filesystem::path(path)) {}
 

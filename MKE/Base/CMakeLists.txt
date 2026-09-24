@@ -20,6 +20,7 @@ add_library(MKE-Base
     # ResPath
     MKE/ResPath.cpp
     MKE/ResPath.hpp
+    MKE/AutoAssetRoot.hpp
 
     # Event
     MKE/Event.hpp

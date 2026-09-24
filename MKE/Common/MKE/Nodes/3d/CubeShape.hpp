@@ -12,6 +12,8 @@ namespace mk {
 
 		void onDraw(RenderTarget& target, DrawContext context, const Game& game) const override;
 
+		void setColor(Color color);
+
 	private:
 		CubePrimitive cube;
 	};

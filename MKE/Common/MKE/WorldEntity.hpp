@@ -19,7 +19,7 @@ namespace mk {
 	enum class DrawMode { Mode2D, Mode3D, ModeUI };
 
 	class WorldEntity: public Transformable, public Updatable {
-	protected:
+	private:
 		EntityID m_entityId = detail::id_counter();
 
 		bool         m_toKill = false;
@@ -33,6 +33,11 @@ namespace mk {
 
 		// if is_paused == true returns from updating and does not propagate
 		bool m_is_paused = false;
+
+		// We want to it be ordered to be able to iterate in an ordered way.
+		std::map<i64, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
+
+		void addParent(WorldEntity* parent);
 
 	public:
 		WorldEntity();
@@ -50,11 +55,6 @@ namespace mk {
 		void setVisible(bool visible);
 		void show();
 		void hide();
-
-		// We want to it be ordered to be able to iterate in an ordered way.
-		std::map<i64, std::list<std::unique_ptr<WorldEntity>>> m_entity_pool;
-
-		void addParent(WorldEntity* parent);
 
 		WorldEntity* getParent() const;
 

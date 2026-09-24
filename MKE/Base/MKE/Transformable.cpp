@@ -70,7 +70,9 @@ void mk::Transformable::setPositionBase(const math::Vector3f position) {
 	this->position = position;
 }
 
-void mk::Transformable::moveBase(const math::Vector3f delta) { position += delta; }
+void mk::Transformable::moveBase(const math::Vector3f delta) {
+	setPositionBase(this->position + delta);
+}
 
 void mk::Transformable::rotateBase(math::Vector3f delta) { rotation += delta; }
 

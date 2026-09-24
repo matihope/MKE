@@ -22,7 +22,7 @@ int main() {
 		else
 			text.setString("Test+");
 
-		window.render(text, window.getCurrentView2D().getTransform());
+		window.render(text, mk::DrawContext(window.getCurrentView2D().getTransform()));
 		window.display();
 	}
 }

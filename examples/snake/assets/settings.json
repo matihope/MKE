@@ -1,13 +1,13 @@
 {
     "window": {
-        "width": 1280,
-        "height": 960,
-        "title": "mk448280 - Matcraft",
-        "vsync": true
+        "width": 800,
+        "height": 800,
+        "title": "Snake",
+        "vsync": false
     },
     "viewport": {
-        "width": 1280,
-        "height": 960
+        "width": 800,
+        "height": 800
     },
     "debug": {
         "printFPS": true,
@@ -15,7 +15,7 @@
     },
     "engine": {
         "physicsUpdateCallFreq": 60,
-        "fontPath": "../../assets/fonts/Born2bSportyV2.ttf",
+        "fontPath": "fonts/Born2bSportyV2.ttf",
         "fontSmooth": false
     }
 }
