@@ -3,14 +3,14 @@
         "width": 800,
         "height": 800,
         "title": "Snake",
-        "vsync": false
+        "vsync": true
     },
     "viewport": {
         "width": 800,
         "height": 800
     },
     "debug": {
-        "printFPS": true,
+        "printFPS": false,
         "drawCollisionShapes": false
     },
     "engine": {

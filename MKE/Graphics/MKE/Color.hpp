@@ -28,6 +28,7 @@ namespace mk {
 
 	namespace Colors {
 		constexpr auto WHITE       = Color(255, 255, 255);
+		constexpr auto YELLOW       = Color(255, 255, 0);
 		constexpr auto BLACK       = Color(0, 0, 0);
 		constexpr auto TRANSPARENT = Color(0, 0, 0, 0);
 		constexpr auto DARK        = Color(0x21, 0x21, 0x21);

@@ -22,11 +22,11 @@ namespace mk {
 		// A map of {key, just_pressed}
 		std::array<bool, (usize) input::KEY::_LAST + 1> pressed_key{};
 
-		std::array<bool, (usize) input::MOUSE::BUTTON_8 + 1> pressed_mouse{};
+		std::array<bool, (usize) input::MOUSE::_LAST + 1> pressed_mouse{};
 
 		std::array<bool, (usize) input::KEY::_LAST + 1> prev_pressed_key{};
 
-		std::array<bool, (usize) input::MOUSE::BUTTON_8 + 1> prev_pressed_mouse{};
+		std::array<bool, (usize) input::MOUSE::_LAST + 1> prev_pressed_mouse{};
 
 		math::Vector2f mouse_position{ -1.f };
 		math::Vector2f mouse_delta{};

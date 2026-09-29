@@ -139,13 +139,10 @@ namespace mk {
 	RenderWindow& Game::getRenderWindow() { return m_window; }
 
 	void Game::updateViewportSize() {
-		math::Vector2f viewportScale
-			= scaleToFit(math::Vector2f(m_view_2d.getSize()), getWindowSize());
-		// m_view2d.setViewport(sf::FloatRect(
-		// 	math::Vector2f(0.5f - viewportScale.x / 2, 0.5f - viewportScale.y / 2), viewportScale
-		// ));
-		m_view_2d.setSize(viewportScale);
-		m_window.setView2D(m_view_2d);
+		// math::Vector2f viewportScale
+		// 	= scaleToFit(math::Vector2f(m_view_2d.getSize()), getWindowSize());
+		// m_view_2d.setSize(getWindowSize().type<float>() * viewportScale);
+		// m_window.setView2D(m_view_2d);
 	}
 
 	// const sf::View* Game::getView() { return &m_view; }

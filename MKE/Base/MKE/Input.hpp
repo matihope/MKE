@@ -93,7 +93,11 @@ namespace mk::input {
 		BUTTON_5,
 		BUTTON_6,
 		BUTTON_7,
-		BUTTON_8,  // LAST
+		BUTTON_8,
+
+		// GUARDS
+		_FIRST = BUTTON_1,
+		_LAST  = BUTTON_8
 	};
 	constexpr MOUSE MOUSE_LEFT   = MOUSE::BUTTON_1;
 	constexpr MOUSE MOUSE_RIGHT  = MOUSE::BUTTON_2;

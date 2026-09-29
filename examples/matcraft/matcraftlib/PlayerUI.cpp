@@ -93,7 +93,7 @@ void PlayerUI::onEvent(mk::Game& game, const mk::Event& event) {
 			setCursorMode(CursorMode::PLAYING, game);
 	}
 	if (const auto ev = event.get<mk::Event::MouseScrolled>(); ev)
-		inv->changeSlot(mk::math::sign(ev->delta.y));
+		inv->changeSlot(-mk::math::sign(ev->delta.y));
 }
 
 void PlayerUI::setCursorMode(const CursorMode mode, mk::Game& game) {
