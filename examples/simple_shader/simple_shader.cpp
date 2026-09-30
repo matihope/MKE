@@ -32,9 +32,8 @@ int main() {
 
 	bool run = true;
 	while (run) {
-		mk::Event event;
-		while (window.pollEvent(event))
-			if (event.is<mk::Event::WindowClose>()) run = false;
+		while (auto event = window.pollEvent())
+			if (event->is<mk::Event::WindowClose>()) run = false;
 		window.clear(mk::Colors::DARK);
 
 		mk::Shader::use(&shader);

@@ -20,6 +20,8 @@ add_library(MKE-Common
 
     MKE/Primitives/2d/RectPrimitive.cpp
     MKE/Primitives/2d/RectPrimitive.hpp
+    MKE/Primitives/2d/CirclePrimitive.cpp
+    MKE/Primitives/2d/CirclePrimitive.hpp
     MKE/Primitives/2d/Text.cpp
     MKE/Primitives/2d/Text.hpp
     MKE/Primitives/3d/CubePrimitive.cpp

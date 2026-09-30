@@ -11,13 +11,19 @@
 
 namespace mk::math {
 
-	float _dotProduct(const Vector2f& vec1, const Vector2f& vec2) {
-		return vec1.x * vec2.x + vec1.y * vec2.y;
-	}
 
-	// here vectors are points
-	float _determinant(const Vector2f& tail, const Vector2f& head1, const Vector2f& head2) {
-		return (head1.x - tail.x) * (head2.y - tail.y) - (head2.x - tail.x) * (head1.y - tail.y);
+	namespace {
+		Vector2f getPerpendicular(const Vector2f& vec) { return { -vec.y, vec.x }; }
+
+		float dotProduct(const Vector2f& vec1, const Vector2f& vec2) {
+			return vec1.x * vec2.x + vec1.y * vec2.y;
+		}
+
+		// here vectors are points
+		float determinant(const Vector2f& tail, const Vector2f& head1, const Vector2f& head2) {
+			return (head1.x - tail.x) * (head2.y - tail.y)
+			     - (head2.x - tail.x) * (head1.y - tail.y);
+		}
 	}
 
 	bool isPointInsideConvex(const std::vector<Vector2f>& convex, const Vector2f& point) {
@@ -26,15 +32,13 @@ namespace mk::math {
 		bool has_neg = false;
 		bool has_pos = false;
 		for (std::size_t i = 0; i < convex.size(); i++) {
-			int now_sign = sign(_determinant(point, convex[i], convex[(i + 1) % convex.size()]));
+			int now_sign = sign(determinant(point, convex[i], convex[(i + 1) % convex.size()]));
 			if (now_sign == -1) has_neg = true;
 			if (now_sign == 1) has_pos = true;
 			if (has_neg && has_pos) return false;
 		}
 		return true;
 	}
-
-	Vector2f _getPerpendicular(const Vector2f& vec) { return { -vec.y, vec.x }; }
 
 	bool doShapesIntersect(
 		const std::vector<Vector2f>& shape1, const std::vector<Vector2f>& shape2
@@ -47,21 +51,21 @@ namespace mk::math {
 				s2 = &shape1;
 			}
 			for (size_t i = 0; i < s1->size(); i++) {
-				Vector2f perpendicular = _getPerpendicular(Vector2f(
+				Vector2f perpendicular = getPerpendicular(Vector2f(
 					(*s1)[(i + 1) % s1->size()].x - (*s1)[i].x,
 					(*s1)[(i + 1) % s1->size()].y - (*s1)[i].y
 				));
 				float    min1          = FLOAT_INFINITY;
 				float    max1          = -FLOAT_INFINITY;
 				for (auto j: *s1) {
-					float dp = _dotProduct(perpendicular, j);
+					float dp = dotProduct(perpendicular, j);
 					min1     = std::min(min1, dp);
 					max1     = std::max(max1, dp);
 				}
 				float min2 = FLOAT_INFINITY;
 				float max2 = -FLOAT_INFINITY;
 				for (auto j: *s2) {
-					float dp = _dotProduct(perpendicular, j);
+					float dp = dotProduct(perpendicular, j);
 					min2     = std::min(min2, dp);
 					max2     = std::max(max2, dp);
 				}

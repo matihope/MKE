@@ -98,16 +98,15 @@ namespace mk {
 	}
 
 	void Game::pollEvents() {
-		Event event{};
-		while (m_window.pollEvent(event)) {
-			input_map_normal.handleEvent(event);
-			input_map_physics.handleEvent(event);
+		while (auto event = m_window.pollEvent()) {
+			input_map_normal.handleEvent(*event);
+			input_map_physics.handleEvent(*event);
 
-			if (!m_scene_stack.empty()) m_scene_stack.top()->event(*this, event);
+			if (!m_scene_stack.empty()) m_scene_stack.top()->event(*this, *event);
 
-			if (event.is<Event::WindowClose>())
+			if (event->is<Event::WindowClose>())
 				stop();
-			else if (auto ev = event.get<mk::Event::KeyPressed>(); ev) {
+			else if (auto ev = event->get<mk::Event::KeyPressed>(); ev) {
 				switch (ev->key) {
 				case input::KEY::GRAVE:
 					popScene();
@@ -117,7 +116,7 @@ namespace mk {
 					// skip any other case
 					break;
 				}
-			} else if (auto ev = event.get<mk::Event::WindowResized>(); ev) {
+			} else if (auto ev = event->get<mk::Event::WindowResized>(); ev) {
 				m_fps_label->setPosition(ev->new_size.type<float>().x - 1.f, 1.f);
 				updateViewportSize();
 			}

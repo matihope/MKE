@@ -154,13 +154,13 @@ void mk::Window::addEvent(Event event) {
 	events.push(event);
 }
 
-bool mk::Window::pollEvent(Event& event) {
+std::optional<mk::Event> mk::Window::pollEvent() {
 	if (!events.empty()) {
-		event = events.front();
+		auto event = events.front();
 		events.pop();
-		return true;
+		return event;
 	}
-	return false;
+	return std::nullopt;
 }
 
 void mk::Window::clear(Color color) {

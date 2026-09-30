@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <MKE/Ints.hpp>
 #include <cmath>
 #include <type_traits>
 

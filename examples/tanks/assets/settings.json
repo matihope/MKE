@@ -1,0 +1,17 @@
+{
+    "window": {
+        "width": 800,
+        "height": 800,
+        "title": "Tanks",
+        "vsync": true
+    },
+    "debug": {
+        "printFPS": false,
+        "drawCollisionShapes": false
+    },
+    "engine": {
+        "physicsUpdateCallFreq": 60,
+        "fontPath": "fonts/Born2bSportyV2.ttf",
+        "fontSmooth": false
+    }
+}

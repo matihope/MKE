@@ -13,4 +13,7 @@ namespace mk::math {
 	);
 
 	std::vector<Vector2i> drawLine(Vector2i start, Vector2i end);
+
+	bool isPointInsideConvex(const std::vector<Vector2f> &convex, const Vector2f &point);
+	bool doShapesIntersect(const std::vector<Vector2f> &shape1, const std::vector<Vector2f> &shape2);
 }

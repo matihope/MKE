@@ -33,7 +33,7 @@ namespace mk {
 		void display();
 
 		virtual void addEvent(Event event);
-		bool         pollEvent(Event& event);
+		std::optional<Event>         pollEvent();
 
 		[[nodiscard]]
 		bool isKeyPressed(input::KEY key) const;
