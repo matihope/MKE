@@ -4,9 +4,11 @@
 #include "MKE/Event.hpp"
 #include "MKE/NonCopyable.hpp"
 #include <MKE/Math/Vector.hpp>
+#include <chrono>
 #include <queue>
 
 struct GLFWwindow;
+struct GLFWmonitor;
 
 namespace mk {
 	class Window: public NonCopyable {
@@ -35,6 +37,8 @@ namespace mk {
 		virtual void addEvent(Event event);
 		std::optional<Event>         pollEvent();
 
+		void checkMonitorChange();
+
 		[[nodiscard]]
 		bool isKeyPressed(input::KEY key) const;
 		[[nodiscard]]
@@ -43,6 +47,16 @@ namespace mk {
 		math::Vector2i getMousePosition() const;
 
 		void enableVerticalSync(bool enable);
+
+		/**
+		 * Software frame limiter.
+		 * Pass 0 to disable
+		 */
+		void setFrameRateLimit(u32 fps);
+
+		void setFullscreen(bool enable);
+		[[nodiscard]]
+		bool isFullscreen() const;
 
 		[[nodiscard]]
 		bool isExitRequested() const;
@@ -72,6 +86,15 @@ namespace mk {
 		math::Vector2f mouse_position{ -1.f };
 
 		MouseMode mouse_mode = MouseMode::NORMAL;
+
+		bool           fullscreen = false;
+		math::Vector2i windowed_pos{};
+		math::Vector2u windowed_size{};
+
+		float                                 frame_time_target = 0.f;
+		std::chrono::steady_clock::time_point last_frame_time;
+
+		GLFWmonitor* current_monitor = nullptr;
 
 		// This should not be public, if you wish to you use it please use a method from the
 		// interface, and if there's none, then add it please.

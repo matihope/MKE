@@ -1,3 +1,4 @@
+#include "MKE/Clock.hpp"
 #include "MKE/Event.hpp"
 #include "MKE/Input.hpp"
 #include "MKE/Primitives/2d/CirclePrimitive.hpp"
@@ -6,6 +7,7 @@
 #include "MKE/Transformable.hpp"
 #include <MKE/Math/Vector.hpp>
 #include <MKE/Math/Math.hpp>
+#include <iostream>
 #include <list>
 #include <variant>
 
@@ -102,6 +104,10 @@ int main() {
     mk::CirclePrimitive circle(50.f);
     circle.setPosition(400, 300);
 
+    mk::Clock fps_clock;
+    float     fps_sum   = 0.f;
+    int       fps_count = 0;
+
     while(!window.isExitRequested()) {
         auto x = static_cast<int>(window.isKeyPressed(mk::input::KEY::D)) - window.isKeyPressed(mk::input::KEY::A);
         auto y = static_cast<int>(window.isKeyPressed(mk::input::KEY::S)) - window.isKeyPressed(mk::input::KEY::W);
@@ -110,5 +116,14 @@ int main() {
         window.render(rect, mk::DrawContext(window.getCurrentView2D().getTransform()));
         window.render(circle, mk::DrawContext(window.getCurrentView2D().getTransform()));
         window.display();
+
+        float dt = fps_clock.restart();
+        ++fps_count;
+        fps_sum += dt;
+        if (fps_sum >= 1.f) {
+            std::cout << "FPS: " << fps_count << '\n';
+            fps_count = 0;
+            fps_sum   = 0.f;
+        }
     }
 }

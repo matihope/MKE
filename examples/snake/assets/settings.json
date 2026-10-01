@@ -10,7 +10,7 @@
         "height": 800
     },
     "debug": {
-        "printFPS": false,
+        "printFPS": true,
         "drawCollisionShapes": false
     },
     "engine": {

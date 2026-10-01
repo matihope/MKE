@@ -17,6 +17,10 @@ namespace mk {
 			math::Vector2f scale_factors;
 		};
 
+		struct WindowMonitorChanged {
+			u32 refresh_rate;
+		};
+
 		struct KeyPressed {
 			input::KEY key;
 		};
@@ -68,6 +72,7 @@ namespace mk {
 			WindowClose,
 			WindowResized,
 			WindowScaleFactorChanged,
+			WindowMonitorChanged,
 			KeyPressed,
 			KeyReleased,
 			MouseButtonPressed,
