@@ -7,24 +7,41 @@
 #include "Base.hpp"
 #include "Vector.hpp"
 
+#include <iostream>
+#include <limits>
 #include <vector>
 
 namespace mk::math {
 
+	float dotProduct(const Vector2f& vec1, const Vector2f& vec2) {
+		return vec1.x * vec2.x + vec1.y * vec2.y;
+	}
 
 	namespace {
-		Vector2f getPerpendicular(const Vector2f& vec) { return { -vec.y, vec.x }; }
-
-		float dotProduct(const Vector2f& vec1, const Vector2f& vec2) {
-			return vec1.x * vec2.x + vec1.y * vec2.y;
-		}
 
 		// here vectors are points
 		float determinant(const Vector2f& tail, const Vector2f& head1, const Vector2f& head2) {
 			return (head1.x - tail.x) * (head2.y - tail.y)
 			     - (head2.x - tail.x) * (head1.y - tail.y);
 		}
+
+		struct Projection {
+			float min, max;
+		};
+
+		Projection project(const std::vector<Vector2f>& shape, Vector2f axis) {
+			float min = dotProduct(shape[0], axis);
+			float max = min;
+			for (usize i = 1; i < shape.size(); i++) {
+				const float d = dotProduct(shape[i], axis);
+				min           = std::min(min, d);
+				max           = std::max(max, d);
+			}
+			return { min, max };
+		}
 	}
+
+	Vector2f getPerpendicular(const Vector2f& vec) { return { -vec.y, vec.x }; }
 
 	bool isPointInsideConvex(const std::vector<Vector2f>& convex, const Vector2f& point) {
 		if (convex.size() < 3) return false;
@@ -40,39 +57,45 @@ namespace mk::math {
 		return true;
 	}
 
-	bool doShapesIntersect(
-		const std::vector<Vector2f>& shape1, const std::vector<Vector2f>& shape2
-	) {
-		const std::vector<Vector2f>* s1 = &shape1;
-		const std::vector<Vector2f>* s2 = &shape2;
-		for (size_t t = 0; t < 2; ++t) {
-			if (t == 1) {
-				s1 = &shape2;
-				s2 = &shape1;
-			}
-			for (size_t i = 0; i < s1->size(); i++) {
-				Vector2f perpendicular = getPerpendicular(Vector2f(
-					(*s1)[(i + 1) % s1->size()].x - (*s1)[i].x,
-					(*s1)[(i + 1) % s1->size()].y - (*s1)[i].y
-				));
-				float    min1          = FLOAT_INFINITY;
-				float    max1          = -FLOAT_INFINITY;
-				for (auto j: *s1) {
-					float dp = dotProduct(perpendicular, j);
-					min1     = std::min(min1, dp);
-					max1     = std::max(max1, dp);
-				}
-				float min2 = FLOAT_INFINITY;
-				float max2 = -FLOAT_INFINITY;
-				for (auto j: *s2) {
-					float dp = dotProduct(perpendicular, j);
-					min2     = std::min(min2, dp);
-					max2     = std::max(max2, dp);
-				}
-				if (max2 < min1 || min2 > max1) return false;
-			}
+	bool isPointInsidePolygon(const std::vector<Vector2f>& poly, const Vector2f& p) {
+		bool inside = false;
+		for (std::size_t i = 0, j = poly.size() - 1; i < poly.size(); j = i++) {
+			const Vector2f& a = poly[i];
+			const Vector2f& b = poly[j];
+			// Does edge (a, b) straddle the horizontal line through p,
+			// and is the crossing point to the right of p?
+			if ((a.y > p.y) != (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x)
+				inside = !inside;
 		}
-		return true;
+		return inside;
+	}
+
+	std::optional<CollisionInfo>
+		getCollision(const std::vector<Vector2f>& shape1, const std::vector<Vector2f>& shape2) {
+		float    depth = std::numeric_limits<float>::infinity();
+		Vector2f normal;
+
+		for (const auto& shape: { &shape1, &shape2 })
+			for (usize i = 0; i < shape->size(); i++) {
+				const Vector2f& start = (*shape)[i];
+				const Vector2f& end   = (*shape)[(i + 1) % shape->size()];
+				Vector2f        axis  = getPerpendicular(end - start);
+				if (axis.lengthSquared() < EPS_ZERO) continue;
+				axis = axis.normalizeOrZero();
+
+				const Projection pa = project(shape1, axis);
+				const Projection pb = project(shape2, axis);
+				if (pa.max <= pb.min || pb.max <= pa.min) return std::nullopt;
+
+				const float push_a  = pa.max - pb.min;
+				const float push_b  = pb.max - pa.min;
+				const float overlap = std::min(push_a, push_b);
+				if (overlap < depth) {
+					depth  = overlap;
+					normal = (push_a < push_b) ? -axis : axis;
+				}
+			}
+		return { { normal, depth } };
 	}
 
 	Vector2f findLineIntersection(Vector2f p1, Vector2f p2, Vector2f p3, Vector2f p4) {

@@ -1,6 +1,9 @@
 #include "MKE/Clock.hpp"
+#include "MKE/Color.hpp"
 #include "MKE/Event.hpp"
+#include "MKE/Game.hpp"
 #include "MKE/Input.hpp"
+#include "MKE/Nodes/2d/RectShape.hpp"
 #include "MKE/Primitives/2d/CirclePrimitive.hpp"
 #include "MKE/Primitives/2d/RectPrimitive.hpp"
 #include "MKE/RenderWindow.hpp"
@@ -10,7 +13,8 @@
 #include <iostream>
 #include <list>
 #include <variant>
-
+#include "MKE/WorldEntity.hpp"
+#include "physics/physics.hpp"
 
 namespace theory {
 	struct Wall {
@@ -93,37 +97,56 @@ namespace theory {
 	};
 }
 
+class World: public mk::WorldEntity2D {
+	mk::RectShape*                  rect1;
+	physics::body::StaticBody2D*    body1;
+	mk::RectShape*                  rect2;
+	physics::body::KinematicBody2D* body2;
+
+	physics::World world;
+
+public:
+	void onReady(mk::Game& game) override {
+		rect1 = addChild<mk::RectShape>(game, mk::Colors::WHITE, mk::math::Vector2f{ 50.f, 50.f });
+		body1 = world.addBody(
+			std::make_unique<physics::body::StaticBody2D>(
+				physics::collision::CollisionShape2D(physics::collision::Rectangle({ 50.f, 50.f }))
+			)
+		);
+		body1->setPosition(0, 0);
+
+		rect2 = addChild<mk::RectShape>(game, mk::Colors::RED, mk::math::Vector2f{ 50.f, 50.f });
+		body2 = world.addBody(
+			std::make_unique<physics::body::KinematicBody2D>(
+				physics::collision::CollisionShape2D(physics::collision::Rectangle({ 50.f, 50.f }))
+			)
+		);
+		body2->setPosition(0, 25);
+	}
+
+	void onPhysicsUpdate(mk::Game& game, float dt) override {
+		auto x = static_cast<int>(game.isKeyPressed(mk::input::KEY::D))
+		       - game.isKeyPressed(mk::input::KEY::A);
+		auto y = static_cast<int>(game.isKeyPressed(mk::input::KEY::S))
+		       - game.isKeyPressed(mk::input::KEY::W);
+
+		auto r = static_cast<int>(game.isKeyPressed(mk::input::KEY::E))
+		       - game.isKeyPressed(mk::input::KEY::Q);
+
+		body2->velocity = mk::math::Vector2f(x, y).normalizeOrZero() * 50 * dt;
+		body2->rotate(r * dt * 10);
+		world.step(dt);
+		rect1->setPosition(body1->getPosition());
+		rect2->setPosition(body2->getPosition());
+		rect2->setRotation(body2.getRotation());
+	}
+};
+
 int main() {
 	// auto w = theory::World({ 20, 20 });
 	// w.print(std::cout);
-    mk::RenderWindow window(800, 600, "Test");
-    window.enableVerticalSync(true);
 
-    mk::RectPrimitive rect(mk::math::Vector2f{50.f, 50.f});
-    rect.setPosition(50, 80);
-    mk::CirclePrimitive circle(50.f);
-    circle.setPosition(400, 300);
-
-    mk::Clock fps_clock;
-    float     fps_sum   = 0.f;
-    int       fps_count = 0;
-
-    while(!window.isExitRequested()) {
-        auto x = static_cast<int>(window.isKeyPressed(mk::input::KEY::D)) - window.isKeyPressed(mk::input::KEY::A);
-        auto y = static_cast<int>(window.isKeyPressed(mk::input::KEY::S)) - window.isKeyPressed(mk::input::KEY::W);
-        circle.move(mk::math::Vector2f(x, y).normalizeOrZero() * 5);
-        window.clear(mk::Color(21, 21, 21));
-        window.render(rect, mk::DrawContext(window.getCurrentView2D().getTransform()));
-        window.render(circle, mk::DrawContext(window.getCurrentView2D().getTransform()));
-        window.display();
-
-        float dt = fps_clock.restart();
-        ++fps_count;
-        fps_sum += dt;
-        if (fps_sum >= 1.f) {
-            std::cout << "FPS: " << fps_count << '\n';
-            fps_count = 0;
-            fps_sum   = 0.f;
-        }
-    }
+	mk::Game game("settings.json");
+	game.addScene<World>();
+	game.run();
 }
