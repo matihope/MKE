@@ -23,15 +23,20 @@ namespace physics {
 			float radius;
 		};
 
-		struct CollisionShape2D {
-			std::variant<Rectangle, Circle> shape = Rectangle({ 1.f });
+		struct CollisionShape2D: public mk::Transformable {
+			std::variant<Rectangle, Circle> shape;
+
+			CollisionShape2D(std::variant<Rectangle, Circle> shape = Rectangle({ 1.f })):
+				  shape(std::move(shape)) {}
 
 			std::optional<mk::math::CollisionInfo> collidesWith(
-				const mk::math::Matrix4f& me_transform,
-				const CollisionShape2D&   he,
-				const mk::math::Matrix4f& he_transform
+				mk::math::Matrix4f      me_transform,
+				const CollisionShape2D& he,
+				mk::math::Matrix4f      he_transform
 			) const {
 				if (&he == this) return std::nullopt;
+				me_transform *= getTransform();
+				he_transform *= he.getTransform();
 				variant_match(shape) {
 					variant_case(Rectangle, me_rect) {
 						variant_match(he.shape) {
@@ -91,6 +96,7 @@ namespace physics {
 
 			bool shouldFree() const { return should_free; }
 
+			collision::CollisionShape2D& getCollisionShape() { return collision_shape; }
 			const collision::CollisionShape2D& getCollisionShape() const { return collision_shape; }
 		};
 

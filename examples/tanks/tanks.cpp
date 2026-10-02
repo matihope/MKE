@@ -108,20 +108,24 @@ class World: public mk::WorldEntity2D {
 public:
 	void onReady(mk::Game& game) override {
 		rect1 = addChild<mk::RectShape>(game, mk::Colors::WHITE, mk::math::Vector2f{ 50.f, 50.f });
+		rect1->setOrigin({25.f, 25.f});
 		body1 = world.addBody(
 			std::make_unique<physics::body::StaticBody2D>(
 				physics::collision::CollisionShape2D(physics::collision::Rectangle({ 50.f, 50.f }))
 			)
 		);
-		body1->setPosition(0, 0);
+		body1->getCollisionShape().setOrigin({ 25.f, 25.f });
+		body1->setPosition(50, 50);
 
 		rect2 = addChild<mk::RectShape>(game, mk::Colors::RED, mk::math::Vector2f{ 50.f, 50.f });
+		rect2->setOrigin({25.f, 25.f});
 		body2 = world.addBody(
 			std::make_unique<physics::body::KinematicBody2D>(
 				physics::collision::CollisionShape2D(physics::collision::Rectangle({ 50.f, 50.f }))
 			)
 		);
-		body2->setPosition(0, 25);
+		body2->getCollisionShape().setOrigin({ 25.f, 25.f });
+		body2->setPosition(75, 75);
 	}
 
 	void onPhysicsUpdate(mk::Game& game, float dt) override {
@@ -134,11 +138,11 @@ public:
 		       - game.isKeyPressed(mk::input::KEY::Q);
 
 		body2->velocity = mk::math::Vector2f(x, y).normalizeOrZero() * 50 * dt;
-		body2->rotate(r * dt * 10);
+		body2->rotate(r * dt * 5);
 		world.step(dt);
 		rect1->setPosition(body1->getPosition());
 		rect2->setPosition(body2->getPosition());
-		rect2->setRotation(body2.getRotation());
+		rect2->setRotation(body2->getRotation());
 	}
 };
 

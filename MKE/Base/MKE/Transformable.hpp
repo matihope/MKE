@@ -38,6 +38,11 @@ namespace mk {
 		void setRotation(math::Vector3f rotation);
 		void setRotation(float d_pitch, float d_yaw, float d_roll);
 
+		[[nodiscard]]
+		math::Vector3f getRotation() const;
+		[[nodiscard]]
+		float getRotation2D() const;
+
 		void setScale(math::Vector3f scale);
 		void setScale(float xscale, float yscale, float zscale);
 

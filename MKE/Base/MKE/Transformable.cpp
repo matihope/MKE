@@ -41,6 +41,10 @@ mk::math::Vector3f mk::Transformable::getPosition() const { return position; }
 
 void mk::Transformable::setRotation(math::Vector3f rotation) { setRotationBase(rotation); }
 
+mk::math::Vector3f mk::Transformable::getRotation() const { return rotation; }
+
+float mk::Transformable::getRotation2D() const { return rotation.x; }
+
 void mk::Transformable::rotate(float d_pitch, float d_yaw, float d_roll) {
 	rotate({ d_pitch, d_yaw, d_roll });
 }
