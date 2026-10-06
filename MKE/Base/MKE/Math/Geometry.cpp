@@ -87,12 +87,12 @@ namespace mk::math {
 				const Projection pb = project(shape2, axis);
 				if (pa.max <= pb.min || pb.max <= pa.min) return std::nullopt;
 
-				const float push_a  = pa.max - pb.min;
-				const float push_b  = pb.max - pa.min;
-				const float overlap = std::min(push_a, push_b);
+				const float push_backward = pa.max - pb.min;
+				const float push_forward  = pb.max - pa.min;
+				const float overlap       = std::min(push_backward, push_forward);
 				if (overlap < depth) {
 					depth  = overlap;
-					normal = (push_a < push_b) ? -axis : axis;
+					normal = (push_backward < push_forward) ? -axis : axis;
 				}
 			}
 		return { { normal, depth } };

@@ -99,7 +99,7 @@ namespace theory {
 
 class World: public mk::WorldEntity2D {
 	mk::RectShape*                  rect1;
-	physics::body::StaticBody2D*    body1;
+	physics::body::KinematicBody2D*    body1;
 	mk::RectShape*                  rect2;
 	physics::body::KinematicBody2D* body2;
 
@@ -110,7 +110,7 @@ public:
 		rect1 = addChild<mk::RectShape>(game, mk::Colors::WHITE, mk::math::Vector2f{ 50.f, 50.f });
 		rect1->setOrigin({25.f, 25.f});
 		body1 = world.addBody(
-			std::make_unique<physics::body::StaticBody2D>(
+			std::make_unique<physics::body::KinematicBody2D>(
 				physics::collision::CollisionShape2D(physics::collision::Rectangle({ 50.f, 50.f }))
 			)
 		);
@@ -134,13 +134,24 @@ public:
 		auto y = static_cast<int>(game.isKeyPressed(mk::input::KEY::S))
 		       - game.isKeyPressed(mk::input::KEY::W);
 
+		auto x2 = static_cast<int>(game.isKeyPressed(mk::input::KEY::ARROW_RIGHT))
+		       - game.isKeyPressed(mk::input::KEY::ARROW_LEFT);
+		auto y2 = static_cast<int>(game.isKeyPressed(mk::input::KEY::ARROW_DOWN))
+		       - game.isKeyPressed(mk::input::KEY::ARROW_UP);
+
 		auto r = static_cast<int>(game.isKeyPressed(mk::input::KEY::E))
 		       - game.isKeyPressed(mk::input::KEY::Q);
+		auto r2 = static_cast<int>(game.isKeyPressed(mk::input::KEY::O))
+		       - game.isKeyPressed(mk::input::KEY::L);
 
-		body2->velocity = mk::math::Vector2f(x, y).normalizeOrZero() * 50 * dt;
-		body2->rotate(r * dt * 5);
+		body1->velocity = mk::math::Vector2f(x, y).normalizeOrZero() * 100;
+		body1->rotate(r * 5 * dt);
+		body2->velocity = mk::math::Vector2f(x2, y2).normalizeOrZero() * 100;
+		body2->rotate(r2 * 5 * dt);
 		world.step(dt);
+
 		rect1->setPosition(body1->getPosition());
+		rect1->setRotation(body1->getRotation());
 		rect2->setPosition(body2->getPosition());
 		rect2->setRotation(body2->getRotation());
 	}

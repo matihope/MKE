@@ -97,6 +97,7 @@ namespace physics {
 			bool shouldFree() const { return should_free; }
 
 			collision::CollisionShape2D& getCollisionShape() { return collision_shape; }
+
 			const collision::CollisionShape2D& getCollisionShape() const { return collision_shape; }
 		};
 
@@ -122,6 +123,8 @@ namespace physics {
 		std::list<std::unique_ptr<body::StaticBody2D>>    static_bodies;
 		std::list<std::unique_ptr<body::KinematicBody2D>> kinematic_bodies;
 
+		std::vector<body::PhysicsBody2D*> getBodies() { std::vector<body::PhysicsBody2D> bodies; }
+
 	public:
 		template<class T>
 		T* addBody(std::unique_ptr<T> body) {
@@ -137,23 +140,33 @@ namespace physics {
 		}
 
 		void step(float dt, usize sub_steps = 4) {
-			for (std::unique_ptr<body::KinematicBody2D>& kinematic_body: kinematic_bodies)
-				for (usize i = 0; i < sub_steps; i++) {
-					kinematic_body->move(kinematic_body->velocity / sub_steps);
-					for (const auto& static_body: static_bodies)
-						if (auto collision_info = kinematic_body->getCollisionShape().collidesWith(
-								kinematic_body->getTransform(),
-								static_body->getCollisionShape(),
-								static_body->getTransform()
-							)) {
-							kinematic_body->move(collision_info->normal * collision_info->depth);
-							kinematic_body->velocity
-							    -= collision_info->normal
-							     * mk::math::dotProduct(
-									   collision_info->normal, kinematic_body->velocity
-								 );
+			for (usize i = 0; i < sub_steps; i++) {
+				for (std::unique_ptr<body::KinematicBody2D>& kb: kinematic_bodies) {
+					kb->move(kb->velocity / sub_steps * dt);
+
+					const auto collision_checker = [&](const auto& body_iterator) {
+						for (const auto& body: body_iterator) {
+							if ((const body::PhysicsBody2D*) body.get() == kb.get()) continue;
+							if (auto collision_info = kb->getCollisionShape().collidesWith(
+									kb->getTransform(),
+									body->getCollisionShape(),
+									body->getTransform()
+								)) {
+								kb->move(collision_info->normal * collision_info->depth);
+								const float vn
+								    = mk::math::dotProduct(collision_info->normal, kb->velocity);
+								if (vn > 0)
+									kb->velocity -= collision_info->normal
+									              * mk::math::dotProduct(
+														collision_info->normal, kb->velocity
+												  );
+							}
 						}
+					};
+					collision_checker(kinematic_bodies);
+					collision_checker(static_bodies);
 				}
+			}
 		}
 	};
 }
