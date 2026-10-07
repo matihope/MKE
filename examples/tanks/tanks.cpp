@@ -97,64 +97,97 @@ namespace theory {
 	};
 }
 
+class Tank: public mk::WorldEntity2D {
+	physics::World&                 world;
+	physics::body::KinematicBody2D* physics_body;
+	mk::RectShape*                  visual_body;
+	mk::Color                       color;
+	mk::math::Vector2f              size;
+
+	mk::input::KEY forward;
+	mk::input::KEY backward;
+	mk::input::KEY right;
+	mk::input::KEY left;
+
+public:
+	Tank(
+		physics::World&    world,
+		mk::Color          color,
+		mk::math::Vector2f size,
+		mk::input::KEY     forward,
+		mk::input::KEY     backward,
+		mk::input::KEY     right,
+		mk::input::KEY     left
+	):
+		  world(world),
+		  color(color),
+		  size(size),
+		  forward(forward),
+		  backward(backward),
+		  right(right),
+		  left(left) {}
+
+	void onReady(mk::Game& game) override {
+		visual_body = addChild<mk::RectShape>(game, color, size);
+		visual_body->setOrigin(size / 2.f);
+		physics_body = world.addBody(
+			std::make_unique<physics::body::KinematicBody2D>(
+				physics::collision::CollisionShape2D(physics::collision::Rectangle(size))
+			)
+		);
+		physics_body->getCollisionShape().setOrigin(size / 2);
+		physics_body->setPosition(400, 300);
+	}
+
+	void onUpdate(mk::Game&, float) override {
+		setPosition(physics_body->getPosition());
+		setRotation(physics_body->getRotation());
+	}
+
+	void onPhysicsUpdate(mk::Game& game, float) override {
+		auto fw = static_cast<int>(game.isKeyPressed(forward)) - game.isKeyPressed(backward);
+		auto rl = static_cast<int>(game.isKeyPressed(right)) - game.isKeyPressed(left);
+
+		physics_body->velocity = mk::math::Vector2f(rl, fw).normalizeOrZero() * 100;
+	}
+};
+
 class World: public mk::WorldEntity2D {
-	mk::RectShape*                  rect1;
-	physics::body::KinematicBody2D*    body1;
-	mk::RectShape*                  rect2;
-	physics::body::KinematicBody2D* body2;
+	std::vector<Tank*> tanks;
 
 	physics::World world;
 
 public:
 	void onReady(mk::Game& game) override {
-		rect1 = addChild<mk::RectShape>(game, mk::Colors::WHITE, mk::math::Vector2f{ 50.f, 50.f });
-		rect1->setOrigin({25.f, 25.f});
-		body1 = world.addBody(
-			std::make_unique<physics::body::KinematicBody2D>(
-				physics::collision::CollisionShape2D(physics::collision::Rectangle({ 50.f, 50.f }))
+		tanks.push_back(
+			addChild<Tank>(
+				game,
+				world,
+				mk::Colors::WHITE,
+				mk::math::Vector2f{ 50.f, 70.f },
+				mk::input::KEY::W,
+				mk::input::KEY::S,
+				mk::input::KEY::D,
+				mk::input::KEY::A
 			)
 		);
-		body1->getCollisionShape().setOrigin({ 25.f, 25.f });
-		body1->setPosition(50, 50);
-
-		rect2 = addChild<mk::RectShape>(game, mk::Colors::RED, mk::math::Vector2f{ 50.f, 50.f });
-		rect2->setOrigin({25.f, 25.f});
-		body2 = world.addBody(
-			std::make_unique<physics::body::KinematicBody2D>(
-				physics::collision::CollisionShape2D(physics::collision::Rectangle({ 50.f, 50.f }))
+		tanks.back()->setPosition({ 100.f, 100.f });
+		tanks.push_back(
+			addChild<Tank>(
+				game,
+				world,
+				mk::Colors::RED,
+				mk::math::Vector2f{ 50.f, 70.f },
+				mk::input::KEY::ARROW_UP,
+				mk::input::KEY::ARROW_DOWN,
+				mk::input::KEY::ARROW_RIGHT,
+				mk::input::KEY::ARROW_LEFT
 			)
 		);
-		body2->getCollisionShape().setOrigin({ 25.f, 25.f });
-		body2->setPosition(75, 75);
+		tanks.back()->setPosition({ 200.f, 200.f });
 	}
 
-	void onPhysicsUpdate(mk::Game& game, float dt) override {
-		auto x = static_cast<int>(game.isKeyPressed(mk::input::KEY::D))
-		       - game.isKeyPressed(mk::input::KEY::A);
-		auto y = static_cast<int>(game.isKeyPressed(mk::input::KEY::S))
-		       - game.isKeyPressed(mk::input::KEY::W);
-
-		auto x2 = static_cast<int>(game.isKeyPressed(mk::input::KEY::ARROW_RIGHT))
-		       - game.isKeyPressed(mk::input::KEY::ARROW_LEFT);
-		auto y2 = static_cast<int>(game.isKeyPressed(mk::input::KEY::ARROW_DOWN))
-		       - game.isKeyPressed(mk::input::KEY::ARROW_UP);
-
-		auto r = static_cast<int>(game.isKeyPressed(mk::input::KEY::E))
-		       - game.isKeyPressed(mk::input::KEY::Q);
-		auto r2 = static_cast<int>(game.isKeyPressed(mk::input::KEY::O))
-		       - game.isKeyPressed(mk::input::KEY::L);
-
-		body1->velocity = mk::math::Vector2f(x, y).normalizeOrZero() * 100;
-		body1->rotate(r * 5 * dt);
-		body2->velocity = mk::math::Vector2f(x2, y2).normalizeOrZero() * 100;
-		body2->rotate(r2 * 5 * dt);
-		world.step(dt);
-
-		rect1->setPosition(body1->getPosition());
-		rect1->setRotation(body1->getRotation());
-		rect2->setPosition(body2->getPosition());
-		rect2->setRotation(body2->getRotation());
-	}
+	void onPhysicsUpdate(mk::Game&, float dt) override { world.step(dt); }
 };
 
 int main() {

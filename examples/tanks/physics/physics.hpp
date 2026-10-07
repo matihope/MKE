@@ -155,7 +155,7 @@ namespace physics {
 								kb->move(collision_info->normal * collision_info->depth);
 								const float vn
 								    = mk::math::dotProduct(collision_info->normal, kb->velocity);
-								if (vn > 0)
+								if (vn < 0)
 									kb->velocity -= collision_info->normal
 									              * mk::math::dotProduct(
 														collision_info->normal, kb->velocity
